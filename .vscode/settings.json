@@ -1,0 +1,11 @@
+{
+    "deno.enable": true,
+    "deno.lint": true,
+    "deno.unstable": true,
+    "editor.quickSuggestions": {
+      "strings": true
+    },
+    "editor.suggest.imports": false,
+    "editor.suggest.tsplus": false,
+    "typescript.validate.enable": false
+}  
