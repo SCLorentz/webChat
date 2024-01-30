@@ -1,5 +1,6 @@
 import { Application, Context, send } from 'https://deno.land/x/oak/mod.ts';
 import { bold, cyan, green, yellow } from "https://deno.land/std@0.200.0/fmt/colors.ts";
+import { indexedDB } from "https://deno.land/x/indexeddb@v1.1.0/ponyfill.ts";
 //
 import file from "./database/chat.json" with { type: "json" };
 const filePath = './database/chat.json';
