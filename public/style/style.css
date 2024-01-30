@@ -364,6 +364,7 @@ button {
     display: flex;
     align-items: center;
     position: relative;
+    color-scheme: only light;
 }
 
 #homeSettings * {
@@ -381,6 +382,7 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
+    color-scheme: auto;
 }
 
 .deleteGroup {
@@ -487,6 +489,7 @@ button {
     font-family: 'roboto';
     font-size: 20px;
     color: #051211;
+    background: #040e0d;
 }
 #descriptionInput {
     margin: 10px 0;

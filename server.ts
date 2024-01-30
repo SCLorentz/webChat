@@ -1,4 +1,4 @@
-import { Application, Context, send } from 'https://deno.land/x/oak/mod.ts';
+import { Application, Context, send, Router } from 'https://deno.land/x/oak/mod.ts';
 import { bold, cyan, green, yellow } from "https://deno.land/std@0.200.0/fmt/colors.ts";
 import { DB } from "https://deno.land/x/sqlite/mod.ts";
 
@@ -10,9 +10,21 @@ db.execute(`
   CREATE TABLE IF NOT EXISTS people (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
-    value TEXT
+    users TEXT,
+    settings TEXT
   )
 `);
+
+// Create a new router
+const router = new Router();
+
+router.get("/data", async (context) => {
+  const data = [];
+  for (const [name] of db.query("SELECT name FROM users")) {
+    data.push({ name });
+  }
+  context.response.body = data;
+});
 
 // Run a simple query
 /*for (const name of ["Peter Parker", "Clark Kent", "Bruce Wayne"]) {
@@ -41,6 +53,9 @@ app.use(async (context) => {
     context.response.body = "Not Found";
   }
 });
+
+app.use(router.routes());
+app.use(router.allowedMethods());
 
 console.log('HTTP server running. Access it at: ' + yellow(`http://localhost:${port}/`));
 
