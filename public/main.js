@@ -1,26 +1,3 @@
-const dataToSend = { id: '1', value: 'context'}; // Seus dados a serem enviados
-
-fetch('http://localhost:8080/enviar-dados', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(dataToSend),
-})
-    .then(response => response.text())
-    .then(responseText => {
-        console.log(responseText);
-    })
-    .catch(error => {
-        console.error('Erro ao enviar dados:', error);
-    });
-
-//import WaveSurfer from '/wavesurfer/wavesurfer.js';
-
-/*const socket = io();
-socket.on('helloUser', (message) => {
-    console.log(message);
-});*/
 window.addEventListener("keydown", function (e) {
     switch (e.ctrlKey && e.key) {
         case 's':
@@ -118,28 +95,9 @@ class chat {
         this.createMsg();
         this.msgs = [];
         if (this.gen) {
-            const dataToSend = { id: this.id, name: this.name, thumb: this.thumb, guests: this.guests, adm: this.adm };
-            fetch('/salvar-dados', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(dataToSend),
-            })
-                .then(response => response.text())
-                .then(message => console.log(message))
-                .catch(error => console.error('Erro ao enviar dados:', error));
+            //salvar dados do grupo
         }
-        fetch('/palavras-banidas', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(response => response.json())
-            .then(dados =>
-                this.bannedWords = dados
-            )
+        //obter palavras banidas do grupo e globais
     }
     createChat() {
         this.chatElement = new Obj('div', ['chat', 'chatMenu'], document.body);
