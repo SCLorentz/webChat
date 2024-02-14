@@ -19,7 +19,7 @@ db.execute(`
 const router = new Router();
 
 router.get("/dados", (context, next) => {
-  context .response.body = "HELLO WORLD";
+  context.response.body = "HELLO WORLD";
 })
 
 // Run a simple query
@@ -41,13 +41,24 @@ app.use(async (context) => {
 
     await send(context, path, {
       root: `${Deno.cwd()}/public`,
-      index: "index.html",
+      index: "index.ejs",
     });
   } catch (error) {
-    // Se o arquivo não for encontrado, retornamos um erro 404.
-    context.response.status = 404;
-    context.response.body = "Not Found";
-    await send(context, './view/404.ejs')
+    switch (error.status) {
+      case 404:
+        context.response.status = 404;
+        context.response.body = "Not Found";
+        await send(context, './view/404.ejs');
+        break
+      case 403:
+        context.response.status = 403;
+        context.response.body = "Forbidden";
+        await send(context, './view/403.ejs');
+        break
+      default:
+        context.response.status = error.status;
+        context.response.body = error.status;
+    }
   }
 });
 
