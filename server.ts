@@ -18,13 +18,9 @@ db.execute(`
 // Create a new router
 const router = new Router();
 
-router.get("/data", async (context) => {
-  const data = [];
-  for (const [name] of db.query("SELECT name FROM users")) {
-    data.push({ name });
-  }
-  context.response.body = data;
-});
+router.get("/dados", (context, next) => {
+  context .response.body = "HELLO WORLD";
+})
 
 // Run a simple query
 /*for (const name of ["Peter Parker", "Clark Kent", "Bruce Wayne"]) {
@@ -51,6 +47,7 @@ app.use(async (context) => {
     // Se o arquivo não for encontrado, retornamos um erro 404.
     context.response.status = 404;
     context.response.body = "Not Found";
+    await send(context, './view/404.ejs')
   }
 });
 

@@ -16,6 +16,10 @@
     --background-theme-9: #0000006b;
 }
 
+img {
+    color-scheme: only light;
+}
+
 html {
     height: 100%;
 }
@@ -37,7 +41,9 @@ a:-webkit-any-link {
     color: lightgray;
 }
 
-.material-icons, .material-icons-outlined, .material-icons-round {
+.material-icons,
+.material-icons-outlined,
+.material-icons-round {
     user-select: none;
 }
 
@@ -45,9 +51,18 @@ button {
     cursor: pointer;
     text-decoration: none;
     color: white;
-    border:none;
+    border: none;
     background: none;
     font-family: 'Roboto';
+}
+
+#logo {
+    user-select: none;
+    -webkit-user-drag: none;
+    position: fixed;
+    left: calc(50%);
+    top: calc(50% - 130px);
+    width: 220px;
 }
 
 .guestList {
@@ -62,6 +77,7 @@ button {
     overflow-y: auto;
     overflow-x: hidden;
     height: -webkit-fill-available;
+    color-scheme: only light;
 }
 
 .guestList::-webkit-scrollbar,
@@ -146,9 +162,11 @@ button {
     border-bottom: 2px solid;
     align-items: center;
 }
+
 .guestInfoMenu>a>p {
     margin: auto;
 }
+
 .guestInfoMenu>a>img {
     padding: 5px;
     height: -webkit-fill-available;
@@ -202,6 +220,7 @@ button {
     background: #b15c1f41;
     text-decoration: line-through;
 }
+
 .groupDesc {
     text-align: center;
     outline: 0;
@@ -236,6 +255,7 @@ button {
     grid-row-gap: 0px;
     display: none;
     position: relative;
+    color-scheme: only light;
 }
 
 .chatConfigs {
@@ -291,6 +311,7 @@ button {
     color: white;
     display: flex;
     align-items: center;
+    user-select: none;
 }
 
 #menu>span {
@@ -301,21 +322,40 @@ button {
 #pesquisar {
     resize: none;
     outline: none;
-    border-radius:50rem;
+    border-radius: 50rem;
     margin: 0 0 0 5px;
-    font-family: 'roboto';
-    font-size: 14px;
-    width: 200px;
+    font-size: 18px;
     padding: 8px;
-    width: 50%;
-    height: 20px;
     background: #2b1606;
     color: white;
     border: 0;
+    transition: all 1s ease;
+}
+
+#pesquisar:hover {
+    font-size: 20px;
 }
 
 #pesquisar::-webkit-scrollbar {
     width: 0;
+}
+
+#searchbar {
+    position: fixed;
+    z-index: 3;
+    top: 15px;
+    left: calc(50% - 250px);
+    width: 500px;
+    padding: 10px;
+    border-radius: 50rem;
+    background: #794119;
+    border: #7d583e 1px solid;
+    color-scheme: only light;
+    color: white;
+    outline: none;
+    text-align: center;
+    display: none;
+    box-shadow: 0 0 60px 20px #040f0e;
 }
 
 #contatos {
@@ -410,10 +450,10 @@ button {
     font-family: 'Roboto';
 }
 
-.groupThumbBtn {
+.thumbnail {
     width: -webkit-fill-available;
     background: transparent;
-    box-shadow: 4px 4px 90px #00000063 inset, 20px 0px 1px #0000009e;
+    box-shadow: 4px 4px 90px #0000003b inset, 20px 0px 1px #0000009e;
     padding: 5px;
     height: 70px;
     display: flex;
@@ -425,14 +465,14 @@ button {
     font-size: 18px;
 }
 
-.groupThumbBtn:hover,
-.groupThumbBtn:focus-visible {
+.thumbnail:hover,
+.thumbnail:focus-visible {
     background: #00000013;
     outline: none;
     translate: -3px;
 }
 
-.groupThumbBtn>img{
+.thumbnail>img {
     width: 60px;
     height: 60px;
     box-shadow: inset 4px 4px 15px #0000006b;
@@ -441,6 +481,9 @@ button {
 
 #newChatMenu {
     background: #79411961;
+    border: 2px solid;
+    border-image: linear-gradient(to right, #784019, #0000ff00);
+    border-image-slice: 1;
     position: fixed;
     z-index: 1;
     backdrop-filter: url(./filter.svg#waterEffect) blur(3px) brightness(0.8);
@@ -457,28 +500,33 @@ button {
     grid-row-gap: 0px;
     display: none;
     max-width: 800px;
-    z-index:2;
+    z-index: 2;
 }
+
 #selecUsers {
     grid-area: 1 / 2 / 3 / 3;
     border-left: 3px solid;
-    padding:10px;
+    padding: 10px;
 }
+
 #menuInputs {
     display: flex;
-    padding:10px;
+    padding: 10px;
 }
+
 #menuInputs img {
     height: 200px;
     border-radius: 50%;
     -webkit-user-drag: none;
 }
+
 #menuInputs button {
     background: none;
-    border:none;
+    border: none;
     outline: none;
     cursor: pointer;
 }
+
 #nameInput {
     border: none;
     border-radius: 5rem;
@@ -491,6 +539,13 @@ button {
     color: #051211;
     background: #040e0d;
 }
+
+/*Para seleção de texto por autofill (não está sendo aplicado, corrigir erro)
+input:-internal-autofill-selected {
+    background-color: #0f1a19;
+    border: 1px solid #1f312f;
+    color-scheme: only light;
+}*/
 #descriptionInput {
     margin: 10px 0;
     border: none;
@@ -505,6 +560,7 @@ button {
     border-radius: 0;
     color: white;
 }
+
 .exitCreateGroupMenu {
     top: calc(0% + 20px);
     left: calc(0% + 20px);
@@ -521,7 +577,8 @@ button {
     margin: 0;
     text-decoration: underline;
 }
-#createChatBtn {
+
+#create {
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -534,6 +591,7 @@ button {
     cursor: pointer;
     outline: none;
 }
+
 .inputChat {
     grid-area: 3 / 1 / 3 / 3;
     background: #040f0e;
@@ -571,7 +629,8 @@ button {
     padding: 5px;
     border-radius: 50%;
     cursor: pointer;
-    display: none; /*temporariamente*/
+    display: none;
+    /*temporariamente*/
 }
 
 .msg {
@@ -585,15 +644,18 @@ button {
     border-radius: 0.5rem;
     /*min-height: 60px;*/
 }
+
 .msgList {
     display: flex;
     flex-direction: row-reverse;
     justify-content: space-between;
 }
+
 .sended {
     background: #ff852e70;
     margin: 15px 15px 0 auto;
 }
+
 .recived {
     background: #0e534c6b;
 }
@@ -605,7 +667,7 @@ button {
     padding: 5px;
     position: fixed;
     z-index: 1;
-    color:white;
+    color: white;
 }
 
 .playTime {
@@ -683,6 +745,9 @@ button {
     grid-area: 2 / 1 / 3 / 2;
     overflow: auto;
     scroll-behavior: smooth;
+    border-left: 2px solid;
+    border-image: linear-gradient(to bottom,#0000ff00, #934d1c, #0000ff00);
+    border-image-slice: 1;
 }
 
 .msgArea::-webkit-scrollbar {
@@ -750,6 +815,7 @@ button {
 .imgContextMenu {
     display: none;
 }
+
 .htmlFileBtn {
     color: white;
     background: #071a18;
@@ -764,7 +830,7 @@ button {
     margin: 0px 0 0px auto;
     background: #142f2d66;
     color: white;
-    border-radius: 0.5rem 0 0 0.5rem;
+    border-radius: 5rem 0 0 5rem;
     padding: 3px 3px 3px 7px;
     display: flex;
     align-items: center;
@@ -820,6 +886,7 @@ button {
     max-width: 40%;
     width: -webkit-fill-available;
 }
+
 .addUserImg {
     height: 60px;
     border-radius: 50%;
@@ -850,7 +917,7 @@ button {
 
 .groupInfo {
     color: white;
-    border-radius: 0 0.5rem 0.5rem 0;
+    border-radius: 0 5rem 5rem 0;
     background: #142f2d66;
     padding: 3px;
     margin: 0 5px 0 0;
@@ -861,10 +928,12 @@ button {
     color: white;
     padding: 3px;
 }
+
 .noGroup {
     margin: 50px;
     font-size: 30px;
 }
+
 .picMenu {
     background: #202d39;
     padding: 10px 15px;
@@ -878,31 +947,37 @@ button {
     box-shadow: 4px 4px 60px #05090c;
     z-index: 1;
 }
+
 .picMenu>button {
     border-radius: 0.5rem;
     background: none;
-    border:0;
+    border: 0;
     box-shadow: 4px 4px 10px #00000052;
     transition: all 1s ease;
     margin: 3px;
     padding: 5px 6px;
 }
+
 .picMenu>button:hover {
     box-shadow: 4px 4px 10px #0000009c;
 }
+
 .picMenu svg {
     fill: white;
 }
+
 .picMenuVidCap {
     border-radius: 0.5rem;
     width: -webkit-fill-available;
     display: none;
     margin-bottom: 20px;
 }
+
 .picMenuCanvas {
     border-radius: 0.5rem;
     width: -webkit-fill-available;
 }
+
 .vidCapBtn {
     color: white;
     background: #202d39 !important;
@@ -912,21 +987,25 @@ button {
     border-radius: 50% !important;
     padding: 10px !important;
     transition: color 1s ease !important;
-    box-shadow:none !important;
-    margin:0 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
 }
+
 .vidCapBtn:focus-visible {
     outline: 0;
     color: darkgrey;
 }
+
 .picMenuCanvas {
     display: none;
     margin-bottom: 20px;
 }
+
 .back {
     position: absolute;
     padding: 15px;
 }
+
 #titleGuests {
     position: sticky;
     top: -5px;
@@ -937,15 +1016,17 @@ button {
     z-index: 0;
     margin: 0;
 }
+
 .addGuest {
     background: #794119;
     padding: 13px;
     width: -webkit-fill-available;
     text-align: center;
     border-radius: 0.5rem;
-    margin:5px;
+    margin: 5px;
     transition: background 0.5s ease;
 }
+
 .arrowBack {
     background: no-repeat;
     color: white;
@@ -953,6 +1034,7 @@ button {
     cursor: pointer;
     display: none
 }
+
 .chatImg {
     border-radius: 50%;
     object-fit: cover;
@@ -960,12 +1042,14 @@ button {
     user-select: none;
     background: #0f1a19;
 }
+
 .filePlaceholder {
     display: flex;
     flex-direction: row-reverse;
     align-items: center;
     justify-content: flex-end;
 }
+
 .filePlaceholder * {
     margin: 5px 0;
 }
@@ -973,21 +1057,24 @@ button {
 .playPause {
     font-size: 30px;
 }
+
 .previewSlides {
     height: fit-content;
     justify-content: center;
     margin: 10px;
     display: none;
 }
+
 .previewSlides * {
     max-height: 500px;
     max-width: 500px;
     width: 100%;
 }
+
 .previewArrow {
     display: none;
     position: absolute;
-    top:50%;
+    top: 50%;
 }
 
 #popup {
@@ -1013,16 +1100,19 @@ button {
         grid-column-gap: 0px;
         grid-row-gap: 0px;
     }
+
     /*#salvos {
         display: none;
     }*/
     .chat {
-        grid-area: 1 / 1 / 2 / 2; 
+        grid-area: 1 / 1 / 2 / 2;
     }
+
     .chatConfigs {
-        grid-area: 1 / 1 / 2 / 2; 
+        grid-area: 1 / 1 / 2 / 2;
     }
 }
+
 @media only screen and (max-width: 550px) {
     .chatConfigs {
         display: grid;
@@ -1032,6 +1122,7 @@ button {
         grid-row-gap: 0px;
         overflow: auto;
     }
+
     .guestList {
         grid-area: 5 / 1 / 5 / 2;
     }

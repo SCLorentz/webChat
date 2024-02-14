@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+    <link rel="manifest" href="/manifest.webmanifest">
+    <!--
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="white">
+        <meta name="theme-color" media="(prefers-color-scheme: dark)"  content="black">
+    -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <!--desc-->
     <meta name="description" content="Chat">
@@ -18,17 +23,22 @@
     <link rel="stylesheet" href="/style/style.css">
 </head>
 <body translate="no">
+    <img src="/img/logo.svg" id="logo" alt="logo">
     <!--nav-->
     <nav id="salvos">
-        <div id="menu">
-            <input id='pesquisar' placeholder="global" tabindex="0" type="text"></input>
+        <nav id="menu">
+            <!--<input id='pesquisar' placeholder="global" tabindex="0" type="text"></input>-->
+            <button class="material-symbols-outlined" tabindex="0" id="pesquisar">
+                search
+                <input placeholder="pesquisar no chat" tabindex="0" type="text" id="searchbar"></input>
+            </button>
             <div id="homeSettings">
                 <button class="material-symbols-outlined" tabindex="0" id='settings'>settings</button>
                 <button class="material-symbols-outlined" tabindex="0" id="home"
                     href="#User Name" style="text-decoration: none;">extension</button>
                 <button class="material-symbols-outlined" id="add">add</button>
             </div>
-        </div>
+        </nav>
         <div id="contatos"></div>
     </nav>
     <!--New Group Menu-->
@@ -42,11 +52,11 @@
                 <input type="text" placeholder="description" id="descriptionInput">
             </div>
             <button tabindex="0" onclick="this.lastElementChild.click()">
-                <img src="/img/newGroupImg.svg">
+                <img src="/img/groupImg.svg">
                 <input type="file" style='display: none;'>
             </button>
         </div>
-        <button class='material-symbols-outlined' id="createChatBtn">group_add</button>
+        <button class='material-symbols-outlined' id="create">group_add</button>
         <div id="selecUsers">
             <h3 style="margin-top: 0;">users</h3>
         </div>
