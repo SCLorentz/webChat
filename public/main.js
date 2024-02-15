@@ -1,4 +1,4 @@
-fetch("/dados")
+/*fetch("/dados")
     .then(response => {
         // Lógica para lidar com a resposta do servidor
         return response.text();
@@ -10,7 +10,7 @@ fetch("/dados")
     .catch(error => {
         // Lógica para lidar com erros de requisição
         console.error(error);
-    });
+    });*/
 
 window.addEventListener("keydown", function (e) {
     switch (e.ctrlKey && e.key) {

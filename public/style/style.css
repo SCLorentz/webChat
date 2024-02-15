@@ -612,6 +612,9 @@ input:-internal-autofill-selected {
     font-family: 'Roboto';
     font-size: 16px;
     padding: 15px 20px;
+    border: 2px solid;
+    border-image: linear-gradient(to left, #101919, #0000ff00);
+    border-image-slice: 1;
 }
 
 .msgBalloon::-webkit-scrollbar {

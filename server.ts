@@ -1,6 +1,7 @@
-import { Application, Context, send, Router } from 'https://deno.land/x/oak/mod.ts';
-import { bold, cyan, green, yellow } from "https://deno.land/std@0.200.0/fmt/colors.ts";
-import { DB } from "https://deno.land/x/sqlite/mod.ts";
+import { Application, Context, send } from 'https://deno.land/x/oak/mod.ts'; //Servidor
+import { bold, cyan, green, yellow } from "https://deno.land/std@0.200.0/fmt/colors.ts"; //console
+import { DB } from "https://deno.land/x/sqlite/mod.ts"; //database
+import { compare, hash } from "https://deno.land/x/bcrypt/mod.ts"; //criptografia e usuarios
 
 const port = 8080;
 const app = new Application({ keys: ["data"] });
@@ -14,13 +15,6 @@ db.execute(`
     settings TEXT
   )
 `);
-
-// Create a new router
-const router = new Router();
-
-router.get("/dados", (context, next) => {
-  context.response.body = "HELLO WORLD";
-})
 
 // Run a simple query
 /*for (const name of ["Peter Parker", "Clark Kent", "Bruce Wayne"]) {
@@ -38,32 +32,46 @@ db.close();
 app.use(async (context) => {
   try {
     const path = new URL(context.request.url).pathname;
-
-    await send(context, path, {
-      root: `${Deno.cwd()}/public`,
-      index: "index.ejs",
-    });
+    switch (path) {
+      case "/login":
+        await send(context, './view/login.ejs');
+        break
+      case "/dados":
+        //context.response.body = "hello";
+        console.log("FUNCIONOU PORRA!");
+        break
+      default:
+        await send(context, path, {
+          root: `${Deno.cwd()}/public`,
+          index: "index.ejs",
+        });
+    }
   } catch (error) {
+    function HTTPError(e, m = e, vPath) {
+      context.response.status = e;
+      context.response.body = m;
+    }
     switch (error.status) {
       case 404:
-        context.response.status = 404;
-        context.response.body = "Not Found";
+        HTTPError(error.status, "Not Found ( ﾉ ﾟｰﾟ)ﾉ")
         await send(context, './view/404.ejs');
         break
       case 403:
-        context.response.status = 403;
-        context.response.body = "Forbidden";
+        HTTPError(error.status, "Forbidden",)
         await send(context, './view/403.ejs');
         break
+      case 500:
+        HTTPError(error.status, "Internal Server Error :(")
+        await send(context, './view/500.ejs');
+        break
       default:
-        context.response.status = error.status;
-        context.response.body = error.status;
+        HTTPError(error.status)
     }
+    /*Outros erros:
+      503 -> serviço indisponivel
+    */
   }
 });
-
-app.use(router.routes());
-app.use(router.allowedMethods());
 
 console.log('HTTP server running. Access it at: ' + yellow(`http://localhost:${port}/`));
 
