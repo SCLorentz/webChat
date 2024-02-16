@@ -1,18 +1,18 @@
-/*fetch("/dados")
-    .then(response => {
-        // Lógica para lidar com a resposta do servidor
-        return response.text();
-    })
+//receber
+fetch('/receber') // Substitua '/dados' pela URL correta para a rota que retorna os dados
+    .then(response => response.json()) // Converte a resposta em formato JSON
     .then(data => {
-        // Lógica para lidar com os dados recebidos do servidor
-        console.log(data);
+        for(let i = 0; i<data.chats.length; i++) {
+            chats.push(new chat(i, data.chats[i], '/img/groupImg.svg', [user, alunos[1]], [user], true));
+        }
     })
-    .catch(error => {
-        // Lógica para lidar com erros de requisição
-        console.error(error);
-    });*/
+    .catch(error => console.error(error))
+    .finally(()=>{
+        const valor = localStorage.getItem('lastChat');
+        document.getElementById(valor).style.display = 'grid';
+    });
 
-window.addEventListener("keydown", function (e) {
+window.addEventListener("keydown", e => {
     switch (e.ctrlKey && e.key) {
         case 's':
             e.preventDefault();
@@ -112,7 +112,7 @@ const popup = document.getElementById('popup');
 class chat {
     constructor(id, name, thumb, guests, adm, gen = false) {
         this.gen = gen;
-        this.id = id;
+        this.id = "chat:"+id;
         this.name = name;
         this.thumb = thumb;
         this.guests = guests;
@@ -212,6 +212,7 @@ class chat {
         this.groupThumbBtn.onclick = () => {
             document.querySelectorAll('.chat, .chatConfigs, .picMenu, .newGuestMenu').forEach(e => e.style.display = 'none');
             this.chatElement.style.display = 'grid';
+            localStorage.setItem('lastChat', this.id);
             //thumb
             document.querySelectorAll('.groupThumbBtn').forEach(e => e.style.background = '');
             this.groupThumbBtn.style.background = '#0000002b';
@@ -331,7 +332,7 @@ class chat {
     }
     editGroup() {
         //edit group img
-        this.img = new Obj('img', ['GroupImg', 'chatImg'], this.chatConfig);
+        this.img = new Obj('img', ['groupImg', 'chatImg'], this.chatConfig);
         this.img.src = this.thumb;
         //
         this.imgInput = document.createElement('input');
@@ -610,32 +611,25 @@ document.getElementById('add').onclick = () => {
     nameInput.addEventListener('drop', e => e.preventDefault());
 };
 document.getElementById('create').onclick = () => {
-    /*if (nameInput.value.replace(/^\W+/, '') != '' && nameInput.value.length < 16) {
-        let dado;  // Declare a variável fora do bloco .then()
-        fetch('/enviar-dados', {
-            method: 'POST',
+    if (nameInput.value.replace(/^\W+/, '') != '' && nameInput.value.length < 16) {
+        fetch('/enviar', {
+            method: 'POST', // Método da requisição (pode ser GET, POST, PUT, DELETE, etc.)
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
+            body: JSON.stringify(nameInput.value.replace(/^\W+/, ''))
         })
             .then(response => response.json())
-            .then(dados => {
-                if (dados.length > 0) {
-                    dado = dados[dados.length - 1];
-                }
+            .then(responseData => {
+                console.log(responseData);
             })
-            .catch(error => console.error('Erro ao enviar os dados:', error))
+            .catch(error => console.error(error))
             .finally(() => {
-                if (dado) {
-                    chats.push(new chat(dado.id + 1, nameInput.value, '/img/newGroupImg.svg', [user, alunos[1]], [user], true));
-                    groupCreator.style.display = '';
-                    nameInput.value = '';
-                }
+                chats.push(new chat(Math.random(), nameInput.value, '/img/groupImg.svg', [user, alunos[1]], [user], true));
+                groupCreator.style.display = '';
+                nameInput.value = '';
             });
-    }*/
-    chats.push(new chat(Math.random(), nameInput.value, '/img/groupImg.svg', [user, alunos[1]], [user], true));
-    groupCreator.style.display = '';
-    nameInput.value = '';
+    }
 }
 /*talvez criar uma classe para o customContext, algumas propriedades:
 color -> cor de fundo do contextMenu
@@ -699,9 +693,9 @@ class msg {
             this.msg.style.marginTop = "2px";
             this.msg.classList.add('msgList');
         } else {
-            this.msgOwnerPic = new Obj('img', ['msgOwnerPic', 'lazyload'], this.msgTop);
+            this.msgOwnerPic = new Obj('img', ['msgOwnerPic'/*, 'lazyload'*/], this.msgTop);
             this.msgOwner = new Obj('p', ['msgOwner'], this.msgTop, `${this.owner.nome} ${this.owner.sobrenome}`);
-            this.msgOwnerPic.dataset.src = '/img/user.svg';
+            this.msgOwnerPic.src = '/img/User.svg';
         }
         if (LAST_MSG && LAST_MSG.time != this.time || this.chat.msgs.length == 0) {
             this.msgDate = new Obj('p', ['msgDate'], this.msgTop, this.time);
@@ -827,8 +821,8 @@ class msg {
             });
         }
         //bad words
-        let bannedWordsRegex = new RegExp(this.chat.bannedWords.join("|"), "gi");
-        this.content = sinonimos(binaryToText(this.content)).replace(bannedWordsRegex, matchedWord => '*'.repeat(matchedWord.length));
+        //let bannedWordsRegex = new RegExp(this.chat.bannedWords.join("|"), "gi");
+        //this.content = sinonimos(binaryToText(this.content)).replace(bannedWordsRegex, matchedWord => '*'.repeat(matchedWord.length));
         //Text Content
         this.msgTextContent = new Obj('a', ['msgTextContent'], this.msg);
         this.msgTextContent.innerHTML = this.content;

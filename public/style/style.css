@@ -213,7 +213,7 @@ button {
     overflow: hidden;
     background: #ffffff0d;
     color: white;
-    box-shadow: 4px 4px 60px #00000095, 1px 1px 0px 1px #00000033;
+    box-shadow: 9px 4px 60px #00000063, 1px 1px 0px 1px #00000033, -1px -1px 0px 1px #ffffff08;
 }
 
 .renameGroup::selection {
@@ -237,16 +237,16 @@ button {
     grid-area: 3 / 2 / 4 / 1;
 }
 
-.GroupImg {
+.groupImg {
     width: 250px;
     height: 250px;
     cursor: pointer;
     margin: auto;
-    box-shadow: 4px 4px 60px #00000063, 1px 1px 0px 1px #00000033;
+    box-shadow: 9px 4px 60px #00000063, 1px 1px 0px 1px #00000033, -1px -1px 0px 1px #ffffff08;
     transition: all 0.8s ease;
 }
-.GroupImg:hover {
-    filter: brightness(0.95);
+.groupImg:hover {
+    filter: brightness(0.8);
 }
 
 .chat {
@@ -1042,6 +1042,9 @@ input:-internal-autofill-selected {
     padding: 15px;
     z-index: 0;
     margin: 0;
+    border-bottom: 2px solid;
+    border-image: linear-gradient(to left, #0000ff00, #ffffff12, #0000ff00);
+    border-image-slice: 1;
 }
 
 .addGuest {
