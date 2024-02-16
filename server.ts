@@ -1,11 +1,14 @@
 import { Application, Context, send } from 'https://deno.land/x/oak/mod.ts'; //Servidor
 import { bold, cyan, green, yellow } from "https://deno.land/std@0.200.0/fmt/colors.ts"; //console
 import { DB } from "https://deno.land/x/sqlite/mod.ts"; //database
-import { compare, hash } from "https://deno.land/x/bcrypt/mod.ts"; //criptografia e usuarios
+//import { compare, hash } from "https://deno.land/x/bcrypt/mod.ts"; //criptografia e usuarios
+//import * as dejs from "https://deno.land/x/dejs@0.10.3/mod.ts"; //ejs
+//Uma opção ao css ou scss é o https://tailwindcss.com/
 
 const port = 8080;
 const app = new Application({ keys: ["data"] });
 const db = new DB('./database/data.db');
+const ejs = require('ejs');
 
 db.execute(`
   CREATE TABLE IF NOT EXISTS people (

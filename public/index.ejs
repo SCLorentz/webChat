@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <link rel="manifest" href="/manifest.webmanifest">
+    <!--<link rel="manifest" href="/manifest.webmanifest"> Arquivo PWA-->
     <!--
         <meta name="theme-color" media="(prefers-color-scheme: light)" content="white">
         <meta name="theme-color" media="(prefers-color-scheme: dark)"  content="black">
     -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <!--desc-->
     <meta name="description" content="Chat">
     <link rel="stylesheet"
@@ -42,8 +41,8 @@
     <!--New Group Menu-->
     <div id="newChatMenu">
         <h2 class='newGroupCreatorTitle'>Novo Grupo</h2>
-        <span class="material-symbols-outlined exitCreateGroupMenu" tabindex="0"
-            onclick="this.parentNode.style.display = 'none'">close</span>
+        <button class="material-symbols-outlined" id="exitCreateGroupMenu" tabindex="0"
+            onclick="this.parentNode.style.display = 'none'">close</button>
         <div id="menuInputs">
             <div style='display: flex;flex-direction: column;width: 100%;justify-content: center;'>
                 <input type="text" id="nameInput" placeholder="Escolha um Nome">

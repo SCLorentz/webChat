@@ -213,7 +213,7 @@ button {
     overflow: hidden;
     background: #ffffff0d;
     color: white;
-    box-shadow: 4px 4px 60px #00000094;
+    box-shadow: 4px 4px 60px #00000095, 1px 1px 0px 1px #00000033;
 }
 
 .renameGroup::selection {
@@ -242,7 +242,11 @@ button {
     height: 250px;
     cursor: pointer;
     margin: auto;
-    box-shadow: 4px 4px 60px #00000063;
+    box-shadow: 4px 4px 60px #00000063, 1px 1px 0px 1px #00000033;
+    transition: all 0.8s ease;
+}
+.GroupImg:hover {
+    filter: brightness(0.95);
 }
 
 .chat {
@@ -329,11 +333,26 @@ button {
     background: #2b1606;
     color: white;
     border: 0;
-    transition: all 1s ease;
+    transition: all 0.5s ease;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-#pesquisar:hover {
+@keyframes myAnim {
+	0% {
+		box-shadow: none;
+	}
+	100% {
+		box-shadow: 0 0 0 2px #41230e, 0 0 0 5px #2b1606ee;
+	}
+}
+
+#pesquisar:hover, #pesquisar:focus-visible {
     font-size: 20px;
+    animation: myAnim 0.8s ease 0s infinite alternate forwards;
 }
 
 #pesquisar::-webkit-scrollbar {
@@ -561,13 +580,18 @@ input:-internal-autofill-selected {
     color: white;
 }
 
-.exitCreateGroupMenu {
+#exitCreateGroupMenu {
     top: calc(0% + 20px);
     left: calc(0% + 20px);
     position: absolute;
     cursor: pointer;
     background: #051210;
     color: white;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .newGroupCreatorTitle {
