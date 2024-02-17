@@ -2,12 +2,12 @@
 fetch('/receber') // Substitua '/dados' pela URL correta para a rota que retorna os dados
     .then(response => response.json()) // Converte a resposta em formato JSON
     .then(data => {
-        for(let i = 0; i<data.chats.length; i++) {
+        for (let i = 0; i < data.chats.length; i++) {
             chats.push(new chat(i, data.chats[i], '/img/groupImg.svg', [user, alunos[1]], [user], true));
         }
     })
     .catch(error => console.error(error))
-    .finally(()=>{
+    .finally(() => {
         const valor = localStorage.getItem('lastChat');
         document.getElementById(valor).style.display = 'grid';
     });
@@ -32,6 +32,7 @@ const chats = [];
 const groupCreator = document.getElementById('newChatMenu');
 const search = document.getElementById('pesquisar');
 document.addEventListener("DOMContentLoaded", () => {
+    console.log(navigator.userAgentData.platform, ":", navigator.userAgentData.brands)
     const configBtn = document.getElementById('settings');
     const settings = document.getElementById("settingsMenu");
     function rotateButton(deg) {
@@ -112,7 +113,7 @@ const popup = document.getElementById('popup');
 class chat {
     constructor(id, name, thumb, guests, adm, gen = false) {
         this.gen = gen;
-        this.id = "chat:"+id;
+        this.id = "chat:" + id;
         this.name = name;
         this.thumb = thumb;
         this.guests = guests;
@@ -617,7 +618,10 @@ document.getElementById('create').onclick = () => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(nameInput.value.replace(/^\W+/, ''))
+            body: JSON.stringify({ 
+                name: nameInput.value.replace(/^\W+/, ''),
+                date: new Date()
+            })
         })
             .then(response => response.json())
             .then(responseData => {

@@ -14,12 +14,31 @@ const app = new Application({ keys: ["data"] });
 const db = new DB('./database/data.db');
 //const ejs = require('ejs');
 
+//chats
 db.execute(`
   CREATE TABLE IF NOT EXISTS chats (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT
+    name TEXT,
+    guests TEXT,
+    creation DATETIME,
+    description TEXT,
+    adms TEXT,
+    creator TEXT,
+    img BLOB
   )
 `);
+//Msgs
+db.execute(`
+  CREATE TABLE IF NOT EXISTS msgs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user TEXT,
+    groupid TEXT,
+    content Text,
+    creation DATETIME,
+    file BLOB
+  )
+`);
+//BLOB --> dados binarios para armazenamento de arquivos
 
 // Run a simple query
 /*for (const name of ["Peter Parker", "Clark Kent", "Bruce Wayne"]) {
@@ -39,6 +58,9 @@ app.use(async (context) => {
       case "/login":
         await send(context, './view/login.ejs');
         break
+      case "/signup":
+        await send(context, './view/signUp.ejs');
+        break
       case "/receber":
         context.response.body = { chats: db.query("SELECT name FROM chats") };
         break
@@ -47,20 +69,15 @@ app.use(async (context) => {
         if (body.type === "json") {
           const data = await body.value;
           try {
-            db.query("INSERT INTO chats (name) VALUES (?)", [data]);
+            db.query("INSERT INTO chats (name, creation) VALUES (?, ?)", [data.name, data.date]);
             context.response.body = { message: "Dados recebidos com sucesso! :)" };
           } catch (error) {
             console.error('Erro ao executar a consulta SQL:', error);
             context.response.body = { message: "Erro ao inserir dados no banco de dados" };
           }          
         } else {
-          const userAgent = context.request.headers.get("user-agent");
-          if (userAgent.includes("Mozilla")) {
-            context.response.status = 400;
-            context.response.body = { message: "ooops, parece que algo deu errado! :(" };
-          } else {
-            context.response.status = 400;
-          }
+          context.response.status = 400;
+          context.response.body = { message: "ooops, parece que algo deu errado! :(" };
         }
         break
       default:
@@ -70,7 +87,7 @@ app.use(async (context) => {
         });
     }
   } catch (error) {
-    function HTTPError(e, m = e, vPath) {
+    function HTTPError(e, m = e) {
       context.response.status = e;
       context.response.body = m;
     }
