@@ -1,6 +1,12 @@
 @font-face {
     font-family: "Roboto";
-    src: url("/style/RobotoMono-VariableFont_wght-1.ttf") format("truetype");
+    src: url("/style/fonts/RobotoMono-VariableFont_wght-1.ttf") format("truetype");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Emoji";
+    src: url("/style/fonts/NotoEmoji-Regular.ttf") format("truetype");
     font-display: swap;
 }
 
@@ -33,7 +39,7 @@ body {
     grid-row-gap: 0px;
     height: 100%;
     overflow: hidden;
-    font-family: 'Roboto';
+    font-family: 'Roboto', 'Emoji';
     background: #061614;
 }
 
@@ -385,8 +391,8 @@ button {
     align-items: flex-start;
     background: #101716;
     z-index: 2;
-    padding: 5px;
-    border-radius: 0 0.5rem 0.5rem 0.5rem;
+    padding: 8px 5px;
+    border-radius: 0 1rem 1rem 1rem;
     border: 0.5px solid #212f2d;
     color-scheme: only light;
     display: none;
@@ -395,6 +401,15 @@ button {
     margin: 3px 0;
     width: -webkit-fill-available;
     text-align: left;
+    display: flex;
+    align-items: center;
+    padding-bottom: 5px;
+    border-bottom: 2px solid;
+    border-image: linear-gradient(to left, #0000ff00, #ffffff12);
+    border-image-slice: 1;
+}
+#sort span {
+    margin-right: 5px;
 }
 
 #contatos {
@@ -666,7 +681,7 @@ input:-internal-autofill-selected {
     border: none;
     background: #040f0e;
     color: white;
-    font-family: 'Roboto';
+    font-family: 'Roboto','Emoji';
     font-size: 16px;
     padding: 15px 20px;
     border: 2px solid;
@@ -683,15 +698,22 @@ input:-internal-autofill-selected {
     background: #152524;
 }
 
+.attach {
+    position: absolute;
+    right: 0;
+    margin: 5px 8px;
+    padding: 0;
+    height: -webkit-fill-available;
+}
+
 .inputAudio {
-    color: #040f0e;
-    background: white;
-    margin: 10px;
-    padding: 5px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: none;
-    /*temporariamente*/
+    position: absolute;
+    right: 0;
+    margin: 5px 40px;
+    height: -webkit-fill-available;
+    display: flex;
+    align-items: center;
+    color: white;
 }
 
 .msg {

@@ -1,7 +1,7 @@
 import { Application, Context, send, Router } from 'https://deno.land/x/oak/mod.ts'; //Servidor
 import { bold, cyan, green, yellow } from "https://deno.land/std@0.200.0/fmt/colors.ts"; //console
 import { DB } from "https://deno.land/x/sqlite/mod.ts"; //database
-import { compile } from "https://x.nest.land/sass@0.2.0/mod.ts"; //style scss
+//import { compile } from "https://x.nest.land/sass@0.2.0/mod.ts"; //style scss <-- modulo bugado
 //import { indexedDB } from "https://deno.land/x/indexeddb@v1.1.0/ponyfill.ts";
 //import { compare, hash } from "https://deno.land/x/bcrypt/mod.ts"; //criptografia e usuarios
 //import * as dejs from "https://deno.land/x/dejs@0.10.3/mod.ts"; //ejs
@@ -70,44 +70,46 @@ function DBData(data) {
       db.execute(`DELETE FROM ${data.target} WHERE id = ${data.id};`);
       break
     case "EDIT":
-      db.execute(`UPDATE ${data.target} SET name = ? WHERE id = ?`, [data.name, data.id]); //corrigir bugs
+      db.execute(`UPDATE ${data.target} SET name = ? WHERE id = ?`, [data.name, data.id]); //corrigir bugs e adicionar mais configurações
       break
   }
 }
 
-function HTTPSend(c) {
+function sendData(c) {
+  return async function () {
+    const body = await c.request.body();
+    if (body.type === "json") {
+      const data = await body.value;
+      try {
+        DBData(data);
+        c.response.body = { message: "Dados recebidos com sucesso! :)" };
+      } catch (error) {
+        c.error('Erro ao executar a consulta SQL:', error);
+        c.response.body = { message: "Erro ao inserir dados no banco de dados" };
+      }
+    } else {
+      c.response.status = 400;
+      c.response.body = { message: "ooops, parece que algo deu errado! :(" };
+    }
+  }
 }
 
 app.use(async (context) => {
   try {
-    //mover para routes
     const path = new URL(context.request.url).pathname;
     switch (path) {
       case "/login":
         await send(context, './view/login.ejs');
-        break
+        break;
       case "/signup":
         await send(context, './view/signUp.ejs');
-        break
+        break;
       case "/receber":
         context.response.body = { chats: db.query("SELECT name, id FROM chats") };
-        break
-      case "/enviar": //enviar dados para o servidor
-        const body = await context.request.body();
-        if (body.type === "json") {
-          const data = await body.value;
-          try {
-            DBData(data);
-            context.response.body = { message: "Dados recebidos com sucesso! :)" };
-          } catch (error) {
-            console.error('Erro ao executar a consulta SQL:', error);
-            context.response.body = { message: "Erro ao inserir dados no banco de dados" };
-          }          
-        } else {
-          context.response.status = 400;
-          context.response.body = { message: "ooops, parece que algo deu errado! :(" };
-        }
-        break
+        break;
+      case "/enviar":
+        await sendData(context)();
+        break;
       default:
         await send(context, path, {
           root: `${Deno.cwd()}/public`,
@@ -121,23 +123,20 @@ app.use(async (context) => {
     }
     switch (error.status) {
       case 404:
-        HTTPError(error.status, "Not Found ( ﾉ ﾟｰﾟ)ﾉ")
+        HTTPError(error.status, "Not Found ( ﾉ ﾟｰﾟ)ﾉ");
         await send(context, './view/404.htm');
-        break
+        break;
       case 403:
-        HTTPError(error.status, "Forbidden",)
+        HTTPError(error.status, "Forbidden");
         await send(context, './view/403.htm');
-        break
+        break;
       case 500:
-        HTTPError(error.status, "Internal Server Error :(")
+        HTTPError(error.status, "Internal Server Error :(");
         await send(context, './view/500.htm');
-        break
+        break;
       default:
-        HTTPError(error.status)
+        HTTPError(error.status);
     }
-    //Outros erros:
-      //503 -> serviço indisponivel
-    //
   }
 });
 

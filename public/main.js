@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const configBtn = document.getElementById('settings');
     const settings = document.getElementById("settingsMenu");
     function rotateButton(deg) {
-        return function () {
+        return function () { //o return em uma função me deu uma ideia para o server.ts
             configBtn.style.transform = `rotate(${deg})`;
         }
     }
@@ -74,20 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     })
-    //
-    /*fetch('/enviar-dados', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    })
-        .then(response => response.json())
-        .then(dados => {
-            dados.forEach(dado => {
-                chats.push(new chat(dado.id, dado.name, '/img/newGroupImg.svg', dado.guests, dado.adm, false));
-            })
-        })
-        .catch(error => console.error('Erro ao enviar os dados:', error));*/
 });
 class Obj {
     constructor(type, customClass, father, innerText) {
@@ -529,13 +515,14 @@ class chat {
         //adicionar corretor automatico e sujestão de palavras
         //Ao começar a digitar, primeira letra em maiusculo (exeto quando o shift está ativado)
         //adicionar opção de gravar audio
-        //adicionar menu de emojis
+        //adicionar menu de emojis e codigos de emojis (#-EMOJI-#) 
         this.msgBalloon = new Obj('textarea', ['msgBalloon'], this.inputChat);
         this.msgBalloon.placeholder = 'vontade de falar...';
+        this.attach = new Obj('button',['attach','material-symbols-outlined'],this.inputChat, "attach_file");
         //audio recorder
         //gravação de audio
         //recursos de legendas para quem não puder ouvir o audio
-        this.inputAudio = new Obj('span', ['material-symbols-outlined', 'inputAudio'], this.inputChat, 'mic')
+        this.inputAudio = new Obj('button', ['material-symbols-outlined', 'inputAudio'], this.inputChat, 'mic')
         let transferfiles = [];
         this.msgBalloon.addEventListener('drop', e => { //drop não funciona em this.msgArea, pesquisar o motivo e corrigir
             e.preventDefault();
