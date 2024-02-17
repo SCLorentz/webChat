@@ -1,10 +1,10 @@
 import { Application, Context, send, Router } from 'https://deno.land/x/oak/mod.ts'; //Servidor
 import { bold, cyan, green, yellow } from "https://deno.land/std@0.200.0/fmt/colors.ts"; //console
 import { DB } from "https://deno.land/x/sqlite/mod.ts"; //database
+import { compile } from "https://x.nest.land/sass@0.2.0/mod.ts"; //style scss
 //import { indexedDB } from "https://deno.land/x/indexeddb@v1.1.0/ponyfill.ts";
 //import { compare, hash } from "https://deno.land/x/bcrypt/mod.ts"; //criptografia e usuarios
 //import * as dejs from "https://deno.land/x/dejs@0.10.3/mod.ts"; //ejs
-//Uma opção ao css ou scss é o https://tailwindcss.com/
 
 //import router from "./routes.ts";
 import { errorHandler } from "./routes/errorHandler.ts";
@@ -19,10 +19,10 @@ db.execute(`
   CREATE TABLE IF NOT EXISTS chats (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
-    guests TEXT,
+    guests_id INTEGER,
     creation DATETIME,
     description TEXT,
-    adms TEXT,
+    adms_id INTEGER,
     creator TEXT,
     img BLOB
   )
@@ -32,12 +32,23 @@ db.execute(`
   CREATE TABLE IF NOT EXISTS msgs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user TEXT,
-    groupid TEXT,
+    group_id INTEGER,
     content Text,
     creation DATETIME,
     file BLOB
   )
 `);
+//Users
+db.execute(`
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    joined DATETIME,
+    img BLOB
+  )
+`);
+
+//db.execute(`DELETE FROM chats WHERE id = 2;`) <-- apagar grupo
 //BLOB --> dados binarios para armazenamento de arquivos
 
 // Run a simple query
@@ -46,8 +57,25 @@ db.execute(`
 }*/
 
 // Print out data in table
-for (const [name] of db.query("SELECT name FROM chats")) {
+/*for (const [name] of db.query("SELECT name FROM chats")) {
   console.log(name);
+}*/
+
+function DBData(data) {
+  switch (data.type) {
+    case "CREATE":
+      db.query(`INSERT INTO ${data.target} (name, creation) VALUES (?, ?)`, [data.name, data.date]);
+      break
+    case "DELETE":
+      db.execute(`DELETE FROM ${data.target} WHERE id = ${data.id};`);
+      break
+    case "EDIT":
+      db.execute(`UPDATE ${data.target} SET name = ? WHERE id = ?`, [data.name, data.id]); //corrigir bugs
+      break
+  }
+}
+
+function HTTPSend(c) {
 }
 
 app.use(async (context) => {
@@ -62,14 +90,14 @@ app.use(async (context) => {
         await send(context, './view/signUp.ejs');
         break
       case "/receber":
-        context.response.body = { chats: db.query("SELECT name FROM chats") };
+        context.response.body = { chats: db.query("SELECT name, id FROM chats") };
         break
       case "/enviar": //enviar dados para o servidor
         const body = await context.request.body();
         if (body.type === "json") {
           const data = await body.value;
           try {
-            db.query("INSERT INTO chats (name, creation) VALUES (?, ?)", [data.name, data.date]);
+            DBData(data);
             context.response.body = { message: "Dados recebidos com sucesso! :)" };
           } catch (error) {
             console.error('Erro ao executar a consulta SQL:', error);
@@ -83,7 +111,7 @@ app.use(async (context) => {
       default:
         await send(context, path, {
           root: `${Deno.cwd()}/public`,
-          index: "index.ejs",
+          index: "index.html",
         });
     }
   } catch (error) {
@@ -123,6 +151,9 @@ await app.listen({
   port: port,
   secure: true,
   //keyFile: "./examples/tls/localhost.key",
+  //certFile: "./examples/tls/localhost.crt"
 });
+
+//deno run -A server.ts
 
 //db.close();

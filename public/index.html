@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+    <meta name="theme-color" content="#794119" />
     <!--<link rel="manifest" href="/manifest.webmanifest"> Arquivo PWA-->
     <!--
         <meta name="theme-color" media="(prefers-color-scheme: light)" content="white">
@@ -29,6 +30,16 @@
                 search
                 <input placeholder="pesquisar no chat" tabindex="0" type="text" id="searchbar"></input>
             </button>
+            <button tabindex="0" class="material-symbols-outlined" id="sort">
+                sort
+                <nav id="sortNav">
+                    <p>a-z</p>
+                    <p>data</p>
+                    <p>não lidas</p>
+                    <p>mais acessadas</p>
+                    <p>custom</p>
+                </nav>
+            </button>
             <div id="homeSettings">
                 <button class="material-symbols-outlined" tabindex="0" id='settings'>settings</button>
                 <button class="material-symbols-outlined" tabindex="0" id="home"
@@ -36,7 +47,9 @@
                 <button class="material-symbols-outlined" id="add">add</button>
             </div>
         </nav>
-        <div id="contatos"></div>
+        <div id="contatos">
+            <a class="material-symbols-outlined" id="favorites" href="/favorites.html">star</a>
+        </div>
     </nav>
     <!--New Group Menu-->
     <div id="newChatMenu">

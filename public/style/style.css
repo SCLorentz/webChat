@@ -156,18 +156,18 @@ button {
     font-size: 15px;
 }
 
-.guestInfoMenu>a {
+.guestInfoMenu>div {
     display: flex;
     flex-direction: row-reverse;
     border-bottom: 2px solid;
     align-items: center;
 }
 
-.guestInfoMenu>a>p {
+.guestInfoMenu p {
     margin: auto;
 }
 
-.guestInfoMenu>a>img {
+.guestInfoMenu img {
     padding: 5px;
     height: -webkit-fill-available;
     object-fit: cover;
@@ -377,6 +377,26 @@ button {
     box-shadow: 0 0 60px 20px #040f0e;
 }
 
+#sortNav {
+    font-family: 'Roboto';
+    font-size: 15px;
+    position: absolute;
+    flex-direction: column;
+    align-items: flex-start;
+    background: #101716;
+    z-index: 2;
+    padding: 5px;
+    border-radius: 0 0.5rem 0.5rem 0.5rem;
+    border: 0.5px solid #212f2d;
+    color-scheme: only light;
+    display: none;
+}
+#sortNav>p {
+    margin: 3px 0;
+    width: -webkit-fill-available;
+    text-align: left;
+}
+
 #contatos {
     scroll-behavior: smooth;
     overflow-y: auto;
@@ -391,6 +411,19 @@ button {
 
 #contatos::-webkit-scrollbar-thumb {
     background: var(--background-theme-2);
+}
+
+#favorites {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 5px;
+    box-shadow: 4px 4px 90px #0000003b inset;
+    border-radius: 0.6rem;
+    margin: 8px;
+    z-index: 2;
+    font-size: 20px;
+    text-decoration: none;
 }
 
 ::placeholder {
@@ -639,6 +672,7 @@ input:-internal-autofill-selected {
     border: 2px solid;
     border-image: linear-gradient(to left, #101919, #0000ff00);
     border-image-slice: 1;
+    caret-color: #ad622c;
 }
 
 .msgBalloon::-webkit-scrollbar {
@@ -962,7 +996,7 @@ input:-internal-autofill-selected {
 }
 
 .picMenu {
-    background: #202d39;
+    background: #5a3013;
     padding: 10px 15px;
     border-radius: 0.5rem;
     width: fit-content;
@@ -987,6 +1021,7 @@ input:-internal-autofill-selected {
 
 .picMenu>button:hover {
     box-shadow: 4px 4px 10px #0000009c;
+    background: #00000047;
 }
 
 .picMenu svg {
