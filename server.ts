@@ -1,4 +1,5 @@
 import { Application, Context, send, Router } from 'https://deno.land/x/oak/mod.ts'; //Servidor
+import { extname, join } from "https://deno.land/std/path/mod.ts";
 import { bold, cyan, green, yellow } from "https://deno.land/std@0.200.0/fmt/colors.ts"; //console
 import { DB } from "https://deno.land/x/sqlite/mod.ts"; //database
 //import { compile } from "https://x.nest.land/sass@0.2.0/mod.ts"; //style scss <-- modulo bugado

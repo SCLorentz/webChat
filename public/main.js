@@ -18,15 +18,15 @@ window.addEventListener("keydown", e => {
         case 's':
             e.preventDefault();
             document.getElementById('settings').click();
-            break;
+            break
         case 'g':
             e.preventDefault();
             document.getElementById('add').click();
-            break;
+            break
         case 'h': //futuramente transformar em pesquisa por mensagens global, ou seja, proucura em todas as conversas
             e.preventDefault();
-            document.getElementById('pesquisar').focus();
-            break;
+            search.click();
+            break
     }
 });
 const chats = [];
@@ -574,7 +574,7 @@ class chat {
             keys[e.key] = true;
             if (keys['Enter'] && !keys['Shift']) {
                 e.preventDefault();
-                if (this.msgBalloon.value.replace(/^\s+/, "").replace(/[\u200E\s⠀ㅤ]/g, "") !== '') {
+                if (this.msgBalloon.value.replace(/^\s+/, "").replace(/[\u200E\s⠀ㅤ]/g, "") !== '' || transferfiles.length !== 0) {
                     if (transferfiles.length > 0) {
                         this.preview.parentNode.removeChild(this.preview);
                         this.inputChat.style.height = '';
@@ -709,6 +709,7 @@ class msg {
             this.msg.style.marginTop = "2px";
             this.msg.classList.add('msgList');
         } else {
+            this.msgTop.style.marginBottom = "5px";
             this.msgOwnerPic = new Obj('img', ['msgOwnerPic'/*, 'lazyload'*/], this.msgTop);
             this.msgOwner = new Obj('p', ['msgOwner'], this.msgTop, `${this.owner.nome} ${this.owner.sobrenome}`);
             this.msgOwnerPic.src = '/img/User.svg';
@@ -720,7 +721,8 @@ class msg {
         }
         //
         this.filePlaceHolder = new Obj('div', ['filePlaceholder'], this.msg);
-        //file
+        //file --> carregamento de novas mensagens.
+        //O carregamento de arquivos em mensagens antigas deve ser feito dentro da classe msg, pois não há previsualização do envio.
         if (this.file) {
             this.file.forEach(file => {
                 file.style.display = 'flex'

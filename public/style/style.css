@@ -684,6 +684,7 @@ input:-internal-autofill-selected {
     font-family: 'Roboto','Emoji';
     font-size: 16px;
     padding: 15px 20px;
+    padding-right: 100px;
     border: 2px solid;
     border-image: linear-gradient(to left, #101919, #0000ff00);
     border-image-slice: 1;
@@ -701,19 +702,27 @@ input:-internal-autofill-selected {
 .attach {
     position: absolute;
     right: 0;
-    margin: 5px 8px;
+    margin: 10px 8px;
     padding: 0;
     height: -webkit-fill-available;
+    background: #131f1e91;
+    border-radius: 0.4rem 0.8rem 0.8rem 0.4rem;
+    width: 40px;
 }
 
 .inputAudio {
     position: absolute;
     right: 0;
-    margin: 5px 40px;
+    margin: 10px 50px;
+    padding: 2px 3px;
     height: -webkit-fill-available;
     display: flex;
     align-items: center;
+    justify-content: center;
     color: white;
+    background: #131f1e91;
+    border-radius: 0.8rem 0.4rem 0.4rem 0.8rem;
+    width: 40px;
 }
 
 .msg {
@@ -797,7 +806,7 @@ input:-internal-autofill-selected {
     display: flex;
     padding: 5px;
     line-break: anywhere;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .msgTextContent::selection {
