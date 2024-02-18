@@ -11,15 +11,14 @@
 }
 
 :root {
-    --background-theme-1: #ffffff;
-    --background-theme-2: #b15c1f;
-    --background-theme-3: #733b13;
-    --background-theme-4: #0f1a19;
-    --background-theme-5: #061614;
-    --background-theme-6: #061614db;
-    --background-theme-7: #040f0e;
+    --text-dark: #ffffff;
+    --theme-2: #b15c1f;
+    --theme-3: #733b13;
+    --theme-5:#794119;
+    --theme-4: #0f1a19;
+    --theme-6: #061614db;
     --background-theme-8: #00000059;
-    --background-theme-9: #0000006b;
+    --theme-9: #102422;
 }
 
 img {
@@ -105,7 +104,7 @@ button {
     user-select: none;
     min-width: 100px;
     min-height: 50px;
-    background: #0e1414;
+    background: var(--background-theme-8);
     border-radius: 0.5rem;
     display: flex;
     align-items: center;
@@ -114,7 +113,7 @@ button {
     flex-direction: row-reverse;
     justify-content: flex-end;
     height: 70px;
-    padding: 5px;
+    padding: 8px;
     width: -webkit-fill-available;
     font-size: 20px;
     position: relative;
@@ -126,11 +125,12 @@ button {
     height: -webkit-fill-available;
     object-fit: cover;
     margin: 0 5px 0 0;
+    box-shadow: 9px 4px 60px #00000063, 1px 1px 0px 1px #00000033, -1px -1px 0px 1px #ffffff08;
 }
 
 .removeGuest {
     margin: 0 0 0 auto;
-    background: #794119;
+    background: var(--theme-5);
     color: white;
     padding: 5px;
     border-radius: 0.3rem;
@@ -269,7 +269,7 @@ button {
 }
 
 .chatConfigs {
-    background: #0f1a19;
+    background: var(--theme-4);
     color: white;
     padding: 15px;
     grid-template-columns: repeat(2, 1fr);
@@ -306,7 +306,7 @@ button {
 #salvos {
     grid-area: 1 / 1 / 3 / 2;
     height: 100%;
-    background: #794119;
+    background: var(--theme-5);
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 60px 1fr;
@@ -421,11 +421,11 @@ button {
 
 #contatos::-webkit-scrollbar {
     width: 5px;
-    background: var(--background-theme-3);
+    background: var(--theme-3);
 }
 
 #contatos::-webkit-scrollbar-thumb {
-    background: var(--background-theme-2);
+    background: var(--theme-2);
 }
 
 #favorites {
@@ -549,7 +549,7 @@ button {
 #newChatMenu {
     background: #79411961;
     border: 2px solid;
-    border-image: linear-gradient(to right, #784019, #0000ff00);
+    border-image: linear-gradient(to right, var(--theme-5), #0000ff00);
     border-image-slice: 1;
     position: fixed;
     z-index: 1;
@@ -603,7 +603,7 @@ button {
     text-align: center;
     font-family: 'roboto';
     font-size: 20px;
-    color: #051211;
+    color: var(--text-dark);
     background: #040e0d;
 }
 
@@ -678,14 +678,14 @@ input:-internal-autofill-selected {
     width: -webkit-fill-available;
     resize: none;
     outline: none;
-    background: #040f0e;
+    background: var(--background-theme-8);
     color: white;
     font-family: 'Roboto','Emoji';
     font-size: 16px;
     padding: 15px 20px;
     padding-right: 100px;
     border: 2px solid;
-    border-image: linear-gradient(to left, #101919, #0000ff00);
+    border-image: linear-gradient(to left, var(--theme-6), #0000ff00);
     border-image-slice: 1;
     caret-color: #ad622c;
 }
@@ -704,7 +704,7 @@ input:-internal-autofill-selected {
     margin: 10px 8px;
     padding: 0;
     height: -webkit-fill-available;
-    background: #131f1e91;
+    background: var(--theme-6);
     border-radius: 0.4rem 0.8rem 0.8rem 0.4rem;
     width: 40px;
 }
@@ -719,9 +719,16 @@ input:-internal-autofill-selected {
     align-items: center;
     justify-content: center;
     color: white;
-    background: #131f1e91;
+    background: var(--theme-6);
     border-radius: 0.8rem 0.4rem 0.4rem 0.8rem;
     width: 40px;
+    transition: border-radius 5s cubic-bezier(0.4, 0, 1, 1), margin 1s ease, background-color 0.5s ease;
+}
+
+.recordingAudio {
+    border-radius: 50rem;
+    margin : 10px 8px;
+    background-color: var(--theme-5);
 }
 
 .msg {
@@ -839,6 +846,7 @@ input:-internal-autofill-selected {
     border-left: 2px solid;
     border-image: linear-gradient(to bottom,#0000ff00, #934d1c, #0000ff00);
     border-image-slice: 1;
+    background: linear-gradient(to top, #00000073, #0000ff00);
 }
 
 .msgArea::-webkit-scrollbar {
@@ -951,7 +959,7 @@ input:-internal-autofill-selected {
 
 .searchOnGroupBtn {
     margin: 0px 0 0px auto;
-    background: #142f2d66;
+    background: var(--theme-9);
     color: white;
     border-radius: 5rem 0 0 5rem;
     padding: 3px 3px 3px 7px;
@@ -1145,7 +1153,7 @@ input:-internal-autofill-selected {
 }
 
 .addGuest {
-    background: #794119;
+    background: var(--theme-5);
     padding: 13px;
     width: -webkit-fill-available;
     text-align: center;

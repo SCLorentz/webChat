@@ -49,6 +49,28 @@ db.execute(`
   )
 `);
 
+db.execute(`
+  CREATE TABLE IF NOT EXISTS themes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    description TEXT,
+    created DATETIME,
+    author_id INTEGER,
+    img BLOB
+  )
+`);
+
+db.execute(`
+  CREATE TABLE IF NOT EXISTS plugins (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    description TEXT,
+    created DATETIME,
+    author_id INTEGER,
+    img BLOB
+  )
+`);
+
 //db.execute(`DELETE FROM chats WHERE id = 2;`) <-- apagar grupo
 //BLOB --> dados binarios para armazenamento de arquivos
 

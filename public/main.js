@@ -59,6 +59,9 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     })
+    if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.getElementById('osTheme').style.background = "black";
+    }
     //receber
     fetch('/receber')
         .then(response => response.json()) // Converte a resposta em formato JSON
@@ -521,7 +524,13 @@ class chat {
         //audio recorder
         //gravação de audio
         //recursos de legendas para quem não puder ouvir o audio
-        this.inputAudio = new Obj('button', ['material-symbols-outlined', 'inputAudio'], this.inputChat, 'mic')
+        this.inputAudio = new Obj('button', ['material-symbols-outlined', 'inputAudio'], this.inputChat, 'mic');
+        this.inputAudio.onclick = () => {
+            this.inputAudio.classList.add("recordingAudio");
+            this.inputAudio.innerText = "stop_circle";
+            this.attach.style.display = "none";
+            this.msgBalloon.disabled = true;
+        }
         let transferfiles = [];
         this.msgBalloon.addEventListener('drop', e => { //drop não funciona em this.msgArea, pesquisar o motivo e corrigir
             e.preventDefault();
