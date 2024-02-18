@@ -1,18 +1,3 @@
-//receber
-fetch('/receber')
-    .then(response => response.json()) // Converte a resposta em formato JSON
-    .then(data => {
-        //console.log(data)
-        for (let i = 0; i < data.chats.length; i++) {
-            chats.push(new chat(data.chats[i][1], data.chats[i][0], '/img/groupImg.svg', [user, alunos[1]], [user], true));
-        }
-    })
-    .catch(error => console.error(error))
-    .finally(() => {
-        const valor = localStorage.getItem('lastChat');
-        document.getElementById(valor).style.display = 'grid';
-    });
-
 window.addEventListener("keydown", e => {
     switch (e.ctrlKey && e.key) {
         case 's':
@@ -74,6 +59,20 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     })
+    //receber
+    fetch('/receber')
+        .then(response => response.json()) // Converte a resposta em formato JSON
+        .then(data => {
+            //console.log(data)
+            for (let i = 0; i < data.chats.length; i++) {
+                chats.push(new chat(data.chats[i][1], data.chats[i][0], '/img/groupImg.svg', [user, alunos[1]], [user], true));
+            }
+        })
+        .catch(error => console.error(error))
+        .finally(() => {
+            const valor = localStorage.getItem('lastChat');
+            document.getElementById(valor).style.display = 'grid';
+        });
 });
 class Obj {
     constructor(type, customClass, father, innerText) {
@@ -518,7 +517,7 @@ class chat {
         //adicionar menu de emojis e codigos de emojis (#-EMOJI-#) 
         this.msgBalloon = new Obj('textarea', ['msgBalloon'], this.inputChat);
         this.msgBalloon.placeholder = 'vontade de falar...';
-        this.attach = new Obj('button',['attach','material-symbols-outlined'],this.inputChat, "attach_file");
+        this.attach = new Obj('button', ['attach', 'material-symbols-outlined'], this.inputChat, "attach_file");
         //audio recorder
         //gravação de audio
         //recursos de legendas para quem não puder ouvir o audio

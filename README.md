@@ -2,7 +2,7 @@
 
 Version: 3.15.4
 
-## Recomendações de bibliotecas (favor revizar):
+## Recomendações de bibliotecas (favor revisar):
 
 1. https://deno.land/x/png2svg@0.0.1 --> converter imagens de perfil em svg
 2. https://deno.land/x/deno_kv_oauth@v0.10.0 --> login com o google

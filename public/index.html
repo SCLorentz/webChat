@@ -16,7 +16,7 @@
     <script src="https://unpkg.com/wavesurfer.js@7/dist/wavesurfer.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!--name & ico-->
-    <link id="page-ico" rel="icon" type="image/x-icon" href="/img/user.svg">
+    <link id="page-ico" rel="icon" type="image/x-icon" href="/img/chat.ico">
     <!--temporariamente usando daniel como favicon, não consigo definir a imagem de icon-->
     <title>Chat</title><!--username-->
     <!--my css-->
@@ -91,7 +91,26 @@
     <!--settings-->
     <div id='settingsMenu'>
         <span id='closeSettings' class="material-symbols-outlined" tabindex="0">close</span>
-        <a href="/manuel">manuel</a>
+        <a href="/help" id="help" class="material-symbols-outlined" title="help">help</a>
+        <div id="themeSelector">
+            <h2 style="width: -webkit-fill-available;margin: 0;">My Themes</h2>
+            <h4>Default</h4>
+            <button style="background: black;width: -webkit-fill-available;">system</button>
+            <button style="background: black;">dark</button>
+            <button style="background: white;color:black">light</button>
+            <h4 style="width: -webkit-fill-available;">Marketplace</h4>
+            <button style="background: #794119;" title="add">
+                <p class="material-symbols-outlined">add</p>
+                <!--Adicionar botões de temas-->
+                <!--botões de tema podem ter textos, cores, imagens e descrições personalizadas-->
+                <!--Ao cicar nos botões com o botão direito um menu aparecerá com as opções:
+                - Desinstalar
+                - Compartilhar
+                - Ver na pagina (ver detalhadamente)
+                -->
+                <!--Os temas personalizados podem mudar cores e desings basicos sem alterar muito o layout-->
+            </button>
+        </div>
     </div>
     <div id="popup"></div>
     <script src="/main.js" type="module"></script>

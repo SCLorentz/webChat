@@ -678,7 +678,6 @@ input:-internal-autofill-selected {
     width: -webkit-fill-available;
     resize: none;
     outline: none;
-    border: none;
     background: #040f0e;
     color: white;
     font-family: 'Roboto','Emoji';
@@ -892,6 +891,38 @@ input:-internal-autofill-selected {
     outline: none;
     background: black;
     border-radius: 0.5rem;
+}
+
+#help {
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin: 10px;
+    text-decoration: none;
+}
+
+#themeSelector {
+    display: flex;
+    align-content: flex-start;
+    width: 300px;
+    flex-wrap: wrap;
+    border-right: #ffffff14 3px solid;
+    padding-right: 20px;
+    color-scheme: only light;
+}
+
+#themeSelector button {
+    width: 140px;
+    height: 100px;
+    display: block;
+    color-scheme: only light;
+    margin: 5px;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    user-select: none;
 }
 
 .searchOnGroup {
