@@ -1,14 +1,29 @@
 {
     "short_name": "Chat",
     "name": "Chat 3.13.0",
-    "icons": [],
+    "lang": "pt-br",
+    "dir":"ltr",
+    "icons": [
+      {
+        "src": "/img/icon/maskable_icon_x128.png",
+        "sizes": "128x128",
+        "type": "image/png",
+        "purpose": "any"
+      },
+      {
+        "src": "/img/icon/maskable_icon_x512.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "any"
+      }
+    ],
     "id": "/?source=pwa",
     "start_url": "/?source=pwa",
     "background_color": "#061614",
-    "display_override": ["window-control-overlay", "minimal-ui"],
+    "display_override": ["minimal-ui"],
     "display": "standalone",
     "scope": "/",
-    "theme_color": "#794119",
+    "theme_color": "#41230e",
     "shortcuts": [],
     "description": "Suas conversas"
   }

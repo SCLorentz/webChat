@@ -1,3 +1,7 @@
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('offline.js');
+} //offline
+
 window.addEventListener("keydown", e => {
     switch (e.ctrlKey && e.key) {
         case 's':
@@ -59,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     })
-    if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
         document.getElementById('osTheme').style.background = "black";
     }
     //receber
@@ -525,11 +529,21 @@ class chat {
         //gravação de audio
         //recursos de legendas para quem não puder ouvir o audio
         this.inputAudio = new Obj('button', ['material-symbols-outlined', 'inputAudio'], this.inputChat, 'mic');
+        let record = true;
         this.inputAudio.onclick = () => {
-            this.inputAudio.classList.add("recordingAudio");
-            this.inputAudio.innerText = "stop_circle";
-            this.attach.style.display = "none";
-            this.msgBalloon.disabled = true;
+            if (record) {
+                this.inputAudio.classList.add("recordingAudio");
+                this.inputAudio.innerText = "stop_circle";
+                this.attach.style.display = "none";
+                this.msgBalloon.disabled = true;
+                record = false;
+            } else {
+                this.inputAudio.classList.remove("recordingAudio");
+                this.inputAudio.innerText = "mic";
+                this.attach.style.display = "inline-block";
+                this.msgBalloon.disabled = false;
+                record = true;
+            }
         }
         let transferfiles = [];
         this.msgBalloon.addEventListener('drop', e => { //drop não funciona em this.msgArea, pesquisar o motivo e corrigir
