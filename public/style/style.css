@@ -14,7 +14,7 @@
     --text-dark: #ffffff;
     --theme-2: #b15c1f;
     --theme-3: #733b13;
-    --theme-5:#794119;
+    --theme-5: #794119;
     --theme-4: #0f1a19;
     --theme-6: #061614db;
     --background-theme-8: #00000059;
@@ -251,6 +251,7 @@ button {
     box-shadow: 9px 4px 60px #00000063, 1px 1px 0px 1px #00000033, -1px -1px 0px 1px #ffffff08;
     transition: all 0.8s ease;
 }
+
 .groupImg:hover {
     filter: brightness(0.8);
 }
@@ -348,15 +349,17 @@ button {
 }
 
 @keyframes myAnim {
-	0% {
-		box-shadow: none;
-	}
-	100% {
-		box-shadow: 0 0 0 2px #41230e, 0 0 0 5px #2b1606ee;
-	}
+    0% {
+        box-shadow: none;
+    }
+
+    100% {
+        box-shadow: 0 0 0 2px #41230e, 0 0 0 5px #2b1606ee;
+    }
 }
 
-#pesquisar:hover, #pesquisar:focus-visible {
+#pesquisar:hover,
+#pesquisar:focus-visible {
     font-size: 20px;
     animation: myAnim 0.8s ease 0s infinite alternate forwards;
 }
@@ -397,6 +400,7 @@ button {
     color-scheme: only light;
     display: none;
 }
+
 #sortNav>p {
     margin: 3px 0;
     width: -webkit-fill-available;
@@ -408,6 +412,7 @@ button {
     border-image: linear-gradient(to left, #0000ff00, #ffffff12);
     border-image-slice: 1;
 }
+
 #sort span {
     margin-right: 5px;
 }
@@ -680,7 +685,7 @@ input:-internal-autofill-selected {
     outline: none;
     background: var(--background-theme-8);
     color: white;
-    font-family: 'Roboto','Emoji';
+    font-family: 'Roboto', 'Emoji';
     font-size: 16px;
     padding: 15px 20px;
     padding-right: 100px;
@@ -727,7 +732,7 @@ input:-internal-autofill-selected {
 
 .recordingAudio {
     border-radius: 50rem;
-    margin : 10px 8px;
+    margin: 10px 8px;
     background-color: var(--theme-5);
 }
 
@@ -844,7 +849,7 @@ input:-internal-autofill-selected {
     overflow: auto;
     scroll-behavior: smooth;
     border-left: 2px solid;
-    border-image: linear-gradient(to bottom,#0000ff00, #934d1c, #0000ff00);
+    border-image: linear-gradient(to bottom, #0000ff00, #934d1c, #0000ff00);
     border-image-slice: 1;
     background: linear-gradient(to top, #00000073, #0000ff00);
 }
@@ -1226,6 +1231,20 @@ input:-internal-autofill-selected {
     align-items: center;
     color: white;
     transition: top 0.3s ease;
+}
+
+/*PWA*/
+#title-bar {
+    position: fixed;
+    left: env(titlebar-area-x, 0);
+    top: env(titlebar-area-y, 0);
+    height: env(titlebar-area-height, 50px);
+    width: env(titlebar-area-width, 100%);
+    -webkit-app-region: drag;
+    background: var(--theme-4);
+    display: none;
+    /*mais em: https://learn.microsoft.com/en-us/microsoft-edge/progressive-web-apps-chromium/how-to/window-controls-overlay
+    (inclui script para ativação e desativação do titlebar)*/
 }
 
 @media only screen and (max-width: 850px) {

@@ -1,6 +1,6 @@
 ﻿# chat Ⅲ
 
-Version: 3.15.6
+Version: 3.16.0
 
 ## Recomendações de bibliotecas (favor revisar):
 

@@ -1,6 +1,6 @@
-if ('serviceWorker' in navigator) {
+/*if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('offline.js');
-} //offline
+}*/ //offline
 
 window.addEventListener("keydown", e => {
     switch (e.ctrlKey && e.key) {
@@ -22,6 +22,9 @@ const chats = [];
 const groupCreator = document.getElementById('newChatMenu');
 const search = document.getElementById('pesquisar');
 document.addEventListener("DOMContentLoaded", () => {
+    //PWA
+    /*if ('windowControlsOverlay' in navigator) {}
+    */
     console.log(navigator.userAgentData.platform, ":", navigator.userAgentData.brands);
     //
     document.getElementById('sort').onclick = e => {
