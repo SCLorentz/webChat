@@ -1,19 +1,28 @@
 @font-face {
     font-family: "Roboto";
-    src: url("/style/RobotoMono-VariableFont_wght-1.ttf") format("truetype");
+    src: url("/style/fonts/RobotoMono-VariableFont_wght-1.ttf") format("truetype");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Emoji";
+    src: url("/style/fonts/NotoEmoji-Regular.ttf") format("truetype");
     font-display: swap;
 }
 
 :root {
-    --background-theme-1: #ffffff;
-    --background-theme-2: #b15c1f;
-    --background-theme-3: #733b13;
-    --background-theme-4: #0f1a19;
-    --background-theme-5: #061614;
-    --background-theme-6: #061614db;
-    --background-theme-7: #040f0e;
+    --text-dark: #ffffff;
+    --theme-2: #b15c1f;
+    --theme-3: #733b13;
+    --theme-5: #794119;
+    --theme-4: #0f1a19;
+    --theme-6: #061614db;
     --background-theme-8: #00000059;
-    --background-theme-9: #0000006b;
+    --theme-9: #102422;
+}
+
+img {
+    color-scheme: only light;
 }
 
 html {
@@ -29,7 +38,7 @@ body {
     grid-row-gap: 0px;
     height: 100%;
     overflow: hidden;
-    font-family: 'Roboto';
+    font-family: 'Roboto', 'Emoji';
     background: #061614;
 }
 
@@ -37,7 +46,9 @@ a:-webkit-any-link {
     color: lightgray;
 }
 
-.material-icons, .material-icons-outlined, .material-icons-round {
+.material-icons,
+.material-icons-outlined,
+.material-icons-round {
     user-select: none;
 }
 
@@ -45,9 +56,18 @@ button {
     cursor: pointer;
     text-decoration: none;
     color: white;
-    border:none;
+    border: none;
     background: none;
     font-family: 'Roboto';
+}
+
+#logo {
+    user-select: none;
+    -webkit-user-drag: none;
+    position: fixed;
+    left: calc(50%);
+    top: calc(50% - 130px);
+    width: 220px;
 }
 
 .guestList {
@@ -62,6 +82,7 @@ button {
     overflow-y: auto;
     overflow-x: hidden;
     height: -webkit-fill-available;
+    color-scheme: only light;
 }
 
 .guestList::-webkit-scrollbar,
@@ -83,7 +104,7 @@ button {
     user-select: none;
     min-width: 100px;
     min-height: 50px;
-    background: #0e1414;
+    background: var(--background-theme-8);
     border-radius: 0.5rem;
     display: flex;
     align-items: center;
@@ -92,7 +113,7 @@ button {
     flex-direction: row-reverse;
     justify-content: flex-end;
     height: 70px;
-    padding: 5px;
+    padding: 8px;
     width: -webkit-fill-available;
     font-size: 20px;
     position: relative;
@@ -104,11 +125,12 @@ button {
     height: -webkit-fill-available;
     object-fit: cover;
     margin: 0 5px 0 0;
+    box-shadow: 9px 4px 60px #00000063, 1px 1px 0px 1px #00000033, -1px -1px 0px 1px #ffffff08;
 }
 
 .removeGuest {
     margin: 0 0 0 auto;
-    background: #794119;
+    background: var(--theme-5);
     color: white;
     padding: 5px;
     border-radius: 0.3rem;
@@ -140,16 +162,18 @@ button {
     font-size: 15px;
 }
 
-.guestInfoMenu>a {
+.guestInfoMenu>div {
     display: flex;
     flex-direction: row-reverse;
     border-bottom: 2px solid;
     align-items: center;
 }
-.guestInfoMenu>a>p {
+
+.guestInfoMenu p {
     margin: auto;
 }
-.guestInfoMenu>a>img {
+
+.guestInfoMenu img {
     padding: 5px;
     height: -webkit-fill-available;
     object-fit: cover;
@@ -195,13 +219,14 @@ button {
     overflow: hidden;
     background: #ffffff0d;
     color: white;
-    box-shadow: 4px 4px 60px #00000094;
+    box-shadow: 9px 4px 60px #00000063, 1px 1px 0px 1px #00000033, -1px -1px 0px 1px #ffffff08;
 }
 
 .renameGroup::selection {
     background: #b15c1f41;
     text-decoration: line-through;
 }
+
 .groupDesc {
     text-align: center;
     outline: 0;
@@ -218,12 +243,17 @@ button {
     grid-area: 3 / 2 / 4 / 1;
 }
 
-.GroupImg {
+.groupImg {
     width: 250px;
     height: 250px;
     cursor: pointer;
     margin: auto;
-    box-shadow: 4px 4px 60px #00000063;
+    box-shadow: 9px 4px 60px #00000063, 1px 1px 0px 1px #00000033, -1px -1px 0px 1px #ffffff08;
+    transition: all 0.8s ease;
+}
+
+.groupImg:hover {
+    filter: brightness(0.8);
 }
 
 .chat {
@@ -236,10 +266,11 @@ button {
     grid-row-gap: 0px;
     display: none;
     position: relative;
+    color-scheme: only light;
 }
 
 .chatConfigs {
-    background: #0f1a19;
+    background: var(--theme-4);
     color: white;
     padding: 15px;
     grid-template-columns: repeat(2, 1fr);
@@ -276,7 +307,7 @@ button {
 #salvos {
     grid-area: 1 / 1 / 3 / 2;
     height: 100%;
-    background: #794119;
+    background: var(--theme-5);
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 60px 1fr;
@@ -291,6 +322,7 @@ button {
     color: white;
     display: flex;
     align-items: center;
+    user-select: none;
 }
 
 #menu>span {
@@ -301,21 +333,88 @@ button {
 #pesquisar {
     resize: none;
     outline: none;
-    border-radius:50rem;
+    border-radius: 50rem;
     margin: 0 0 0 5px;
-    font-family: 'roboto';
-    font-size: 14px;
-    width: 200px;
+    font-size: 18px;
     padding: 8px;
-    width: 50%;
-    height: 20px;
     background: #2b1606;
     color: white;
     border: 0;
+    transition: all 0.5s ease;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes myAnim {
+    0% {
+        box-shadow: none;
+    }
+
+    100% {
+        box-shadow: 0 0 0 2px #41230e, 0 0 0 5px #2b1606ee;
+    }
+}
+
+#pesquisar:hover,
+#pesquisar:focus-visible {
+    font-size: 20px;
+    animation: myAnim 0.8s ease 0s infinite alternate forwards;
 }
 
 #pesquisar::-webkit-scrollbar {
     width: 0;
+}
+
+#searchbar {
+    position: fixed;
+    z-index: 3;
+    top: 15px;
+    left: calc(50% - 250px);
+    width: 500px;
+    padding: 10px;
+    border-radius: 50rem;
+    background: #41230e;
+    border: #653b1e 1px solid;
+    color-scheme: only light;
+    color: white;
+    outline: none;
+    text-align: center;
+    display: none;
+    box-shadow: 0 0 60px 20px #040f0e;
+}
+
+#sortNav {
+    font-family: 'Roboto';
+    font-size: 15px;
+    position: absolute;
+    flex-direction: column;
+    align-items: flex-start;
+    background: #101716;
+    z-index: 2;
+    padding: 8px 5px;
+    border-radius: 0 1rem 1rem 1rem;
+    border: 0.5px solid #212f2d;
+    color-scheme: only light;
+    display: none;
+}
+
+#sortNav>p {
+    margin: 3px 0;
+    width: -webkit-fill-available;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    padding-bottom: 5px;
+    border-bottom: 2px solid;
+    border-image: linear-gradient(to left, #0000ff00, #ffffff12);
+    border-image-slice: 1;
+}
+
+#sort span {
+    margin-right: 5px;
 }
 
 #contatos {
@@ -327,11 +426,24 @@ button {
 
 #contatos::-webkit-scrollbar {
     width: 5px;
-    background: var(--background-theme-3);
+    background: var(--theme-3);
 }
 
 #contatos::-webkit-scrollbar-thumb {
-    background: var(--background-theme-2);
+    background: var(--theme-2);
+}
+
+#favorites {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    padding: 5px;
+    box-shadow: 4px 4px 90px #0000003b inset;
+    border-radius: 0.6rem;
+    margin: 8px;
+    z-index: 2;
+    font-size: 20px;
+    text-decoration: none;
 }
 
 ::placeholder {
@@ -364,6 +476,7 @@ button {
     display: flex;
     align-items: center;
     position: relative;
+    color-scheme: only light;
 }
 
 #homeSettings * {
@@ -381,6 +494,7 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
+    color-scheme: auto;
 }
 
 .deleteGroup {
@@ -408,10 +522,10 @@ button {
     font-family: 'Roboto';
 }
 
-.groupThumbBtn {
+.thumbnail {
     width: -webkit-fill-available;
     background: transparent;
-    box-shadow: 4px 4px 90px #00000063 inset, 20px 0px 1px #0000009e;
+    box-shadow: 4px 4px 90px #0000003b inset, 20px 0px 1px #0000009e;
     padding: 5px;
     height: 70px;
     display: flex;
@@ -423,14 +537,14 @@ button {
     font-size: 18px;
 }
 
-.groupThumbBtn:hover,
-.groupThumbBtn:focus-visible {
+.thumbnail:hover,
+.thumbnail:focus-visible {
     background: #00000013;
     outline: none;
     translate: -3px;
 }
 
-.groupThumbBtn>img{
+.thumbnail>img {
     width: 60px;
     height: 60px;
     box-shadow: inset 4px 4px 15px #0000006b;
@@ -439,6 +553,9 @@ button {
 
 #newChatMenu {
     background: #79411961;
+    border: 2px solid;
+    border-image: linear-gradient(to right, var(--theme-5), #0000ff00);
+    border-image-slice: 1;
     position: fixed;
     z-index: 1;
     backdrop-filter: url(./filter.svg#waterEffect) blur(3px) brightness(0.8);
@@ -455,28 +572,33 @@ button {
     grid-row-gap: 0px;
     display: none;
     max-width: 800px;
-    z-index:2;
+    z-index: 2;
 }
+
 #selecUsers {
     grid-area: 1 / 2 / 3 / 3;
     border-left: 3px solid;
-    padding:10px;
+    padding: 10px;
 }
+
 #menuInputs {
     display: flex;
-    padding:10px;
+    padding: 10px;
 }
+
 #menuInputs img {
     height: 200px;
     border-radius: 50%;
     -webkit-user-drag: none;
 }
+
 #menuInputs button {
     background: none;
-    border:none;
+    border: none;
     outline: none;
     cursor: pointer;
 }
+
 #nameInput {
     border: none;
     border-radius: 5rem;
@@ -486,8 +608,16 @@ button {
     text-align: center;
     font-family: 'roboto';
     font-size: 20px;
-    color: #051211;
+    color: var(--text-dark);
+    background: #040e0d;
 }
+
+/*Para seleção de texto por autofill (não está sendo aplicado, corrigir erro)
+input:-internal-autofill-selected {
+    background-color: #0f1a19;
+    border: 1px solid #1f312f;
+    color-scheme: only light;
+}*/
 #descriptionInput {
     margin: 10px 0;
     border: none;
@@ -502,13 +632,19 @@ button {
     border-radius: 0;
     color: white;
 }
-.exitCreateGroupMenu {
+
+#exitCreateGroupMenu {
     top: calc(0% + 20px);
     left: calc(0% + 20px);
     position: absolute;
     cursor: pointer;
     background: #051210;
     color: white;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .newGroupCreatorTitle {
@@ -518,7 +654,8 @@ button {
     margin: 0;
     text-decoration: underline;
 }
-#createChatBtn {
+
+#create {
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -531,6 +668,7 @@ button {
     cursor: pointer;
     outline: none;
 }
+
 .inputChat {
     grid-area: 3 / 1 / 3 / 3;
     background: #040f0e;
@@ -545,12 +683,16 @@ button {
     width: -webkit-fill-available;
     resize: none;
     outline: none;
-    border: none;
-    background: #040f0e;
+    background: var(--background-theme-8);
     color: white;
-    font-family: 'Roboto';
+    font-family: 'Roboto', 'Emoji';
     font-size: 16px;
     padding: 15px 20px;
+    padding-right: 100px;
+    border: 2px solid;
+    border-image: linear-gradient(to left, var(--theme-6), #0000ff00);
+    border-image-slice: 1;
+    caret-color: #ad622c;
 }
 
 .msgBalloon::-webkit-scrollbar {
@@ -561,14 +703,37 @@ button {
     background: #152524;
 }
 
+.attach {
+    position: absolute;
+    right: 0;
+    margin: 10px 8px;
+    padding: 0;
+    height: -webkit-fill-available;
+    background: var(--theme-6);
+    border-radius: 0.4rem 0.8rem 0.8rem 0.4rem;
+    width: 40px;
+}
+
 .inputAudio {
-    color: #040f0e;
-    background: white;
-    margin: 10px;
-    padding: 5px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: none; /*temporariamente*/
+    position: absolute;
+    right: 0;
+    margin: 10px 50px;
+    padding: 2px 3px;
+    height: -webkit-fill-available;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    background: var(--theme-6);
+    border-radius: 0.8rem 0.4rem 0.4rem 0.8rem;
+    width: 40px;
+    transition: border-radius 5s cubic-bezier(0.4, 0, 1, 1), margin 1s ease, background-color 0.5s ease;
+}
+
+.recordingAudio {
+    border-radius: 50rem;
+    margin: 10px 8px;
+    background-color: var(--theme-5);
 }
 
 .msg {
@@ -582,15 +747,18 @@ button {
     border-radius: 0.5rem;
     /*min-height: 60px;*/
 }
+
 .msgList {
     display: flex;
     flex-direction: row-reverse;
     justify-content: space-between;
 }
+
 .sended {
     background: #ff852e70;
     margin: 15px 15px 0 auto;
 }
+
 .recived {
     background: #0e534c6b;
 }
@@ -602,7 +770,7 @@ button {
     padding: 5px;
     position: fixed;
     z-index: 1;
-    color:white;
+    color: white;
 }
 
 .playTime {
@@ -649,7 +817,7 @@ button {
     display: flex;
     padding: 5px;
     line-break: anywhere;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .msgTextContent::selection {
@@ -680,6 +848,10 @@ button {
     grid-area: 2 / 1 / 3 / 2;
     overflow: auto;
     scroll-behavior: smooth;
+    border-left: 2px solid;
+    border-image: linear-gradient(to bottom, #0000ff00, #934d1c, #0000ff00);
+    border-image-slice: 1;
+    background: linear-gradient(to top, #00000073, #0000ff00);
 }
 
 .msgArea::-webkit-scrollbar {
@@ -734,6 +906,38 @@ button {
     border-radius: 0.5rem;
 }
 
+#help {
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin: 10px;
+    text-decoration: none;
+}
+
+#themeSelector {
+    display: flex;
+    align-content: flex-start;
+    width: 300px;
+    flex-wrap: wrap;
+    border-right: #ffffff14 3px solid;
+    padding-right: 20px;
+    color-scheme: only light;
+}
+
+#themeSelector button {
+    width: 140px;
+    height: 100px;
+    display: block;
+    color-scheme: only light;
+    margin: 5px;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    user-select: none;
+}
+
 .searchOnGroup {
     padding: 10px;
     border-radius: 0.5rem;
@@ -747,6 +951,7 @@ button {
 .imgContextMenu {
     display: none;
 }
+
 .htmlFileBtn {
     color: white;
     background: #071a18;
@@ -759,9 +964,9 @@ button {
 
 .searchOnGroupBtn {
     margin: 0px 0 0px auto;
-    background: #142f2d66;
+    background: var(--theme-9);
     color: white;
-    border-radius: 0.5rem 0 0 0.5rem;
+    border-radius: 5rem 0 0 5rem;
     padding: 3px 3px 3px 7px;
     display: flex;
     align-items: center;
@@ -817,6 +1022,7 @@ button {
     max-width: 40%;
     width: -webkit-fill-available;
 }
+
 .addUserImg {
     height: 60px;
     border-radius: 50%;
@@ -847,7 +1053,7 @@ button {
 
 .groupInfo {
     color: white;
-    border-radius: 0 0.5rem 0.5rem 0;
+    border-radius: 0 5rem 5rem 0;
     background: #142f2d66;
     padding: 3px;
     margin: 0 5px 0 0;
@@ -858,12 +1064,14 @@ button {
     color: white;
     padding: 3px;
 }
+
 .noGroup {
     margin: 50px;
     font-size: 30px;
 }
+
 .picMenu {
-    background: #202d39;
+    background: #5a3013;
     padding: 10px 15px;
     border-radius: 0.5rem;
     width: fit-content;
@@ -875,31 +1083,38 @@ button {
     box-shadow: 4px 4px 60px #05090c;
     z-index: 1;
 }
+
 .picMenu>button {
     border-radius: 0.5rem;
     background: none;
-    border:0;
+    border: 0;
     box-shadow: 4px 4px 10px #00000052;
     transition: all 1s ease;
     margin: 3px;
     padding: 5px 6px;
 }
+
 .picMenu>button:hover {
     box-shadow: 4px 4px 10px #0000009c;
+    background: #00000047;
 }
+
 .picMenu svg {
     fill: white;
 }
+
 .picMenuVidCap {
     border-radius: 0.5rem;
     width: -webkit-fill-available;
     display: none;
     margin-bottom: 20px;
 }
+
 .picMenuCanvas {
     border-radius: 0.5rem;
     width: -webkit-fill-available;
 }
+
 .vidCapBtn {
     color: white;
     background: #202d39 !important;
@@ -909,21 +1124,25 @@ button {
     border-radius: 50% !important;
     padding: 10px !important;
     transition: color 1s ease !important;
-    box-shadow:none !important;
-    margin:0 !important;
+    box-shadow: none !important;
+    margin: 0 !important;
 }
+
 .vidCapBtn:focus-visible {
     outline: 0;
     color: darkgrey;
 }
+
 .picMenuCanvas {
     display: none;
     margin-bottom: 20px;
 }
+
 .back {
     position: absolute;
     padding: 15px;
 }
+
 #titleGuests {
     position: sticky;
     top: -5px;
@@ -933,16 +1152,21 @@ button {
     padding: 15px;
     z-index: 0;
     margin: 0;
+    border-bottom: 2px solid;
+    border-image: linear-gradient(to left, #0000ff00, #ffffff12, #0000ff00);
+    border-image-slice: 1;
 }
+
 .addGuest {
-    background: #794119;
+    background: var(--theme-5);
     padding: 13px;
     width: -webkit-fill-available;
     text-align: center;
     border-radius: 0.5rem;
-    margin:5px;
+    margin: 5px;
     transition: background 0.5s ease;
 }
+
 .arrowBack {
     background: no-repeat;
     color: white;
@@ -950,6 +1174,7 @@ button {
     cursor: pointer;
     display: none
 }
+
 .chatImg {
     border-radius: 50%;
     object-fit: cover;
@@ -957,12 +1182,14 @@ button {
     user-select: none;
     background: #0f1a19;
 }
+
 .filePlaceholder {
     display: flex;
     flex-direction: row-reverse;
     align-items: center;
     justify-content: flex-end;
 }
+
 .filePlaceholder * {
     margin: 5px 0;
 }
@@ -970,21 +1197,24 @@ button {
 .playPause {
     font-size: 30px;
 }
+
 .previewSlides {
     height: fit-content;
     justify-content: center;
     margin: 10px;
     display: none;
 }
+
 .previewSlides * {
     max-height: 500px;
     max-width: 500px;
     width: 100%;
 }
+
 .previewArrow {
     display: none;
     position: absolute;
-    top:50%;
+    top: 50%;
 }
 
 #popup {
@@ -1003,6 +1233,20 @@ button {
     transition: top 0.3s ease;
 }
 
+/*PWA*/
+#title-bar {
+    position: fixed;
+    left: env(titlebar-area-x, 0);
+    top: env(titlebar-area-y, 0);
+    height: env(titlebar-area-height, 50px);
+    width: env(titlebar-area-width, 100%);
+    -webkit-app-region: drag;
+    background: var(--theme-4);
+    display: none;
+    /*mais em: https://learn.microsoft.com/en-us/microsoft-edge/progressive-web-apps-chromium/how-to/window-controls-overlay
+    (inclui script para ativação e desativação do titlebar)*/
+}
+
 @media only screen and (max-width: 850px) {
     body {
         grid-template-columns: 1fr;
@@ -1010,16 +1254,19 @@ button {
         grid-column-gap: 0px;
         grid-row-gap: 0px;
     }
+
     /*#salvos {
         display: none;
     }*/
     .chat {
-        grid-area: 1 / 1 / 2 / 2; 
+        grid-area: 1 / 1 / 2 / 2;
     }
+
     .chatConfigs {
-        grid-area: 1 / 1 / 2 / 2; 
+        grid-area: 1 / 1 / 2 / 2;
     }
 }
+
 @media only screen and (max-width: 550px) {
     .chatConfigs {
         display: grid;
@@ -1029,6 +1276,7 @@ button {
         grid-row-gap: 0px;
         overflow: auto;
     }
+
     .guestList {
         grid-area: 5 / 1 / 5 / 2;
     }

@@ -1,75 +1,88 @@
-const dataToSend = { id: '1', value: 'context'}; // Seus dados a serem enviados
+/*if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('offline.js');
+}*/ //offline
 
-fetch('http://localhost:8080/enviar-dados', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(dataToSend),
-})
-    .then(response => response.text())
-    .then(responseText => {
-        console.log(responseText);
-    })
-    .catch(error => {
-        console.error('Erro ao enviar dados:', error);
-    });
-
-//import WaveSurfer from '/wavesurfer/wavesurfer.js';
-
-/*const socket = io();
-socket.on('helloUser', (message) => {
-    console.log(message);
-});*/
-window.addEventListener("keydown", function (e) {
+window.addEventListener("keydown", e => {
     switch (e.ctrlKey && e.key) {
         case 's':
             e.preventDefault();
             document.getElementById('settings').click();
-            break;
+            break
         case 'g':
             e.preventDefault();
             document.getElementById('add').click();
-            break;
+            break
         case 'h': //futuramente transformar em pesquisa por mensagens global, ou seja, proucura em todas as conversas
             e.preventDefault();
-            document.getElementById('pesquisar').focus();
-            break;
+            search.click();
+            break
     }
 });
 const chats = [];
+const groupCreator = document.getElementById('newChatMenu');
+const search = document.getElementById('pesquisar');
 document.addEventListener("DOMContentLoaded", () => {
+    //PWA
+    /*if ('windowControlsOverlay' in navigator) {}
+    */
+    console.log(navigator.userAgentData.platform, ":", navigator.userAgentData.brands);
+    //
+    document.getElementById('sort').onclick = e => {
+        e.stopPropagation();
+        const sortNav = document.getElementById('sortNav')
+        sortNav.style.display = "flex";
+        document.onclick = () => {
+            sortNav.style.display = "";
+        }
+    }
+    //
     const configBtn = document.getElementById('settings');
     const settings = document.getElementById("settingsMenu");
     function rotateButton(deg) {
-        return function () {
+        return function () { //o return em uma função me deu uma ideia para o server.ts
             configBtn.style.transform = `rotate(${deg})`;
         }
     }
     configBtn.addEventListener('mouseover', rotateButton('10deg'));
     configBtn.addEventListener('mouseleave', rotateButton('0deg'));
     configBtn.addEventListener('click', () => {
-        settings.style.display = 'flex';
-        requestAnimationFrame(() => settings.style.top = '0%');
+        if (groupCreator.style.display !== "grid") {
+            settings.style.display = 'flex';
+            requestAnimationFrame(() => settings.style.top = '0%');
+        }
     });
     document.getElementById('closeSettings').addEventListener('click', () => {
         settings.style.top = '100%';
         setTimeout(() => settings.style.display = 'none', 1000);
     });
-    //
-    /*fetch('/enviar-dados', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+    search.addEventListener('click', e => {
+        if (groupCreator.style.display !== "grid") {
+            e.stopPropagation();
+            let b = search.lastElementChild;
+            b.style.display = "block";
+            b.focus();
+            document.onclick = () => {
+                b.style.display = "";
+            }
+        }
     })
-        .then(response => response.json())
-        .then(dados => {
-            dados.forEach(dado => {
-                chats.push(new chat(dado.id, dado.name, '/img/newGroupImg.svg', dado.guests, dado.adm, false));
-            })
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.getElementById('osTheme').style.background = "black";
+    }
+    //receber
+    fetch('/receber')
+        .then(response => response.json()) // Converte a resposta em formato JSON
+        .then(data => {
+            //console.log(data)
+            for (let i = 0; i < data.chats.length; i++) {
+                chats.push(new chat(data.chats[i][1], data.chats[i][0], '/img/groupImg.svg', [user, alunos[1]], [user], true));
+            }
         })
-        .catch(error => console.error('Erro ao enviar os dados:', error));*/
+        .catch(error => console.error(error))
+        .finally(() => {
+            const valor = localStorage.getItem('lastChat');
+            document.getElementById(valor).style.display = 'grid';
+        });
 });
 class Obj {
     constructor(type, customClass, father, innerText) {
@@ -106,7 +119,7 @@ const popup = document.getElementById('popup');
 class chat {
     constructor(id, name, thumb, guests, adm, gen = false) {
         this.gen = gen;
-        this.id = id;
+        this.id = "chat:" + id;
         this.name = name;
         this.thumb = thumb;
         this.guests = guests;
@@ -118,38 +131,20 @@ class chat {
         this.createMsg();
         this.msgs = [];
         if (this.gen) {
-            const dataToSend = { id: this.id, name: this.name, thumb: this.thumb, guests: this.guests, adm: this.adm };
-            fetch('/salvar-dados', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(dataToSend),
-            })
-                .then(response => response.text())
-                .then(message => console.log(message))
-                .catch(error => console.error('Erro ao enviar dados:', error));
+            //salvar dados do grupo
         }
-        fetch('/palavras-banidas', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(response => response.json())
-            .then(dados =>
-                this.bannedWords = dados
-            )
+        //obter palavras banidas do grupo e globais
     }
     createChat() {
         this.chatElement = new Obj('div', ['chat', 'chatMenu'], document.body);
         this.chatElement.id = this.id;
         //this.chatElement.addEventListener('contextmenu', e => e.preventDefault());
         this.thumbDiv = new Obj('div', ['thumbDiv'], this.chatElement);
-        this.arrowBack = new Obj('button', ['arrowBack', 'material-icons-outlined'], this.thumbDiv, "arrow_back_ios"); //mobile
+        this.arrowBack = new Obj('button', ['arrowBack', 'material-symbols-outlined'], this.thumbDiv, "arrow_back_ios"); //mobile
         //thumbPicture
         this.thumbPicture = new Obj('img', ['thumbPicture', 'chatImg'], this.thumbDiv);
         this.thumbPicture.src = this.thumb;
+        this.thumbPicture.alt = "chat image";
         this.thumbDiv.innerHTML += this.name;
         this.thumbPicture = this.thumbDiv.children[1];
         //
@@ -170,7 +165,7 @@ class chat {
             })
         })
         //pesquisar
-        this.searchBtn = new Obj('span', ['searchOnGroupBtn', 'material-icons-outlined'], this.thumbDiv, 'search');
+        this.searchBtn = new Obj('span', ['searchOnGroupBtn', 'material-symbols-outlined'], this.thumbDiv, 'search');
         this.searchInput = new Obj('input', ['searchOnGroupInput'], this.searchBtn, 'pesquisar...');
         //search action
         this.searchBtn.onclick = () => {
@@ -195,17 +190,17 @@ class chat {
             }
         })
         //video call
-        this.call = new Obj('button', ['videoCam', 'material-icons-outlined'], this.thumbDiv, 'videocam');
+        this.call = new Obj('button', ['videoCam', 'material-symbols-outlined'], this.thumbDiv, 'videocam');
         this.call.onclick = () => {
             window.open('/call')
         }
         this.imageOpened = new Obj('div', ['imageOpened'], this.chatElement);
-        new Obj('button', ['material-icons-outlined'], this.imageOpened, 'close').style.height = 'fit-content';
+        new Obj('button', ['material-symbols-outlined'], this.imageOpened, 'close').style.height = 'fit-content';
     }
     createChatConfigs() {
-        this.openConfig = new Obj('button', ['groupInfo', 'material-icons-outlined'], this.thumbDiv, "more_vert");
+        this.openConfig = new Obj('button', ['groupInfo', 'material-symbols-outlined'], this.thumbDiv, "more_vert");
         this.chatConfig = new Obj('div', ['chatConfigs', 'chatMenu'], document.body);
-        this.back = new Obj('button', ['material-icons-outlined', 'back'], this.chatConfig, 'arrow_back_ios')
+        this.back = new Obj('button', ['material-symbols-outlined', 'back'], this.chatConfig, 'arrow_back_ios')
         this.back.onclick = () => config(false, this);
         this.openConfig.onclick = () => config(true, this);
         function config(view, e) {
@@ -217,17 +212,18 @@ class chat {
     }
     createThumb() {
         const contatosMenu = document.getElementById('contatos');
-        this.groupThumbBtn = new Obj('button', ['groupThumbBtn'], contatosMenu, this.name);
+        this.thumbnail = new Obj('button', ['thumbnail'], contatosMenu, this.name);
         //
-        this.thumbBtnImg = new Obj('img', ['chatImg'], this.groupThumbBtn, this.name);
+        this.thumbBtnImg = new Obj('img', ['chatImg'], this.thumbnail, this.name);
         this.thumbBtnImg.src = this.thumb;
         //
-        this.groupThumbBtn.onclick = () => {
+        this.thumbnail.onclick = () => {
             document.querySelectorAll('.chat, .chatConfigs, .picMenu, .newGuestMenu').forEach(e => e.style.display = 'none');
             this.chatElement.style.display = 'grid';
+            localStorage.setItem('lastChat', this.id);
             //thumb
-            document.querySelectorAll('.groupThumbBtn').forEach(e => e.style.background = '');
-            this.groupThumbBtn.style.background = '#0000002b';
+            document.querySelectorAll('.thumbnail').forEach(e => e.style.background = '');
+            this.thumbnail.style.background = '#0000002b';
             if (window.innerWidth <= 850) {
                 document.getElementById('salvos').style.display = 'none'
             }
@@ -238,7 +234,7 @@ class chat {
         document.querySelectorAll('.guestInList, .addGuest').forEach(e => {
             if (e.parentNode == this.guestList) e.parentNode.removeChild(e)
         })
-        this.addGuest = new Obj('button', ['material-icons-outlined', 'addGuest'], this.guestList, 'person_add');
+        this.addGuest = new Obj('button', ['material-symbols-outlined', 'addGuest'], this.guestList, 'person_add');
         this.addGuest.onclick = () => this.newGuestMenu.style.display = 'flex';
         this.guests.forEach(guest => {
             const guestInList = new Obj('div', ['guestInList'], this.guestList, guest.nome + ' ' + guest.sobrenome);
@@ -250,7 +246,7 @@ class chat {
                 });
             });
             const guestInfoMenu = new Obj('div', ['guestInfoMenu'], guestInList);
-            new Obj('img', [], new Obj('a', [], guestInfoMenu, `${guest.nome} ${guest.sobrenome}`)).src = guest.img;
+            new Obj('img', [], new Obj('div', [], guestInfoMenu, `${guest.nome} ${guest.sobrenome}`)).src = guest.img;
             //email
             this.guestEmail = new Obj('p', [], guestInfoMenu, guest.email);
             this.guestEmail.title = 'copy';
@@ -297,7 +293,7 @@ class chat {
         this.guestListFunction()
         //guestList add btn
         this.newGuestMenu = new Obj('div', ['newGuestMenu'], this.chatConfig);
-        this.closeNewGuestMenu = new Obj('button', ['closeBtn', 'material-icons-outlined'], this.newGuestMenu, 'close');
+        this.closeNewGuestMenu = new Obj('button', ['closeBtn', 'material-symbols-outlined'], this.newGuestMenu, 'close');
         this.closeNewGuestMenu.onclick = () => {
             this.newGuestMenu.style.display = 'none';
         }
@@ -344,7 +340,7 @@ class chat {
     }
     editGroup() {
         //edit group img
-        this.img = new Obj('img', ['GroupImg', 'chatImg'], this.chatConfig);
+        this.img = new Obj('img', ['groupImg', 'chatImg'], this.chatConfig);
         this.img.src = this.thumb;
         //
         this.imgInput = document.createElement('input');
@@ -362,7 +358,7 @@ class chat {
             { name: 'picMenuDel', ico: 'delete' }
         ];
         this.buttonConfigs.forEach(btn => {
-            this[btn.name] = new Obj('button', ['picMenuBtn', 'material-icons-round'], this.picMenu, btn.ico);
+            this[btn.name] = new Obj('button', ['picMenuBtn', 'material-symbols-outlined'], this.picMenu, btn.ico);
         });
         document.addEventListener('click', e => {
             e.stopPropagation();
@@ -379,7 +375,7 @@ class chat {
         //foto
         this.capture = new Obj('video', ['picMenuVidCap'], this.picMenu);
         this.capture.autoplay = true;
-        this.CaptureBtn = new Obj('button', ['vidCapBtn', 'picMenuVidCap', 'material-icons-outlined'], this.picMenu, "add_a_photo");
+        this.CaptureBtn = new Obj('button', ['vidCapBtn', 'picMenuVidCap', 'material-symbols-outlined'], this.picMenu, "add_a_photo");
         this.picMenuCanvas = new Obj('canvas', ['picMenuCanvas'], this.picMenu);
         this.picMenuCanvas.height = "300";
         this.picMenuCanvas.width = "400";
@@ -450,46 +446,55 @@ class chat {
         this.rename.addEventListener('drop', e => e.preventDefault());
         this.desc = new Obj('input', ['groupDesc'], this.chatConfig, 'description')
         //del group
-        this.delete = new Obj('button', ['deleteGroup', 'material-icons-round'], this.chatConfig, 'delete');
+        this.delete = new Obj('button', ['deleteGroup', 'material-symbols-outlined'], this.chatConfig, 'delete');
         this.delete.title = 'burn everything';
         this.delete.onclick = () => {
             if (confirm("deseja apagar este grupo?")) {
                 this.chatElement.parentNode.removeChild(this.chatElement);
                 this.chatConfig.parentNode.removeChild(this.chatConfig);
-                this.groupThumbBtn.parentNode.removeChild(this.groupThumbBtn);
+                this.thumbnail.parentNode.removeChild(this.thumbnail);
                 chats.splice(this.id - 1, 1);
+                //server DB
+                fetch('/enviar', {
+                    method: 'POST', // Método da requisição (pode ser GET, POST, PUT, DELETE, etc.)
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        type: "DELETE",
+                        target: "chats",
+                        id: this.id.replace(/^chat:\s*/, "")
+                    })
+                })
+                    .then(response => response.json())
+                    .then(responseData => {
+                        console.log(responseData);
+                    })
+                    .catch(error => console.error(error))
             }
         }
     }
     renameGroup() {
-        this.thumbDiv.childNodes[2].nodeValue = this.groupThumbBtn.firstChild.nodeValue = this.name = this.rename.value;
+        this.thumbDiv.childNodes[2].nodeValue = this.thumbnail.firstChild.nodeValue = this.name = this.rename.value;
         this.rename.value = this.rename.value.replace(/^\W+/, '');
         //
-        fetch('/enviar-dados', {
-            method: 'POST',
+        fetch('/enviar', {
+            method: 'POST', // Método da requisição (pode ser GET, POST, PUT, DELETE, etc.)
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
+            body: JSON.stringify({
+                type: "EDIT",
+                target: "chats",
+                name: this.rename.value,
+                id: this.id.replace(/^chat:\s*/, "")
+            })
         })
             .then(response => response.json())
-            .then(dados => {
-                const objetoEncontrado = dados.find(objeto => objeto.id === this.id);
-                if (objetoEncontrado) {
-                    fetch('/modificar-nome', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ id: this.id, novoNome: this.rename.value }),
-                    })
-                        .then(response => response.text())
-                        .then(message => console.log(message))
-                        .catch(error => console.error('Erro ao enviar dados:', error));
-                } else {
-                    console.error("Objeto não encontrado com o ID fornecido.");
-                }
+            .then(responseData => {
+                console.log(responseData);
             })
-            .catch(error => console.error('Erro ao enviar os dados:', error));
+            .catch(error => console.error(error))
         //corrigir bugs de renomeio muito rapido (0.3sec), aplicar delay para mostrar o pop-up
         //mudar a mensagem do pop-up caso haja um erro como "erro ao enviar os dados"
         popup.innerText = "Grupo Renomeado!";
@@ -506,26 +511,43 @@ class chat {
     createMsg() {
         this.msgArea = new Obj('div', ['msgArea'], this.chatElement);
         //scroll to the bottom
-        this.scrollToTheBottom = new Obj('span', ['scrollToTheBottom', 'material-icons-round'], this.msgArea, 'arrow_downward');
+        this.scrollToTheBottom = new Obj('span', ['scrollToTheBottom', 'material-symbols-outlined'], this.msgArea, 'arrow_downward');
         this.msgArea.onscroll = () => this.scrollToTheBottom.style.display = (this.msgArea.scrollTop < this.msgArea.scrollHeight - 800) ? "block" : "none";
         this.scrollToTheBottom.onclick = () => this.msgArea.scrollTop = this.msgArea.scrollHeight;
         //file preview
         this.inputChat = new Obj('div', ['inputChat'], this.chatElement);
         this.previewSlides = new Obj('div', ['previewSlides'], this.inputChat);
-        this.previewArrowBackward = new Obj('button', ['material-icons-outlined', 'previewArrow'], this.inputChat, 'arrow_back_ios_new');
-        this.previewArrowFoward = new Obj('button', ['material-icons-outlined', 'previewArrow'], this.inputChat, 'arrow_forward_ios');
+        this.previewArrowBackward = new Obj('button', ['material-symbols-outlined', 'previewArrow'], this.inputChat, 'arrow_back_ios_new');
+        this.previewArrowFoward = new Obj('button', ['material-symbols-outlined', 'previewArrow'], this.inputChat, 'arrow_forward_ios');
         this.previewArrowFoward.style.left = '95%';
         //msgBallon
         //adicionar corretor automatico e sujestão de palavras
         //Ao começar a digitar, primeira letra em maiusculo (exeto quando o shift está ativado)
         //adicionar opção de gravar audio
-        //adicionar menu de emojis
+        //adicionar menu de emojis e codigos de emojis (#-EMOJI-#) 
         this.msgBalloon = new Obj('textarea', ['msgBalloon'], this.inputChat);
         this.msgBalloon.placeholder = 'vontade de falar...';
+        this.attach = new Obj('button', ['attach', 'material-symbols-outlined'], this.inputChat, "attach_file");
         //audio recorder
         //gravação de audio
         //recursos de legendas para quem não puder ouvir o audio
-        this.inputAudio = new Obj('span', ['material-icons-outlined', 'inputAudio'], this.inputChat, 'mic')
+        this.inputAudio = new Obj('button', ['material-symbols-outlined', 'inputAudio'], this.inputChat, 'mic');
+        let record = true;
+        this.inputAudio.onclick = () => {
+            if (record) {
+                this.inputAudio.classList.add("recordingAudio");
+                this.inputAudio.innerText = "stop_circle";
+                this.attach.style.display = "none";
+                this.msgBalloon.disabled = true;
+                record = false;
+            } else {
+                this.inputAudio.classList.remove("recordingAudio");
+                this.inputAudio.innerText = "mic";
+                this.attach.style.display = "inline-block";
+                this.msgBalloon.disabled = false;
+                record = true;
+            }
+        }
         let transferfiles = [];
         this.msgBalloon.addEventListener('drop', e => { //drop não funciona em this.msgArea, pesquisar o motivo e corrigir
             e.preventDefault();
@@ -541,13 +563,14 @@ class chat {
                 reader.onload = e => {
                     if (dataFile.type.startsWith('image/')) {
                         this.preview = new Obj('img', [], this.previewSlides);
-                        this.preview.dataset.src = e.target.result;
-                        this.preview.classList.add('lazyload');
+                        this.preview.src = e.target.result;
                     } else if (dataFile.type.startsWith('audio/')) {
+                        //lidar com uma biblioteca para deno
                         this.preview = new Obj('audio', [], this.previewSlides);
                         this.preview.load();
                         this.preview.src = e.target.result;
                     } else if (dataFile.type.startsWith('video/')) {
+                        //lidar com videos usando a API do youtube
                         this.preview = new Obj('video', [], this.previewSlides);
                         this.preview.load();
                         this.preview.src = e.target.result;
@@ -576,7 +599,7 @@ class chat {
             keys[e.key] = true;
             if (keys['Enter'] && !keys['Shift']) {
                 e.preventDefault();
-                if (this.msgBalloon.value.replace(/^\s+/, "").replace(/[\u200E\s⠀ㅤ]/g, "") !== '') {
+                if (this.msgBalloon.value.replace(/^\s+/, "").replace(/[\u200E\s⠀ㅤ]/g, "") !== '' || transferfiles.length !== 0) {
                     if (transferfiles.length > 0) {
                         this.preview.parentNode.removeChild(this.preview);
                         this.inputChat.style.height = '';
@@ -600,7 +623,6 @@ class chat {
     }
 }
 //criar chat
-const groupCreator = document.getElementById('newChatMenu');
 const nameInput = document.getElementById('nameInput');
 document.getElementById('add').onclick = () => {
     //criar um sistema para organizar os grupos (de forma a ser configurado pelo usuario):
@@ -623,28 +645,30 @@ document.getElementById('add').onclick = () => {
     });
     nameInput.addEventListener('drop', e => e.preventDefault());
 };
-document.getElementById('createChatBtn').onclick = () => {
-    if (nameInput.value.replace(/^\W+/, '') != '' && nameInput.value.length < 16) {
-        let dado;  // Declare a variável fora do bloco .then()
-        fetch('/enviar-dados', {
-            method: 'POST',
+document.getElementById('create').onclick = () => {
+    const name = nameInput.value.replace(/^\W+/, '');
+    if (name.value != '' && name.length < 16) {
+        fetch('/enviar', {
+            method: 'POST', // Método da requisição (pode ser GET, POST, PUT, DELETE, etc.)
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
+            body: JSON.stringify({
+                type: "CREATE",
+                target: "chats",
+                name: name,
+                date: new Date()
+            })
         })
             .then(response => response.json())
-            .then(dados => {
-                if (dados.length > 0) {
-                    dado = dados[dados.length - 1];
-                }
+            .then(responseData => {
+                console.log(responseData);
             })
-            .catch(error => console.error('Erro ao enviar os dados:', error))
+            .catch(error => console.error(error))
             .finally(() => {
-                if (dado) {
-                    chats.push(new chat(dado.id + 1, nameInput.value, '/img/newGroupImg.svg', [user, alunos[1]], [user], true));
-                    groupCreator.style.display = '';
-                    nameInput.value = '';
-                }
+                chats.push(new chat(Math.random(), name, '/img/groupImg.svg', [user, alunos[1]], [user], true)); //obter ip gerado pelo DB
+                groupCreator.style.display = '';
+                nameInput.value = '';
             });
     }
 }
@@ -710,9 +734,10 @@ class msg {
             this.msg.style.marginTop = "2px";
             this.msg.classList.add('msgList');
         } else {
-            this.msgOwnerPic = new Obj('img', ['msgOwnerPic', 'lazyload'], this.msgTop);
+            this.msgTop.style.marginBottom = "5px";
+            this.msgOwnerPic = new Obj('img', ['msgOwnerPic'/*, 'lazyload'*/], this.msgTop);
             this.msgOwner = new Obj('p', ['msgOwner'], this.msgTop, `${this.owner.nome} ${this.owner.sobrenome}`);
-            this.msgOwnerPic.dataset.src = '/img/user.svg';
+            this.msgOwnerPic.src = '/img/User.svg';
         }
         if (LAST_MSG && LAST_MSG.time != this.time || this.chat.msgs.length == 0) {
             this.msgDate = new Obj('p', ['msgDate'], this.msgTop, this.time);
@@ -721,7 +746,8 @@ class msg {
         }
         //
         this.filePlaceHolder = new Obj('div', ['filePlaceholder'], this.msg);
-        //file
+        //file --> carregamento de novas mensagens.
+        //O carregamento de arquivos em mensagens antigas deve ser feito dentro da classe msg, pois não há previsualização do envio.
         if (this.file) {
             this.file.forEach(file => {
                 file.style.display = 'flex'
@@ -793,7 +819,7 @@ class msg {
                         wavesurfer.setTime(0);
                         play.innerText = "play_arrow";
                     })
-                    const play = new Obj('button', ['material-icons-outlined', 'playPause'], this.filePlaceHolder, 'play_arrow');
+                    const play = new Obj('button', ['material-symbols-outlined', 'playPause'], this.filePlaceHolder, 'play_arrow');
                     play.addEventListener('click', () => {
                         wavesurfer.playPause();
                         if (wavesurfer.isPlaying()) {
@@ -838,10 +864,10 @@ class msg {
             });
         }
         //bad words
-        let bannedWordsRegex = new RegExp(this.chat.bannedWords.join("|"), "gi");
-        this.content = sinonimos(binaryToText(this.content)).replace(bannedWordsRegex, matchedWord => '*'.repeat(matchedWord.length));
+        //let bannedWordsRegex = new RegExp(this.chat.bannedWords.join("|"), "gi");
+        //this.content = sinonimos(binaryToText(this.content)).replace(bannedWordsRegex, matchedWord => '*'.repeat(matchedWord.length));
         //Text Content
-        this.msgTextContent = new Obj('a', ['msgTextContent'], this.msg);
+        this.msgTextContent = new Obj('span', ['msgTextContent'], this.msg);
         this.msgTextContent.innerHTML = this.content;
     }
     readTextFile() {
