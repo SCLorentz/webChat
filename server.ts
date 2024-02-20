@@ -71,18 +71,7 @@ db.execute(`
   )
 `);
 
-//db.execute(`DELETE FROM chats WHERE id = 2;`) <-- apagar grupo
 //BLOB --> dados binarios para armazenamento de arquivos
-
-// Run a simple query
-/*for (const name of ["Peter Parker", "Clark Kent", "Bruce Wayne"]) {
-  db.query("INSERT INTO chats (name) VALUES (?)", [name]);
-}*/
-
-// Print out data in table
-/*for (const [name] of db.query("SELECT name FROM chats")) {
-  console.log(name);
-}*/
 
 function DBData(data) {
   switch (data.type) {
@@ -117,54 +106,36 @@ function sendData(c) {
   }
 }
 
-app.use(async (context) => {
-  try {
-    const path = new URL(context.request.url).pathname;
-    switch (path) {
-      case "/login":
-        await send(context, './view/login.ejs');
-        break;
-      case "/signup":
-        await send(context, './view/signUp.ejs');
-        break;
-      case "/receber":
-        context.response.body = { chats: db.query("SELECT name, id FROM chats") };
-        break;
-      case "/enviar":
-        await sendData(context)();
-        break;
-      default:
-        await send(context, path, {
-          root: `${Deno.cwd()}/public`,
-          index: "index.html",
-        });
+const router = new Router();
+router
+  .get("/", async (ctx, next) => {
+    await send(ctx, "./public/index.html");
+  })
+  .get("/enviar", async (ctx, next) => {
+    await sendData(ctx)(); //corrigir bugs
+  })
+  .get("/receber", (ctx, next) => {
+    ctx.response.body = { chats: db.query("SELECT name, id FROM chats") };
+  })
+  .get("/:item", async (ctx, next) => {
+    try {
+      const filePath = `./public/pages/${ctx.params.item}.html`.replace(/\\/g, "/");
+      await send(ctx, filePath);
+    } catch (error) {
+      ctx.response.body = error.status;
+      ctx.response.status = error.status;
     }
-  } catch (error) {
-    function HTTPError(e, m = e) {
-      context.response.status = e;
-      context.response.body = m;
+  })
+  .get("/:folder/:item", async (ctx, next) => {
+    try {
+      await send(ctx, `./public/${ctx.params.folder}/${ctx.params.item}`);
+    } catch (error) {
+      ctx.response.status = error.status;
     }
-    switch (error.status) {
-      case 404:
-        HTTPError(error.status, "Not Found ( ﾉ ﾟｰﾟ)ﾉ");
-        await send(context, './view/404.htm');
-        break;
-      case 403:
-        HTTPError(error.status, "Forbidden");
-        await send(context, './view/403.htm');
-        break;
-      case 500:
-        HTTPError(error.status, "Internal Server Error :(");
-        await send(context, './view/500.htm');
-        break;
-      default:
-        HTTPError(error.status);
-    }
-  }
-});
+  })
 
-//app.use(router.routes());
-//app.use(router.allowedMethods());
+app.use(router.routes());
+app.use(router.allowedMethods());
 app.use(errorHandler);
 
 console.log('HTTP server running. Access it at: ' + yellow(`http://localhost:${port}/`));

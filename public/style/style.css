@@ -1,12 +1,12 @@
 @font-face {
     font-family: "Roboto";
-    src: url("/style/fonts/RobotoMono-VariableFont_wght-1.ttf") format("truetype");
+    src: url("/font/RobotoMono-VariableFont_wght-1.ttf") format("truetype");
     font-display: swap;
 }
 
 @font-face {
     font-family: "Emoji";
-    src: url("/style/fonts/NotoEmoji-Regular.ttf") format("truetype");
+    src: url("/font/NotoEmoji-Regular.ttf") format("truetype");
     font-display: swap;
 }
 
