@@ -1,10 +1,9 @@
 import { Application, Context, send, Router } from 'https://deno.land/x/oak/mod.ts'; //Servidor
-import { extname, join } from "https://deno.land/std/path/mod.ts";
 import { bold, cyan, green, yellow } from "https://deno.land/std@0.200.0/fmt/colors.ts"; //console
 import { DB } from "https://deno.land/x/sqlite/mod.ts"; //database
 //import { compile } from "https://x.nest.land/sass@0.2.0/mod.ts"; //style scss <-- modulo bugado
 //import { indexedDB } from "https://deno.land/x/indexeddb@v1.1.0/ponyfill.ts";
-//import { compare, hash } from "https://deno.land/x/bcrypt/mod.ts"; //criptografia e usuarios
+//import { compare, hash } from "https://deno.land/x/bcrypt/mod.ts"; //criptografia
 //import * as dejs from "https://deno.land/x/dejs@0.10.3/mod.ts"; //ejs
 
 //import router from "./routes.ts";
@@ -86,7 +85,7 @@ function DBData(data) {
       break
   }
 }
-
+//corrigir bugs
 function sendData(c) {
   return async function () {
     const body = await c.request.body();
@@ -108,15 +107,9 @@ function sendData(c) {
 
 const router = new Router();
 router
-  .get("/", async (ctx, next) => {
-    await send(ctx, "./public/index.html");
-  })
-  .get("/enviar", async (ctx, next) => {
-    await sendData(ctx)(); //corrigir bugs
-  })
-  .get("/receber", (ctx, next) => {
-    ctx.response.body = { chats: db.query("SELECT name, id FROM chats") };
-  })
+  .get("/", async (ctx, next) => await send(ctx, "./public/index.html"))
+  .get("/enviar", async (ctx, next) => await sendData(ctx)() /*corrigir bugs*/)
+  .get("/receber", (ctx, next) => ctx.response.body = { chats: db.query("SELECT name, id FROM chats") })
   .get("/:item", async (ctx, next) => {
     try {
       const filePath = `./public/pages/${ctx.params.item}.html`.replace(/\\/g, "/");
@@ -134,9 +127,10 @@ router
     }
   })
 
-app.use(router.routes());
-app.use(router.allowedMethods());
-app.use(errorHandler);
+app
+  .use(router.routes())
+  .use(router.allowedMethods())
+  .use(errorHandler);
 
 console.log('HTTP server running. Access it at: ' + yellow(`http://localhost:${port}/`));
 

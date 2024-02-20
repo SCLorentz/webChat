@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta name="theme-color" content="#794119" />
+    <meta name="theme-color" content="#41230e" />
     <!--PWA-->
     <link rel="manifest" href="/script/manifest.webmanifest">
     <!--THEME-->
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="white">
-    <meta name="theme-color" media="(prefers-color-scheme: dark)"  content="black">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#794119">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)"  content="#0f1a19">
     <!--desc-->
     <meta name="description" content="Chat">
     <meta charset="UTF-8">
     <!--WaveSurfer-->
     <script src="/script/wavesurfer.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!--name & ico - corrigir bugs de renderização do ícone-->
-    <link id="page-ico" rel="icon" type="image/x-icon" href="/img/chat.ico">
+    <!--name & ico-->
+    <link id="page-ico" rel="icon" type="image/x-icon" href="/icon/chat.ico">
     <title>Chat</title><!--username-->
-    <!--my css-->
+    <!--css-->
     <link rel="stylesheet" href="/style/style.css">
 </head>
 <body translate="no">
@@ -88,7 +88,7 @@
     </div>
     <!--settings-->
     <div id='settingsMenu'>
-        <span id='closeSettings' class="material-symbols-outlined" tabindex="0">close</span>
+        <button id='closeSettings' class="material-symbols-outlined" tabindex="0">close</button>
         <a href="/help" id="help" class="material-symbols-outlined" title="help">help</a>
         <div id="themeSelector">
             <h2 style="width: -webkit-fill-available;margin: 0;">My Themes</h2>

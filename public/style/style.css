@@ -31,6 +31,7 @@
     direction: ltr;
     -webkit-font-feature-settings: 'liga';
     -webkit-font-smoothing: antialiased;
+    user-select: none;
 }
 
 :root {
@@ -67,12 +68,6 @@ body {
 
 a:-webkit-any-link {
     color: lightgray;
-}
-
-.material-icons,
-.material-icons-outlined,
-.material-icons-round {
-    user-select: none;
 }
 
 button {
@@ -132,7 +127,6 @@ button {
     display: flex;
     align-items: center;
     margin: 5px;
-    cursor: pointer;
     flex-direction: row-reverse;
     justify-content: flex-end;
     height: 70px;
@@ -162,7 +156,6 @@ button {
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
     position: absolute;
     left: calc(100% - 40px);
 }
@@ -345,12 +338,6 @@ button {
     color: white;
     display: flex;
     align-items: center;
-    user-select: none;
-}
-
-#menu>span {
-    font-size: 28px;
-    cursor: pointer;
 }
 
 #pesquisar {
@@ -475,9 +462,9 @@ button {
 }
 
 #home,
-#settings {
+#settings,
+#add {
     font-size: 35px;
-    cursor: pointer;
     transition: all 1s ease;
     color: white;
     background: transparent;
@@ -486,7 +473,8 @@ button {
 }
 
 #home:focus-visible,
-#settings:focus-visible {
+#settings:focus-visible,
+#add:focus-visible {
     outline: 0;
     translate: 0 -3px;
 }
@@ -619,7 +607,6 @@ button {
     background: none;
     border: none;
     outline: none;
-    cursor: pointer;
 }
 
 #nameInput {
@@ -660,7 +647,6 @@ input:-internal-autofill-selected {
     top: calc(0% + 20px);
     left: calc(0% + 20px);
     position: absolute;
-    cursor: pointer;
     background: #051210;
     color: white;
     width: 24px;
@@ -688,7 +674,6 @@ input:-internal-autofill-selected {
     position: absolute;
     left: calc(100% - 45px);
     top: calc(0% + 5px);
-    cursor: pointer;
     outline: none;
 }
 
@@ -769,6 +754,7 @@ input:-internal-autofill-selected {
     padding: 5px;
     border-radius: 0.5rem;
     /*min-height: 60px;*/
+    /*Aplicar formatação de raio de borda para conectar menagens umas as outras como o google chat*/
 }
 
 .msgList {
@@ -886,12 +872,10 @@ input:-internal-autofill-selected {
 }
 
 .scrollToTheBottom {
-    user-select: none;
     color: white;
     position: absolute;
     top: calc(100% - 110px);
     left: calc(100% - 50px);
-    cursor: pointer;
     display: none;
     z-index: 1;
     font-size: 30px;
@@ -915,8 +899,6 @@ input:-internal-autofill-selected {
 }
 
 #closeSettings {
-    cursor: pointer;
-    user-select: none;
     position: absolute;
     top: calc(0% + 10px);
     left: calc(0% + 10px);
@@ -994,7 +976,6 @@ input:-internal-autofill-selected {
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
 }
 
 .searchOnGroupInput {
@@ -1194,7 +1175,6 @@ input:-internal-autofill-selected {
     background: no-repeat;
     color: white;
     border: none;
-    cursor: pointer;
     display: none
 }
 

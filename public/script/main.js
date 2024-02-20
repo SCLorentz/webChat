@@ -165,7 +165,7 @@ class chat {
             })
         })
         //pesquisar
-        this.searchBtn = new Obj('span', ['searchOnGroupBtn', 'material-symbols-outlined'], this.thumbDiv, 'search');
+        this.searchBtn = new Obj('button', ['searchOnGroupBtn', 'material-symbols-outlined'], this.thumbDiv, 'search');
         this.searchInput = new Obj('input', ['searchOnGroupInput'], this.searchBtn, 'pesquisar...');
         //search action
         this.searchBtn.onclick = () => {
@@ -237,7 +237,7 @@ class chat {
         this.addGuest = new Obj('button', ['material-symbols-outlined', 'addGuest'], this.guestList, 'person_add');
         this.addGuest.onclick = () => this.newGuestMenu.style.display = 'flex';
         this.guests.forEach(guest => {
-            const guestInList = new Obj('div', ['guestInList'], this.guestList, guest.nome + ' ' + guest.sobrenome);
+            const guestInList = new Obj('button', ['guestInList'], this.guestList, guest.nome + ' ' + guest.sobrenome);
             guestInList.addEventListener('contextmenu', e => {
                 e.preventDefault();
                 guestInfoMenu.style.display = 'flex';
@@ -511,7 +511,7 @@ class chat {
     createMsg() {
         this.msgArea = new Obj('div', ['msgArea'], this.chatElement);
         //scroll to the bottom
-        this.scrollToTheBottom = new Obj('span', ['scrollToTheBottom', 'material-symbols-outlined'], this.msgArea, 'arrow_downward');
+        this.scrollToTheBottom = new Obj('button', ['scrollToTheBottom', 'material-symbols-outlined'], this.msgArea, 'arrow_downward');
         this.msgArea.onscroll = () => this.scrollToTheBottom.style.display = (this.msgArea.scrollTop < this.msgArea.scrollHeight - 800) ? "block" : "none";
         this.scrollToTheBottom.onclick = () => this.msgArea.scrollTop = this.msgArea.scrollHeight;
         //file preview
