@@ -1,16 +1,14 @@
 import { Application, Context, send, Router } from 'https://deno.land/x/oak/mod.ts'; //Servidor
 import { bold, cyan, green, yellow } from "https://deno.land/std@0.200.0/fmt/colors.ts"; //console
 import { DB } from "https://deno.land/x/sqlite/mod.ts"; //database
-//import { compile } from "https://x.nest.land/sass@0.2.0/mod.ts"; //style scss <-- modulo bugado
-//import { indexedDB } from "https://deno.land/x/indexeddb@v1.1.0/ponyfill.ts";
 //import { compare, hash } from "https://deno.land/x/bcrypt/mod.ts"; //criptografia
-//import * as dejs from "https://deno.land/x/dejs@0.10.3/mod.ts"; //ejs
 
 //import router from "./routes.ts";
 import { errorHandler } from "./routes/errorHandler.ts";
 
 const port = 8080;
 const app = new Application({ keys: ["data"] });
+
 const db = new DB('./database/data.db');
 //const ejs = require('ejs');
 
@@ -107,15 +105,35 @@ function sendData(c) {
 
 const router = new Router();
 router
-  .get("/", async (ctx, next) => await send(ctx, "./public/index.html"))
-  .get("/enviar", async (ctx, next) => await sendData(ctx)() /*corrigir bugs*/)
-  .get("/receber", (ctx, next) => ctx.response.body = { chats: db.query("SELECT name, id FROM chats") })
-  .get("/:item", async (ctx, next) => {
+  .get("/", async ctx => await send(ctx, "./public/index.html"))
+  /*.get("/signin", async ctx => {
+    return await signIn(request, oauthConfig);
+  })
+  .get("callback", async ctx => {
+    const code = ctx.request.url.searchParams.get("code");
+    const token = await oauth.getToken(code);
+  })
+  .get("/protected", authenticate, async ctx => {
+    return await getSessionId(request) === undefined
+        ? new Response("Unauthorized", { status: 401 })
+        : new Response("You are allowed");
+  })
+  .get("/signout", async ctx => {
+    return await signOut(request);
+  })*/
+  .get("/enviar", async ctx => await sendData(ctx)() /*corrigir bugs*/)
+  .get("/receber", ctx => ctx.response.body = { chats: db.query("SELECT name, id FROM chats") })
+  .get("/:item", async ctx => {
     try {
       const filePath = `./public/pages/${ctx.params.item}.html`.replace(/\\/g, "/");
       await send(ctx, filePath);
     } catch (error) {
-      ctx.response.body = `<html><head><title>${error.status}</title></head><body><h1>${error.status}</h1></body></html>`;
+      try {
+        const fileContent = await Deno.readTextFile(`./view/error/${error.status}.html`);
+        ctx.response.body = fileContent;
+      } catch (error) {
+        ctx.response.body = `<html><head><title>${error.status}</title></head><body><h1>${error.status}</h1></body></html>`;
+      }
       ctx.response.status = error.status;
     }
   })

@@ -1,6 +1,6 @@
 ﻿# chat Ⅲ
 
-Version: 3.17.3
+Version: 3.17.4
 
 ## Recomendações de bibliotecas (favor revisar):
 
@@ -16,3 +16,7 @@ Version: 3.17.3
 2. AI generativa
 3. WASM
 4. EJS
+
+## ferramentas
+
+Imagem de usuario padrão --> imagem do google

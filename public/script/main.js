@@ -18,9 +18,12 @@ window.addEventListener("keydown", e => {
             break
     }
 });
-const chats = [];
-const groupCreator = document.getElementById('newChatMenu');
-const search = document.getElementById('pesquisar');
+const chats = [],
+groupCreator = document.getElementById('newChatMenu'),
+search = document.getElementById('pesquisar'),
+alunos = [];
+//obter informações do aluno atravez de um banco de dados server-side.
+
 document.addEventListener("DOMContentLoaded", () => {
     //PWA
     /*if ('windowControlsOverlay' in navigator) {}
@@ -29,15 +32,14 @@ document.addEventListener("DOMContentLoaded", () => {
     //
     document.getElementById('sort').onclick = e => {
         e.stopPropagation();
-        const sortNav = document.getElementById('sortNav')
+        const sortNav = document.getElementById('sortNav');
         sortNav.style.display = "flex";
         document.onclick = () => {
             sortNav.style.display = "";
         }
     }
     //
-    const configBtn = document.getElementById('settings');
-    const settings = document.getElementById("settingsMenu");
+    const configBtn = document.getElementById('settings'), settings = document.getElementById("settingsMenu");
     function rotateButton(deg) {
         return function () { //o return em uma função me deu uma ideia para o server.ts
             configBtn.style.transform = `rotate(${deg})`;
@@ -98,8 +100,6 @@ class Obj {
         return this._element;
     }
 }
-//obter informações do aluno atravez de um banco de dados server-side.
-const alunos = []; // Banco de dados de alunos
 for (let i = 0; i < 8; i++) {
     const aluno = {
         nome: 'nome' + i,
@@ -148,19 +148,20 @@ class chat {
         this.thumbDiv.innerHTML += this.name;
         this.thumbPicture = this.thumbDiv.children[1];
         //
-        Array.from(document.getElementsByClassName('arrowBack')).forEach(e => {
+        const backArrow = Array.from(document.getElementsByClassName('arrowBack')), salvos = document.getElementById('salvos');
+        backArrow.forEach(e => {
             if (window.innerWidth <= 850) {
                 e.style.display = 'flex';
             }
         })
         window.addEventListener('resize', () => {
-            if (window.innerWidth >= 850 && document.getElementById('salvos').style.display == 'none') {
-                document.getElementById('salvos').style.display = 'grid'
+            if (window.innerWidth >= 850 && salvos.style.display == 'none') {
+                salvos.style.display = 'grid'
             }
-            Array.from(document.getElementsByClassName('arrowBack')).forEach(e => {
+            backArrow.forEach(e => {
                 e.style.display = (window.innerWidth <= 850) ? 'flex' : '';
                 e.onclick = () => {
-                    document.getElementById('salvos').style.display = 'grid'
+                    salvos.style.display = 'grid'
                 }
             })
         })
@@ -204,8 +205,8 @@ class chat {
         this.back.onclick = () => config(false, this);
         this.openConfig.onclick = () => config(true, this);
         function config(view, e) {
-            e.chatConfig.style.display = (view) ? 'grid' : 'none';
-            e.chatElement.style.display = (view) ? 'none' : 'grid';
+            e.chatConfig.style.display = view ? 'grid' : 'none';
+            e.chatElement.style.display = view ? 'none' : 'grid';
         }
         this.editGroup();
         this.createGuestList();
@@ -214,7 +215,7 @@ class chat {
         const contatosMenu = document.getElementById('contatos');
         this.thumbnail = new Obj('button', ['thumbnail'], contatosMenu, this.name);
         //
-        this.thumbBtnImg = new Obj('img', ['chatImg'], this.thumbnail, this.name);
+        this.thumbBtnImg = new Obj('img', ['chatImg'], this.thumbnail, this.name)
         this.thumbBtnImg.src = this.thumb;
         //
         this.thumbnail.onclick = () => {
@@ -237,7 +238,11 @@ class chat {
         this.addGuest = new Obj('button', ['material-symbols-outlined', 'addGuest'], this.guestList, 'person_add');
         this.addGuest.onclick = () => this.newGuestMenu.style.display = 'flex';
         this.guests.forEach(guest => {
-            const guestInList = new Obj('button', ['guestInList'], this.guestList, guest.nome + ' ' + guest.sobrenome);
+            const guestInList = new Obj('button', ['guestInList'], this.guestList, guest.nome + ' ' + guest.sobrenome),
+            guestInfoMenu = new Obj('div', ['guestInfoMenu'], guestInList),
+            guestInListImg = new Obj('img', [], guestInList),
+            removeGuest = new Obj('p', ['removeGuest'], guestInfoMenu, "x"),
+            toAdm = new Obj('p', ['tornarAdm','material-symbols-outlined'], guestInfoMenu);
             guestInList.addEventListener('contextmenu', e => {
                 e.preventDefault();
                 guestInfoMenu.style.display = 'flex';
@@ -245,7 +250,6 @@ class chat {
                     guestInfoMenu.style.display = 'none';
                 });
             });
-            const guestInfoMenu = new Obj('div', ['guestInfoMenu'], guestInList);
             new Obj('img', [], new Obj('div', [], guestInfoMenu, `${guest.nome} ${guest.sobrenome}`)).src = guest.img;
             //email
             this.guestEmail = new Obj('p', [], guestInfoMenu, guest.email);
@@ -257,10 +261,8 @@ class chat {
                     console.error('Erro ao copiar texto: ', err);
                 }
             }
-            const guestInListImg = new Obj('img', [], guestInList);
             guestInListImg.src = guest.img;
             //remove guest
-            const removeGuest = new Obj('p', ['removeGuest'], guestInfoMenu, "x");
             removeGuest.onclick = () => {
                 if (user == guest && confirm('deseja sair do grupo?')) {
                     guestInList.parentNode.removeChild(guestInList);
@@ -276,13 +278,12 @@ class chat {
                     c.adm.splice(c.adm.indexOf(g), 1);
                 }
             }
-            const toAdm = new Obj('p', ['tornarAdm'], guestInfoMenu);
-            toAdm.innerText = (this.adm.includes(guest)) ? 'remove adm' : 'add adm';
+            toAdm.innerText = (this.adm.includes(guest)) ? 'gpp_bad' : 'shield_person';
             toAdm.onclick = () => {
                 if (this.adm.includes(user)) {
                     if (this.adm.includes(guest)) this.adm.splice(this.adm.indexOf(guest), 1);
                     else this.adm.push(guest);
-                    toAdm.innerText = (this.adm.includes(guest)) ? 'remove adm' : 'add adm';
+                    toAdm.innerText = (this.adm.includes(guest)) ? 'gpp_bad' : 'shield_person';
                 }
             }
         })
@@ -302,13 +303,13 @@ class chat {
         this.guestsToAdd = new Obj('div', ['guestsToAdd'], this.newGuestMenu);
         alunos.forEach(aluno => {
             if (!this.guests.includes(aluno)) {
-                const add = new Obj('button', [], this.guestsToAdd, `${aluno.nome} ${aluno.sobrenome}`);
-                const img = new Obj('img', ['addUserImg'], add);
+                const add = new Obj('button', [], this.guestsToAdd, `${aluno.nome} ${aluno.sobrenome}`), img = new Obj('img', ['addUserImg'], add);
                 img.src = aluno.img;
                 add.onclick = () => {
                     this.guests.push(aluno);
                     add.parentNode.removeChild(add);
                     this.guestListFunction() //corrigir bugs
+                    //atualizar para verção posts
                     fetch('/enviar-dados', {
                         method: 'POST',
                         headers: {
@@ -317,8 +318,7 @@ class chat {
                     })
                         .then(response => response.json())
                         .then(dados => {
-                            const objetoEncontrado = dados.find(objeto => objeto.id === this.id);
-                            if (objetoEncontrado) {
+                            if (dados.find(objeto => objeto.id === this.id)) {
                                 fetch('/add-guest', {
                                     method: 'POST',
                                     headers: {
@@ -444,7 +444,7 @@ class chat {
             else this.rename.value = this.name;
         }
         this.rename.addEventListener('drop', e => e.preventDefault());
-        this.desc = new Obj('input', ['groupDesc'], this.chatConfig, 'description')
+        this.desc = new Obj('input', ['groupDesc'], this.chatConfig, 'description');
         //del group
         this.delete = new Obj('button', ['deleteGroup', 'material-symbols-outlined'], this.chatConfig, 'delete');
         this.delete.title = 'burn everything';
@@ -523,7 +523,6 @@ class chat {
         //msgBallon
         //adicionar corretor automatico e sujestão de palavras
         //Ao começar a digitar, primeira letra em maiusculo (exeto quando o shift está ativado)
-        //adicionar opção de gravar audio
         //adicionar menu de emojis e codigos de emojis (#-EMOJI-#) 
         this.msgBalloon = new Obj('textarea', ['msgBalloon'], this.inputChat);
         this.msgBalloon.placeholder = 'vontade de falar...';
@@ -532,7 +531,7 @@ class chat {
         //gravação de audio
         //recursos de legendas para quem não puder ouvir o audio
         this.inputAudio = new Obj('button', ['material-symbols-outlined', 'inputAudio'], this.inputChat, 'mic');
-        let record = true;
+        let transferfiles = [], record = true;
         this.inputAudio.onclick = () => {
             if (record) {
                 this.inputAudio.classList.add("recordingAudio");
@@ -548,7 +547,6 @@ class chat {
                 record = true;
             }
         }
-        let transferfiles = [];
         this.msgBalloon.addEventListener('drop', e => { //drop não funciona em this.msgArea, pesquisar o motivo e corrigir
             e.preventDefault();
             if (e.dataTransfer.files.length > 1) {
@@ -625,8 +623,6 @@ class chat {
 //criar chat
 const nameInput = document.getElementById('nameInput');
 document.getElementById('add').onclick = () => {
-    //criar um sistema para organizar os grupos (de forma a ser configurado pelo usuario):
-    //nome (a-z)/ data de criação / mais acessados / não lidas / personalizado (os grupos não são organizados automaticamente e ganham a propriedade de serem arrastaveis)
     //adicionar context menu: fixar / marcar não lida / silenciar
     groupCreator.style.display = 'grid';
     groupCreator.style.left = `calc(50% - ${groupCreator.offsetWidth / 2}px)`;

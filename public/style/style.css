@@ -164,17 +164,20 @@ button {
     position: absolute;
     background: #0f1a1994;
     padding: 5px;
-    backdrop-filter: blur(2px);
+    backdrop-filter: blur(5px);
     border-radius: 0.5rem;
     flex-direction: column;
     align-items: flex-start;
     display: none;
     width: 350px;
     z-index: 1;
+    border: 2px solid;
+    border-image: linear-gradient(to left, #1b2625, #0000ff00);
+    border-image-slice: 1;
 }
 
 .guestInfoMenu>p {
-    margin: 5px 0;
+    margin: 5px;
     font-size: 15px;
 }
 
@@ -185,23 +188,23 @@ button {
     align-items: center;
 }
 
-.guestInfoMenu p {
-    margin: auto;
-}
-
 .guestInfoMenu img {
-    padding: 5px;
+    margin: 5px;
     height: -webkit-fill-available;
     object-fit: cover;
     border-radius: 50%;
+    box-shadow: 9px 4px 60px #00000063, 1px 1px 0px 1px #00000033, -1px -1px 0px 1px #ffffff08;
 }
 
 .tornarAdm {
-    background: white;
-    color: black;
-    border-radius: 0.5rem;
-    padding: 0 5px;
-    margin: 5px;
+    border-radius: 0.2rem !important;
+    margin: 5px !important;
+    position: absolute;
+    right: 35px;
+    padding: 5px;
+    font-size: 20px !important;
+    background: var(--theme-9);
+    color: var(--text-dark);
 }
 
 .newGuestMenu {
