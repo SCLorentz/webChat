@@ -115,15 +115,21 @@ router
       const filePath = `./public/pages/${ctx.params.item}.html`.replace(/\\/g, "/");
       await send(ctx, filePath);
     } catch (error) {
-      ctx.response.body = error.status;
+      ctx.response.body = `<html><head><title>${error.status}</title></head><body><h1>${error.status}</h1></body></html>`;
       ctx.response.status = error.status;
     }
   })
   .get("/:folder/:item", async (ctx, next) => {
-    try {
-      await send(ctx, `./public/${ctx.params.folder}/${ctx.params.item}`);
-    } catch (error) {
-      ctx.response.status = error.status;
+    if (ctx.request.headers.get("Referer")?.includes("http://")) {
+      try {
+        await send(ctx, `./public/${ctx.params.folder}/${ctx.params.item}`);
+      } catch (error) {
+        ctx.response.status = error.status;
+      }
+    } else {
+      ctx.response.status = 403;
+      const fileContent = await Deno.readTextFile("./view/error/403.html");
+      ctx.response.body = fileContent;
     }
   })
 
