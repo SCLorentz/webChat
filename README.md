@@ -2,6 +2,8 @@
 
 Version: 3.16.0
 
+tentar adicionar compatibilidade com o docker
+
 ## Recomendações de bibliotecas (favor revisar):
 
 1. https://deno.land/x/png2svg@0.0.1 --> converter imagens de perfil em svg
