@@ -41,7 +41,7 @@
     --theme-5: #794119;
     --theme-4: #0f1a19;
     --theme-6: #061614db;
-    --background-theme-8: #00000059;
+    --theme-8: #00000059;
     --theme-9: #102422;
 }
 
@@ -122,7 +122,7 @@ button {
     user-select: none;
     min-width: 100px;
     min-height: 50px;
-    background: var(--background-theme-8);
+    background: var(--theme-8);
     border-radius: 0.5rem;
     display: flex;
     align-items: center;
@@ -160,7 +160,7 @@ button {
     left: calc(100% - 40px);
 }
 
-.guestInfoMenu {
+.guestInfo {
     position: absolute;
     background: #0f1a1994;
     padding: 5px;
@@ -174,35 +174,46 @@ button {
     border: 2px solid;
     border-image: linear-gradient(to left, #1b2625, #0000ff00);
     border-image-slice: 1;
+    font-size: 26px;
 }
 
-.guestInfoMenu>p {
+.guestInfo>p {
     margin: 5px;
-    font-size: 15px;
+    width: 24px;
+    height: 24px;
 }
 
-.guestInfoMenu>div {
+.guestInfo>div>p {
+    margin: 5px;
+    font-size: 20px;
+}
+
+.email {
+    font-size: 18px;
+    margin: 10px;
+}
+
+.guestInfo>div {
     display: flex;
     flex-direction: row-reverse;
     border-bottom: 2px solid;
     align-items: center;
 }
 
-.guestInfoMenu img {
+.guestInfo img {
     margin: 5px;
     height: -webkit-fill-available;
     object-fit: cover;
     border-radius: 50%;
     box-shadow: 9px 4px 60px #00000063, 1px 1px 0px 1px #00000033, -1px -1px 0px 1px #ffffff08;
+    margin-right: 15px;
 }
 
 .tornarAdm {
     border-radius: 0.2rem !important;
-    margin: 5px !important;
     position: absolute;
     right: 35px;
     padding: 5px;
-    font-size: 20px !important;
     background: var(--theme-9);
     color: var(--text-dark);
 }
@@ -350,7 +361,7 @@ button {
     margin: 0 0 0 5px;
     font-size: 18px;
     padding: 8px;
-    background: #2b1606;
+    background: var(--theme-8);
     color: white;
     border: 0;
     transition: all 0.5s ease;
@@ -367,14 +378,14 @@ button {
     }
 
     100% {
-        box-shadow: 0 0 0 2px #41230e, 0 0 0 5px #2b1606ee;
+        box-shadow: 0 0 0 2px #41230e, 0 0 0 5px var(--theme-8);
     }
 }
 
 #pesquisar:hover,
 #pesquisar:focus-visible {
     font-size: 20px;
-    animation: myAnim 0.8s ease 0s infinite alternate forwards;
+    animation: myAnim 2s alternate infinite;
 }
 
 #pesquisar::-webkit-scrollbar {
@@ -499,10 +510,8 @@ button {
 }
 
 #add {
-    background: white;
-    color: black;
-    mix-blend-mode: screen;
     border-radius: 50%;
+    background: #ffffff1a;
     width: 25px;
     height: 25px;
     display: flex;
@@ -694,7 +703,7 @@ input:-internal-autofill-selected {
     width: -webkit-fill-available;
     resize: none;
     outline: none;
-    background: var(--background-theme-8);
+    background: var(--theme-8);
     color: white;
     font-family: 'Roboto', 'Emoji';
     font-size: 16px;
@@ -874,7 +883,7 @@ input:-internal-autofill-selected {
     background: #ff852e70;
 }
 
-.scrollToTheBottom {
+.toBottom {
     color: white;
     position: absolute;
     top: calc(100% - 110px);

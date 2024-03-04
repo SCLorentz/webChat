@@ -67,6 +67,17 @@ db.execute(`
     img BLOB
   )
 `);
+db.query(`
+  CREATE TABLE IF NOT EXISTS bw (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    word TEXT
+  )
+`);
+
+// Execute the SQL command to insert the value "batata" into the "word" column
+/*db.query(`
+  INSERT INTO bw (word) VALUES ('batata')
+`);*/
 
 //BLOB --> dados binarios para armazenamento de arquivos
 
@@ -121,7 +132,7 @@ router
   .get("/signout", async ctx => {
     return await signOut(request);
   })*/
-  .get("/enviar", async ctx => await sendData(ctx)() /*corrigir bugs*/)
+  .post("/enviar", async ctx => await sendData(ctx)() /*corrigir bugs*/)
   .get("/receber", ctx => ctx.response.body = { chats: db.query("SELECT name, id FROM chats") })
   .get("/:item", async ctx => {
     try {
@@ -129,7 +140,7 @@ router
       await send(ctx, filePath);
     } catch (error) {
       try {
-        const fileContent = await Deno.readTextFile(`./view/error/${error.status}.html`);
+        const fileContent = await Deno.readTextFile(`./view/err/${error.status}.html`);
         ctx.response.body = fileContent;
       } catch (error) {
         ctx.response.body = `<html><head><title>${error.status}</title></head><body><h1>${error.status}</h1></body></html>`;
@@ -146,7 +157,7 @@ router
       }
     } else {
       ctx.response.status = 403;
-      const fileContent = await Deno.readTextFile("./view/error/403.html");
+      const fileContent = await Deno.readTextFile("./view/err/403.html");
       ctx.response.body = fileContent;
     }
   })
