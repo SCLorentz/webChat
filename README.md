@@ -1,6 +1,6 @@
 ﻿# chat Ⅲ
 
-Version: 3.19.0
+Version: 3.19.1
 
 dockerName: chat3
 

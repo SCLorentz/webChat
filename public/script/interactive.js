@@ -2,7 +2,7 @@
 
 import { chat, chats, user, alunos } from '/script/main.js';
 const search = document.getElementById('pesquisar'),
-groupCreator = document.getElementById('newChatMenu');
+    groupCreator = document.getElementById('newChatMenu');
 
 /*if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('offline.js');
@@ -25,6 +25,10 @@ window.addEventListener("keydown", e => {
     }
 });
 
+Element.prototype.hideOnClick = function () {
+    document.onclick = () => this.style.display = "none";
+};
+
 document.addEventListener("DOMContentLoaded", () => {
     //PWA
     /*if ('windowControlsOverlay' in navigator) {}
@@ -35,9 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
         e.stopPropagation();
         const sortNav = document.getElementById('sortNav');
         sortNav.style.display = "flex";
-        document.onclick = () => {
-            sortNav.style.display = "";
-        }
+        sortNav.hideOnClick();
     }
     //
     const configBtn = document.getElementById('settings'), settings = document.getElementById("settingsMenu");
@@ -64,9 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
             let b = search.lastElementChild;
             b.style.display = "block";
             b.focus();
-            document.onclick = () => {
-                b.style.display = "";
-            }
+            b.hideOnClick();
         }
     })
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -131,7 +131,7 @@ document.getElementById('create').onclick = () => {
             .catch(error => console.error(error))
             .finally(() => {
                 chats.push(new chat(Math.random(), name, '/img/groupImg.svg', [user, alunos[1]], [user], true)); //obter ip gerado pelo DB
-                groupCreator.style.display = '';
+                groupCreator.hideOnClick();
                 nameInput.value = '';
             });
     }

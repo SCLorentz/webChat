@@ -15,6 +15,12 @@ function Obj(type, classes, father, txt) {
     return e;
 }
 
+Object.defineProperty(Element.prototype, 'disp', {
+    set: function (s) {
+        this.style.display = s;
+    }
+});
+
 for (let i = 0; i < 8; i++) {
     const aluno = {
         nome: 'nome' + i,
@@ -54,12 +60,12 @@ class chat {
         this.thumbPicture = this.thumbDiv.children[1];
         //
         const backArrow = Array.from(document.getElementsByClassName('arrowBack')), salvos = document.getElementById('salvos');
-        backArrow.forEach(e => e.style.display = window.innerWidth <= 850 ? 'flex' : '');
+        backArrow.forEach(e => e.disp = window.innerWidth <= 850 ? 'flex' : '');
         window.addEventListener('resize', () => {
-            if (window.innerWidth >= 850 && salvos.style.display == 'none') salvos.style.display = 'grid';
+            if (window.innerWidth >= 850 && salvos.disp == 'none') salvos.disp = "grid";
             backArrow.forEach(e => {
-                e.style.display = window.innerWidth <= 850 ? 'flex' : '';
-                e.onclick = () => salvos.style.display = 'grid';
+                e.disp = window.innerWidth <= 850 ? 'flex' : '';
+                e.onclick = () => salvos.disp = "grid";
             })
         })
         //pesquisar
@@ -78,7 +84,7 @@ class chat {
             if (e.key == 'Enter') {
                 e.preventDefault();
                 this.msgs.forEach(msg =>
-                    msg.getMsg.style.display = (
+                    msg.getMsg.disp = (
                         [...msg.content].filter((char, index) => char == this.searchInput.value.charAt(index)).length / msg.content.length < 0.7 && this.searchInput.value !== '' && msg.content
                     ) ? 'none' : 'block'
                     //verificar se o input !== '' && conteudo da mensagem ~=(70%) input
@@ -99,9 +105,9 @@ class chat {
         this.back = Obj('button', ['material-symbols-outlined', 'back'], this.chatConfig, 'arrow_back_ios')
         this.back.onclick = () => config(false, this);
         this.openConfig.onclick = () => config(true, this);
-        function config(view, e) {
-            e.chatConfig.style.display = view ? 'grid' : 'none';
-            e.chatElement.style.display = view ? 'none' : 'grid';
+        function config(v, e) {
+            e.chatConfig.disp = v ? 'grid' : 'none';
+            e.chatElement.disp = v ? 'none' : 'grid';
         }
         this.editGroup();
         this.GuestList();
@@ -114,13 +120,13 @@ class chat {
         this.thumbBtnImg.src = this.thumb;
         //
         this.thumbnail.onclick = () => {
-            document.querySelectorAll('.chat, .chatConfigs, .picMenu, .newGuestMenu').forEach(e => e.style.display = 'none');
-            this.chatElement.style.display = 'grid';
+            document.querySelectorAll('.chat, .chatConfigs, .picMenu, .newGuestMenu').forEach(e => e.disp = 'none');
+            this.chatElement.disp = 'grid';
             localStorage.setItem('lastChat', this.id);
             //thumb
             document.querySelectorAll('.thumbnail').forEach(e => e.style.background = '');
             this.thumbnail.style.background = '#0000002b';
-            if (window.innerWidth <= 850) document.getElementById('salvos').style.display = 'none';
+            if (window.innerWidth <= 850) document.getElementById('salvos').disp = 'none';
         }
         menu.scrollTop = menu.scrollHeight;
     }
@@ -129,7 +135,7 @@ class chat {
             if (e.parentNode == this.guestList) e.parentNode.removeChild(e)
         })
         this.addGuest = Obj('button', ['material-symbols-outlined', 'addGuest'], this.guestList, 'person_add');
-        this.addGuest.onclick = () => this.newGuestMenu.style.display = 'flex';
+        this.addGuest.onclick = () => this.newGuestMenu.disp = 'flex';
         this.guests.forEach(guest => {
             const guestInList = Obj('button', ['guestInList'], this.guestList, guest.nome + ' ' + guest.sobrenome),
                 guestInfo = Obj('div', ['guestInfo'], guestInList),
@@ -138,8 +144,8 @@ class chat {
                 toAdm = Obj('p', ['tornarAdm', 'material-symbols-outlined'], guestInfo);
             guestInList.addEventListener('contextmenu', e => {
                 e.preventDefault();
-                guestInfo.style.display = 'flex';
-                guestInList.addEventListener('mouseleave', () => guestInfo.style.display = '');
+                guestInfo.disp = 'flex';
+                guestInList.addEventListener('mouseleave', () => guestInfo.disp = '');
             });
             Obj('img', [], Obj('div', [], guestInfo, `${guest.nome} ${guest.sobrenome}`)).src = guest.img;
             //email
@@ -184,7 +190,7 @@ class chat {
         //guestList add btn
         this.newGuestMenu = Obj('div', ['newGuestMenu'], this.chatConfig);
         this.closeNewGuestMenu = Obj('button', ['closeBtn', 'material-symbols-outlined'], this.newGuestMenu, 'close');
-        this.closeNewGuestMenu.onclick = () => this.newGuestMenu.style.display = 'none';
+        this.closeNewGuestMenu.onclick = () => this.newGuestMenu.disp = 'none';
         this.addNewGuestTitle = Obj('h2', [], this.newGuestMenu, 'add guests');
         //add
         this.guestsToAdd = Obj('div', ['guestsToAdd'], this.newGuestMenu);
@@ -212,11 +218,11 @@ class chat {
         this.img = Obj('img', ['groupImg', 'chatImg'], this.chatConfig);
         this.img.src = this.thumb;
         //
-        this.imgInput = Obj("input",[],this.chatConfig);
+        this.imgInput = Obj("input", [], this.chatConfig);
         this.imgInput.type = 'file';
         this.imgInput.accept = "image/svg+xml";
-        this.imgInput.style.display = 'none';
-        //this.picMenuOff.element.addEventListener('click',()=> this.picMenuOff.element.style.display = "none");
+        this.imgInput.disp = 'none';
+        //this.picMenuOff.element.addEventListener('click',()=> this.picMenuOff.element.disp = "none");
         this.picMenu = Obj('div', ['picMenu'], this.chatConfig);
         this.buttonConfigs = [
             { name: 'picMenuUpload', ico: 'upload' },
@@ -230,12 +236,12 @@ class chat {
         });
         document.addEventListener('click', e => {
             e.stopPropagation();
-            if (!this.picMenu.contains(e.target) && e.target !== this.picMenu && e.target !== this.img && this.picMenu.style.display === 'flex') {
-                this.picMenu.style.display = 'none';
+            if (!this.picMenu.contains(e.target) && e.target !== this.picMenu && e.target !== this.img && this.picMenu.disp === 'flex') {
+                this.picMenu.disp = 'none';
             }
         })
         this.img.addEventListener('click', () => {
-            this.picMenu.style.display = "flex";
+            this.picMenu.disp = "flex";
             this.picMenu.style.top = `calc(50% - ${this.picMenu.offsetHeight / 2}px)`;
             this.picMenu.style.left = `calc(50% - ${this.picMenu.offsetWidth / 2}px)`;
             //comando para fechar o menu
@@ -251,9 +257,9 @@ class chat {
             if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 navigator.mediaDevices.getUserMedia({ video: true })
                     .then(stream => {
-                        Array.from(document.getElementsByClassName('picMenuVidCap')).forEach(e => e.style.display = "flex");
+                        Array.from(document.getElementsByClassName('picMenuVidCap')).forEach(e => e.disp = "flex");
                         this.capture.srcObject = stream;
-                        Array.from(document.getElementsByClassName('picMenuBtn')).forEach(e => e.style.display = "none");
+                        Array.from(document.getElementsByClassName('picMenuBtn')).forEach(e => e.disp = "none");
                         this.picMenu.style.top = `calc(50% - ${this.picMenu.offsetHeight / 2}px)`;
                         this.picMenu.style.left = `calc(50% - ${this.picMenu.offsetWidth / 2}px)`;
                     })
@@ -261,8 +267,8 @@ class chat {
             }
             this.CaptureBtn.addEventListener('click', () => {
                 this.picMenuCanvas.getContext('2d').drawImage(this.capture, 0, 0, 400, 300);
-                this.picMenuCanvas.style.display = 'flex';
-                this.capture.style.display = "none";
+                this.picMenuCanvas.disp = 'flex';
+                this.capture.disp = "none";
                 this.CaptureBtn.innerText = "replay";
                 //
                 this.thumb = this.picMenuCanvas.toDataURL('image/png');
@@ -281,7 +287,7 @@ class chat {
                     changeImg(this);
                 }
             } else alert('não é uma imagem tipo svg');
-            this.picMenu.style.display = "none";
+            this.picMenu.disp = "none";
         })
         function changeImg(c) {
             c.thumbBtnImg.src = c.img.src = c.thumbPicture.src = c.thumb;
@@ -292,25 +298,23 @@ class chat {
         this.rename.spellcheck = false;
         this.rename.value = this.name;
         this.rename.addEventListener("paste", e => {
-            const clipboardData = e.clipboardData || window.Clipboard;
-            if (clipboardData.getData("text").length + this.rename.value.length > 17) {
+            const c = e.clipboardData || window.Clipboard;
+            if (c.getData("text").length + this.rename.value.length > 17) {
                 e.preventDefault();
                 alert('texto muito grande, você só tem mais ' + (17 - this.rename.value.length) + ' caracteres até o limite');
             }
         });
         this.rename.addEventListener("keydown", e => {
-            if (this.rename.value.length > 16 && e.key !== "Backspace" && e.key !== 13 && e.key !== 37 && e.key !== 39 && e.key !== 9 && e.key !== 116 && this.rename.selectionStart == this.rename.selectionEnd) {
+            const keyList = [37, 39, 46, 9, 8, 116]
+            if (this.rename.value.length > 16 && !keyList.includes(e.keyCode) && this.rename.selectionStart == this.rename.selectionEnd) {
                 e.preventDefault();
             }
-            if (e.key == "Enter") {
+            if (e.keyCode == 13) {
                 e.preventDefault();
-                if (this.rename.value.replace(/^\W+/, '') !== '') this.renameGroup();
+                this.renameGroup();
             }
         });
-        this.rename.onblur = () => {
-            if (this.rename.value.replace(/^\W+/, '') !== '' && this.rename.value != this.name) this.renameGroup();
-            else this.rename.value = this.name;
-        }
+        this.rename.onblur = () => this.renameGroup();
         this.rename.addEventListener('drop', e => e.preventDefault());
         this.desc = Obj('input', ['groupDesc'], this.chatConfig, 'description');
         //del group
@@ -318,9 +322,7 @@ class chat {
         this.delete.title = 'burn everything';
         this.delete.onclick = () => {
             if (confirm("deseja apagar este grupo?")) {
-                this.chatElement.parentNode.removeChild(this.chatElement);
-                this.chatConfig.parentNode.removeChild(this.chatConfig);
-                this.thumbnail.parentNode.removeChild(this.thumbnail);
+                ["chatElement","chatConfig","thumbnail"].forEach(e => this[e].parentNode.removeChild(this[e]))
                 chats.splice(this.id - 1, 1);
                 //server DB
                 fetch('/enviar', {
@@ -334,45 +336,47 @@ class chat {
                         id: this.id.replace(/^chat:\s*/, "")
                     })
                 }).then(response => response.json())
-                .then(responseData => log(responseData))
-                .catch(error => console.error(error))
+                    .then(responseData => console.log(responseData))
+                    .catch(error => console.error(error))
             }
         }
     }
     renameGroup() {
-        this.thumbDiv.childNodes[2].nodeValue = this.thumbnail.firstChild.nodeValue = this.name = this.rename.value;
-        this.rename.value = this.rename.value.replace(/^\W+/, '');
-        //
-        fetch('/enviar', {
-            method: 'POST', // Método da requisição (pode ser GET, POST, PUT, DELETE, etc.)
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                type: "EDIT",
-                target: "chats",
-                name: this.rename.value,
-                id: this.id.replace(/^chat:\s*/, "")
-            })
-        }).then(response => response.json())
-        .then(responseData => console.log(responseData))
-        .catch(error => console.error(error))
-        //corrigir bugs de renomeio muito rapido (0.3sec), aplicar delay para mostrar o pop-up
-        //mudar a mensagem do pop-up caso haja um erro como "erro ao enviar os dados"
-        popup.innerText = "Grupo Renomeado!";
-        popup.style.display = "flex";
-        popup.style.top = '0%';
-        popup.style.left = `calc(50% - ${popup.offsetWidth / 2}px)`;
-        setTimeout(() => {
-            popup.style.top = '-20%';
-            popup.addEventListener('transitionend', () => popup.style.display = "")
-        }, 3000)
+        if (this.rename.value != this.name && this.rename.value.replace(/^\W+/, '') !== '') {
+            this.thumbDiv.childNodes[2].nodeValue = this.thumbnail.firstChild.nodeValue = this.name = this.rename.value;
+            this.rename.value = this.rename.value.replace(/^\W+/, '');
+            //
+            fetch('/enviar', {
+                method: 'POST', // Método da requisição (pode ser GET, POST, PUT, DELETE, etc.)
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    type: "EDIT",
+                    target: "chats",
+                    name: this.rename.value,
+                    id: this.id.replace(/^chat:\s*/, "")
+                })
+            }).then(response => response.json())
+                .then(responseData => console.log(responseData))
+                .catch(error => console.error(error))
+            //corrigir bugs de renomeio muito rapido (0.3sec), aplicar delay para mostrar o pop-up
+            //mudar a mensagem do pop-up caso haja um erro como "erro ao enviar os dados"
+            popup.innerText = "Grupo Renomeado!";
+            popup.disp = "flex";
+            popup.style.top = '0%';
+            popup.style.left = `calc(50% - ${popup.offsetWidth / 2}px)`;
+            setTimeout(() => {
+                popup.style.top = '-20%';
+                popup.addEventListener('transitionend', () => popup.disp = "")
+            }, 3000)
+        } else this.rename.value = this.name;
     }
     Msgs() {
         this.msgArea = Obj('div', ['msgArea'], this.chatElement);
         //scroll to the bottom
         this.toBottom = Obj('button', ['toBottom', 'material-symbols-outlined'], this.msgArea, 'arrow_downward');
-        this.msgArea.onscroll = () => this.toBottom.style.display = (this.msgArea.scrollTop < this.msgArea.scrollHeight - 800) ? "block" : "none";
+        this.msgArea.onscroll = () => this.toBottom.disp = (this.msgArea.scrollTop < this.msgArea.scrollHeight - 800) ? "block" : "none";
         this.toBottom.onclick = () => this.msgArea.scrollTop = this.msgArea.scrollHeight;
         //file preview
         this.inputChat = Obj('div', ['inputChat'], this.chatElement);
@@ -396,13 +400,13 @@ class chat {
             if (record) {
                 this.inputAudio.classList.add("recordingAudio");
                 this.inputAudio.innerText = "stop_circle";
-                this.attach.style.display = "none";
+                this.attach.disp = "none";
                 this.msgBalloon.disabled = true;
                 record = false;
             } else {
                 this.inputAudio.classList.remove("recordingAudio");
                 this.inputAudio.innerText = "mic";
-                this.attach.style.display = "inline-block";
+                this.attach.disp = "inline-block";
                 this.msgBalloon.disabled = false;
                 record = true;
             }
@@ -410,7 +414,7 @@ class chat {
         this.msgBalloon.addEventListener('drop', e => { //drop não funciona em this.msgArea, pesquisar o motivo e corrigir
             e.preventDefault();
             if (e.dataTransfer.files.length > 1) {
-                this.previewArrowFoward.style.display = this.previewArrowBackward.style.display = 'inline';
+                this.previewArrowFoward.disp = this.previewArrowBackward.disp = 'inline';
                 this.previewArrowFoward.addEventListener('click', () => changeSlide(i + 1, this.previewSlides));
                 this.previewArrowBackward.addEventListener('click', () => changeSlide(i - 1, this.previewSlides));
             }
@@ -432,9 +436,9 @@ class chat {
                         this.preview.load();
                         this.preview.src = e.target.result;
                     }
-                    this.preview.style.display = 'none';
-                    this.previewSlides.style.display = 'flex';
-                    this.previewSlides.childNodes[0].style.display = 'block';
+                    this.preview.disp = 'none';
+                    this.previewSlides.disp = 'flex';
+                    this.previewSlides.childNodes[0].disp = 'block';
                     this.preview.controls = true;
                     transferfiles.push(this.preview)
                 }
@@ -442,10 +446,10 @@ class chat {
             let i = 0;
             function changeSlide(index, e) {
                 if (index < e.childNodes.length && index >= 0) {
-                    if (e.childNodes[i].nodeName == 'VIDEO' || e.childNodes[i].nodeName == 'AUDIO')e.childNodes[i].pause();
-                    e.childNodes[i].style.display = 'none';
+                    if (e.childNodes[i].nodeName == 'VIDEO' || e.childNodes[i].nodeName == 'AUDIO') e.childNodes[i].pause();
+                    e.childNodes[i].disp = 'none';
                     i = index;
-                    e.childNodes[i].style.display = 'block';
+                    e.childNodes[i].disp = 'block';
                 }
             }
         });
@@ -458,7 +462,7 @@ class chat {
                     if (transferfiles.length > 0) {
                         this.preview.parentNode.removeChild(this.preview);
                         this.inputChat.style.height = '';
-                        this.previewSlides.style.display = '';
+                        this.previewSlides.disp = '';
                         this.msgs.push(new msg(this.msgBalloon.value, transferfiles, new Date(), user, this));
                         transferfiles = [];
                     } else this.msgs.push(new msg(this.msgBalloon.value, null, new Date(), user, this));
@@ -503,9 +507,7 @@ class msg {
         //scroll
         this.chat.msgArea.scrollTop = this.chat.msgArea.scrollHeight;
     }
-    get getMsg() {
-        return this.msg
-    }
+    get getMsg() { return this.msg }
     Msgs() {
         //Adicionar opção de editar
         this.chat.msgBalloon.value = '';
@@ -520,13 +522,13 @@ class msg {
         this.msg.addEventListener('contextmenu', e => {
             e.preventDefault();
             e.stopPropagation();
-            msgContext.style.display = 'flex';
+            msgContext.disp = 'flex';
             msgContext.style.left = `calc(${e.screenX}px)`;
             msgContext.style.top = `calc(${e.clientY}px)`;
             document.addEventListener('contextmenu', e => {
-                if (e.target.classList != 'msgContext') msgContext.style.display = '';
+                if (e.target.classList != 'msgContext') msgContext.disp = '';
             })
-            document.addEventListener('click', () => msgContext.style.display = '');
+            document.addEventListener('click', () => msgContext.disp = '');
         })
         //owner
         this.msgTop = Obj('div', ['msgTop'], this.msg);
@@ -552,7 +554,7 @@ class msg {
         //O carregamento de arquivos em mensagens antigas deve ser feito dentro da classe msg, pois não há previsualização do envio.
         if (this.file) {
             this.file.forEach(file => {
-                file.style.display = 'flex'
+                file.disp = 'flex'
                 if (file.tagName.toLowerCase() == "audio") {
                     const playtime = Obj('span', ['playTime'], this.filePlaceHolder)
                     const wavesurfer = WaveSurfer.create({
@@ -567,22 +569,22 @@ class msg {
                         //codigo disponivel em https://wavesurfer.xyz, modificado por AI, formatado e otimizado por mim:
                         renderFunction: (channels, ctx) => {
                             const { width, height } = ctx.canvas,
-                            scale = channels[0].length / width,
-                            step = 10,
-                            // Encontrar o valor máximo absoluto nos samples do áudio
-                            maxAmplitude = Math.max(...channels[0].map(value => Math.abs(value))),
-                            // Ajustar a escala dinamicamente
-                            dynamicScale = height / (2 * maxAmplitude);
+                                scale = channels[0].length / width,
+                                step = 10,
+                                // Encontrar o valor máximo absoluto nos samples do áudio
+                                maxAmplitude = Math.max(...channels[0].map(value => Math.abs(value))),
+                                // Ajustar a escala dinamicamente
+                                dynamicScale = height / (2 * maxAmplitude);
                             ctx.translate(0, height / 2);
                             ctx.strokeStyle = ctx.fillStyle;
                             ctx.beginPath();
                             for (let i = 0; i < width; i += step * 2) {
                                 const index = Math.floor(i * scale),
-                                value = Math.abs(channels[0][index]),
-                                // Aplicar o fator de escala dinâmica
-                                scaleValue = value * dynamicScale;
+                                    value = Math.abs(channels[0][index]),
+                                    // Aplicar o fator de escala dinâmica
+                                    scaleValue = value * dynamicScale;
                                 let x = i,
-                                y = scaleValue;
+                                    y = scaleValue;
                                 ctx.moveTo(x, 0);
                                 ctx.lineTo(x, y);
                                 ctx.arc(x + step / 2, y, step / 2, Math.PI, 0, true);
@@ -600,16 +602,16 @@ class msg {
                     })
                     wavesurfer.on('ready', () => {
                         var dur = wavesurfer.getDuration(),
-                        minutes = Math.floor(dur / 60),
-                        seconds = Math.floor(dur % 60);
+                            minutes = Math.floor(dur / 60),
+                            seconds = Math.floor(dur % 60);
                         minutes = (minutes < 10 ? "0" : "") + minutes;
                         seconds = (seconds < 10 ? "0" : "") + seconds;
                         playtime.innerText = minutes + ":" + seconds;
                     })
                     wavesurfer.on('timeupdate', () => {
                         var currentTime = wavesurfer.getDuration() - wavesurfer.getCurrentTime(),
-                        minutes = Math.floor(currentTime / 60),
-                        seconds = Math.floor(currentTime % 60);
+                            minutes = Math.floor(currentTime / 60),
+                            seconds = Math.floor(currentTime % 60);
                         minutes = (minutes < 10 ? "0" : "") + minutes;
                         seconds = (seconds < 10 ? "0" : "") + seconds;
                         playtime.innerText = minutes + ":" + seconds;
@@ -632,28 +634,24 @@ class msg {
                 })*/
             })
         }
-        if (this.filePlaceHolder.childElementCount == 0) {
-            this.filePlaceHolder.style.display = 'none';
-        }
+        if (this.filePlaceHolder.childElementCount == 0) this.filePlaceHolder.disp = 'none';
         //emails e links
         const emails = this.content.match(/\b[A-Za-z0-9._%+-ãçõ]+@[A-Za-z0-9.-ã]+\.[A-Za-z]{2,}\b/g),
-        links = this.content.match(/https?:\/\/\S+/gi),
-        formatRules = [
-            { regex: /(\*)(.*?)(\*)/g, tag: 'strong' },
-            { regex: /(\%)(.*?)(\%)/g, tag: 'i' },
-            { regex: /(\~~)(.*?)(\~~)/g, tag: 'a', style: 'text-decoration: line-through 2px;' }
-        ];
-        if (emails) emails.forEach(m =>
-            this.content = this.content.replace(m, `<a href="mailto:${m}" title="email" target="_blank">${m}</a>`)
-        );
-        if (links) links.forEach(link => this.content = this.content.replace(link, link.link(link)));
+            links = this.content.match(/https?:\/\/\S+/gi),
+            formatRules = [
+                { regex: /(\*)(.*?)(\*)/g, tag: 'strong' },
+                { regex: /(\%)(.*?)(\%)/g, tag: 'i' },
+                { regex: /(\~~)(.*?)(\~~)/g, tag: 'a', style: 'text-decoration: line-through 2px;' }
+            ];
+        if (emails) emails.forEach(m => this.content = this.content.replace(m, `<a href="mailto:${m}" title="email" target="_blank">${m}</a>`));
+        if (links) links.forEach(l => this.content = this.content.replace(l, l.link(l)));
         //text decorations
         for (const rule of formatRules) {
             this.content = this.content.replace(rule.regex, (match, p1, p2, p3) => {
-                let leadingSpace = p2.startsWith(' ') ? '&nbsp;' : '';
-                let trailingSpace = p2.endsWith(' ') ? '&nbsp;' : '';
+                let l = p2.startsWith(' ') ? '&nbsp;' : '',
+                t = p2.endsWith(' ') ? '&nbsp;' : '';
                 p2 = p2.trim().replace(/\s+/g, ' '); // Substitui múltiplos espaços por um único espaço
-                return `<${rule.tag} ${rule.style ? `style='${rule.style}'` : ''}>${leadingSpace}${p2}${trailingSpace}</${rule.tag}>`;
+                return `<${rule.tag} ${rule.style ? `style='${rule.style}'` : ''}>${l}${p2}${t}</${rule.tag}>`;
             });
         }
         //bad words
@@ -716,11 +714,4 @@ function sinonimos(synonyms) {
         }
         return synonym; // retorna o sinônimo original se não for encontrado
     }).join('');
-};
-function binaryToText(str) {
-    if (/^(?=.*(\d.*\d.*\d.*\d.*\d.*\d.*\d.*\d))[01\s]*$/.test(str)) {
-        return str.split(' ').map((bin) => {
-            return String.fromCharCode(parseInt(bin, 2));
-        }).join('');
-    } else return str
 };
