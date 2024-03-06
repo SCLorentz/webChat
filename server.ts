@@ -1,17 +1,14 @@
 import { Application, Context, send, Router } from 'https://deno.land/x/oak/mod.ts'; //Servidor
-import { extname, join } from "https://deno.land/std/path/mod.ts";
 import { bold, cyan, green, yellow } from "https://deno.land/std@0.200.0/fmt/colors.ts"; //console
 import { DB } from "https://deno.land/x/sqlite/mod.ts"; //database
-//import { compile } from "https://x.nest.land/sass@0.2.0/mod.ts"; //style scss <-- modulo bugado
-//import { indexedDB } from "https://deno.land/x/indexeddb@v1.1.0/ponyfill.ts";
-//import { compare, hash } from "https://deno.land/x/bcrypt/mod.ts"; //criptografia e usuarios
-//import * as dejs from "https://deno.land/x/dejs@0.10.3/mod.ts"; //ejs
+//import { compare, hash } from "https://deno.land/x/bcrypt/mod.ts"; //criptografia
 
 //import router from "./routes.ts";
 import { errorHandler } from "./routes/errorHandler.ts";
 
 const port = 8080;
 const app = new Application({ keys: ["data"] });
+
 const db = new DB('./database/data.db');
 //const ejs = require('ejs');
 
@@ -70,34 +67,34 @@ db.execute(`
     img BLOB
   )
 `);
+db.query(`
+  CREATE TABLE IF NOT EXISTS bw (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    word TEXT
+  )
+`);
 
-//db.execute(`DELETE FROM chats WHERE id = 2;`) <-- apagar grupo
+// Execute the SQL command to insert the value "batata" into the "word" column
+/*db.query(`
+  INSERT INTO bw (word) VALUES ('batata')
+`);*/
+
 //BLOB --> dados binarios para armazenamento de arquivos
-
-// Run a simple query
-/*for (const name of ["Peter Parker", "Clark Kent", "Bruce Wayne"]) {
-  db.query("INSERT INTO chats (name) VALUES (?)", [name]);
-}*/
-
-// Print out data in table
-/*for (const [name] of db.query("SELECT name FROM chats")) {
-  console.log(name);
-}*/
 
 function DBData(data) {
   switch (data.type) {
     case "CREATE":
-      db.query(`INSERT INTO ${data.target} (name, creation) VALUES (?, ?)`, [data.name, data.date]);
+      db.query(`INSERT INTO ${data.target} (name, creation) VALUES (?, ?)`, [data.value, data.date]);
       break
     case "DELETE":
       db.execute(`DELETE FROM ${data.target} WHERE id = ${data.id};`);
       break
     case "EDIT":
-      db.execute(`UPDATE ${data.target} SET name = ? WHERE id = ?`, [data.name, data.id]); //corrigir bugs e adicionar mais configurações
+      db.query(`UPDATE ${data.target} SET ${data.column} = ? WHERE id = ?`,[data.value,data.id]); //corrigir bugs e adicionar mais configurações
       break
   }
 }
-
+//corrigir bugs
 function sendData(c) {
   return async function () {
     const body = await c.request.body();
@@ -117,55 +114,58 @@ function sendData(c) {
   }
 }
 
-app.use(async (context) => {
-  try {
-    const path = new URL(context.request.url).pathname;
-    switch (path) {
-      case "/login":
-        await send(context, './view/login.ejs');
-        break;
-      case "/signup":
-        await send(context, './view/signUp.ejs');
-        break;
-      case "/receber":
-        context.response.body = { chats: db.query("SELECT name, id FROM chats") };
-        break;
-      case "/enviar":
-        await sendData(context)();
-        break;
-      default:
-        await send(context, path, {
-          root: `${Deno.cwd()}/public`,
-          index: "index.html",
-        });
+const router = new Router();
+router
+  .get("/", async ctx => await send(ctx, "./public/index.html"))
+  /*.get("/signin", async ctx => {
+    return await signIn(request, oauthConfig);
+  })
+  .get("callback", async ctx => {
+    const code = ctx.request.url.searchParams.get("code");
+    const token = await oauth.getToken(code);
+  })
+  .get("/protected", authenticate, async ctx => {
+    return await getSessionId(request) === undefined
+        ? new Response("Unauthorized", { status: 401 })
+        : new Response("You are allowed");
+  })
+  .get("/signout", async ctx => {
+    return await signOut(request);
+  })*/
+  .post("/enviar", async ctx => await sendData(ctx)() /*corrigir bugs*/)
+  .get("/receber", ctx => ctx.response.body = { chats: db.query("SELECT name, id, img FROM chats") })
+  .get("/:item", async ctx => {
+    try {
+      const filePath = `./public/pages/${ctx.params.item}.html`.replace(/\\/g, "/");
+      await send(ctx, filePath);
+    } catch (error) {
+      try {
+        const fileContent = await Deno.readTextFile(`./view/err/${error.status}.html`);
+        ctx.response.body = fileContent;
+      } catch (error) {
+        ctx.response.body = `<html><head><title>${error.status}</title></head><body><h1>${error.status}</h1></body></html>`;
+      }
+      ctx.response.status = error.status;
     }
-  } catch (error) {
-    function HTTPError(e, m = e) {
-      context.response.status = e;
-      context.response.body = m;
+  })
+  .get("/:folder/:item", async (ctx, next) => {
+    if (ctx.request.headers.get("Referer")?.includes("http://")) {
+      try {
+        await send(ctx, `./public/${ctx.params.folder}/${ctx.params.item}`);
+      } catch (error) {
+        ctx.response.status = error.status;
+      }
+    } else {
+      ctx.response.status = 403;
+      const fileContent = await Deno.readTextFile("./view/err/403.html");
+      ctx.response.body = fileContent;
     }
-    switch (error.status) {
-      case 404:
-        HTTPError(error.status, "Not Found ( ﾉ ﾟｰﾟ)ﾉ");
-        await send(context, './view/404.htm');
-        break;
-      case 403:
-        HTTPError(error.status, "Forbidden");
-        await send(context, './view/403.htm');
-        break;
-      case 500:
-        HTTPError(error.status, "Internal Server Error :(");
-        await send(context, './view/500.htm');
-        break;
-      default:
-        HTTPError(error.status);
-    }
-  }
-});
+  })
 
-//app.use(router.routes());
-//app.use(router.allowedMethods());
-app.use(errorHandler);
+app
+  .use(router.routes())
+  .use(router.allowedMethods())
+  .use(errorHandler);
 
 console.log('HTTP server running. Access it at: ' + yellow(`http://localhost:${port}/`));
 

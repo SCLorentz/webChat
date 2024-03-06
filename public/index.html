@@ -1,25 +1,22 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta name="theme-color" content="#794119" />
+    <meta name="theme-color" content="#41230e" />
     <!--PWA-->
-    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="manifest" href="/pwa/manifest.webmanifest">
     <!--THEME-->
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="white">
-    <meta name="theme-color" media="(prefers-color-scheme: dark)"  content="black">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#794119">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)"  content="#0f1a19">
     <!--desc-->
     <meta name="description" content="Chat">
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <meta charset="UTF-8">
     <!--WaveSurfer-->
-    <script src="https://unpkg.com/wavesurfer.js@7/dist/wavesurfer.min.js"></script>
+    <script src="/script/wavesurfer.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!--name & ico-->
-    <link id="page-ico" rel="icon" type="image/x-icon" href="/img/chat.ico">
-    <!--temporariamente usando daniel como favicon, não consigo definir a imagem de icon-->
+    <link id="page-ico" rel="icon" type="image/x-icon" href="/icon/chat.ico">
     <title>Chat</title><!--username-->
-    <!--my css-->
+    <!--css-->
     <link rel="stylesheet" href="/style/style.css">
 </head>
 <body translate="no">
@@ -66,7 +63,7 @@
             </div>
         </nav>
         <div id="contatos">
-            <a class="material-symbols-outlined" id="favorites" href="/favorites.html">star</a>
+            <a class="material-symbols-outlined" id="favorites" href="/favorites">star</a>
         </div>
     </nav>
     <!--New Group Menu-->
@@ -91,7 +88,7 @@
     </div>
     <!--settings-->
     <div id='settingsMenu'>
-        <span id='closeSettings' class="material-symbols-outlined" tabindex="0">close</span>
+        <button id='closeSettings' class="material-symbols-outlined" tabindex="0">close</button>
         <a href="/help" id="help" class="material-symbols-outlined" title="help">help</a>
         <div id="themeSelector">
             <h2 style="width: -webkit-fill-available;margin: 0;">My Themes</h2>
@@ -114,6 +111,7 @@
         </div>
     </div>
     <div id="popup"></div>
-    <script src="/main.js" type="module"></script>
+    <script src="/script/main.js" type="module"></script>
+    <script src="/script/interactive.js" type="module"></script>
 </body>
 </html>
