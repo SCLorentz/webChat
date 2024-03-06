@@ -109,6 +109,10 @@ class chat {
             e.chatConfig.disp = v ? 'grid' : 'none';
             e.chatElement.disp = v ? 'none' : 'grid';
         }
+        /*const c = (v,  { chatConfig, chatElement } = this) => {
+            chatConfig.disp = v ? 'grid' : 'none';
+            chatElement.disp = v ? 'none' : 'grid';
+        }*/
         this.editGroup();
         this.GuestList();
     }
@@ -224,21 +228,17 @@ class chat {
         this.imgInput.disp = 'none';
         //this.picMenuOff.element.addEventListener('click',()=> this.picMenuOff.element.disp = "none");
         this.picMenu = Obj('div', ['picMenu'], this.chatConfig);
-        this.buttonConfigs = [
+        this.buttons = [
             { name: 'picMenuUpload', ico: 'upload' },
             { name: 'picMenuCam', ico: 'photo_camera' },
             { name: 'picMenuNew', ico: 'add' },
             { name: 'picMenuEdit', ico: 'edit' },
             { name: 'picMenuDel', ico: 'delete' }
         ];
-        this.buttonConfigs.forEach(btn => {
-            this[btn.name] = Obj('button', ['picMenuBtn', 'material-symbols-outlined'], this.picMenu, btn.ico);
-        });
+        this.buttons.forEach(btn => this[btn.name] = Obj('button', ['picMenuBtn', 'material-symbols-outlined'], this.picMenu, btn.ico));
         document.addEventListener('click', e => {
             e.stopPropagation();
-            if (!this.picMenu.contains(e.target) && e.target !== this.picMenu && e.target !== this.img && this.picMenu.disp === 'flex') {
-                this.picMenu.disp = 'none';
-            }
+            if (!this.picMenu.contains(e.target) && e.target !== this.picMenu && e.target !== this.img) this.picMenu.disp = '';
         })
         this.img.addEventListener('click', () => {
             this.picMenu.disp = "flex";
@@ -291,6 +291,21 @@ class chat {
         })
         function changeImg(c) {
             c.thumbBtnImg.src = c.img.src = c.thumbPicture.src = c.thumb;
+            fetch('/enviar', {
+                method: 'POST', // Método da requisição (pode ser GET, POST, PUT, DELETE, etc.)
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    type: "EDIT",
+                    target: "chats",
+                    column: "img",
+                    value: c.thumb,
+                    id: c.id.replace(/^chat:\s*/, "")
+                })
+            }).then(response => response.json())
+                .then(responseData => console.log(responseData))
+                .catch(error => console.error(error))
         }
         //Criar editor svg com animações pre-definidas e por script
         //rename group
@@ -322,7 +337,7 @@ class chat {
         this.delete.title = 'burn everything';
         this.delete.onclick = () => {
             if (confirm("deseja apagar este grupo?")) {
-                ["chatElement","chatConfig","thumbnail"].forEach(e => this[e].parentNode.removeChild(this[e]))
+                ["chatElement", "chatConfig", "thumbnail"].forEach(e => this[e].parentNode.removeChild(this[e]))
                 chats.splice(this.id - 1, 1);
                 //server DB
                 fetch('/enviar', {
@@ -354,7 +369,8 @@ class chat {
                 body: JSON.stringify({
                     type: "EDIT",
                     target: "chats",
-                    name: this.rename.value,
+                    column: "name",
+                    value: this.rename.value,
                     id: this.id.replace(/^chat:\s*/, "")
                 })
             }).then(response => response.json())
@@ -649,7 +665,7 @@ class msg {
         for (const rule of formatRules) {
             this.content = this.content.replace(rule.regex, (match, p1, p2, p3) => {
                 let l = p2.startsWith(' ') ? '&nbsp;' : '',
-                t = p2.endsWith(' ') ? '&nbsp;' : '';
+                    t = p2.endsWith(' ') ? '&nbsp;' : '';
                 p2 = p2.trim().replace(/\s+/g, ' '); // Substitui múltiplos espaços por um único espaço
                 return `<${rule.tag} ${rule.style ? `style='${rule.style}'` : ''}>${l}${p2}${t}</${rule.tag}>`;
             });

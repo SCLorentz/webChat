@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(data => {
             //console.log(data)
             for (let i = 0; i < data.chats.length; i++) {
-                chats.push(new chat(data.chats[i][1], data.chats[i][0], '/img/groupImg.svg', [user, alunos[1]], [user], true));
+                chats.push(new chat(data.chats[i][1], data.chats[i][0], data.chats[i][2], [user, alunos[1]], [user], true));
             }
         })
         .catch(error => console.error(error))

@@ -84,13 +84,13 @@ db.query(`
 function DBData(data) {
   switch (data.type) {
     case "CREATE":
-      db.query(`INSERT INTO ${data.target} (name, creation) VALUES (?, ?)`, [data.name, data.date]);
+      db.query(`INSERT INTO ${data.target} (name, creation) VALUES (?, ?)`, [data.value, data.date]);
       break
     case "DELETE":
       db.execute(`DELETE FROM ${data.target} WHERE id = ${data.id};`);
       break
     case "EDIT":
-      db.execute(`UPDATE ${data.target} SET name = ? WHERE id = ?`, [data.name, data.id]); //corrigir bugs e adicionar mais configurações
+      db.query(`UPDATE ${data.target} SET ${data.column} = ? WHERE id = ?`,[data.value,data.id]); //corrigir bugs e adicionar mais configurações
       break
   }
 }
@@ -133,7 +133,7 @@ router
     return await signOut(request);
   })*/
   .post("/enviar", async ctx => await sendData(ctx)() /*corrigir bugs*/)
-  .get("/receber", ctx => ctx.response.body = { chats: db.query("SELECT name, id FROM chats") })
+  .get("/receber", ctx => ctx.response.body = { chats: db.query("SELECT name, id, img FROM chats") })
   .get("/:item", async ctx => {
     try {
       const filePath = `./public/pages/${ctx.params.item}.html`.replace(/\\/g, "/");

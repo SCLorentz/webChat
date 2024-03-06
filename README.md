@@ -1,8 +1,10 @@
 ﻿# chat Ⅲ
 
-Version: 3.19.1
+Version: 3.20.0
 
 dockerName: chat3
+
+tentar usar o react no fron-end
 
 ## Recomendações de bibliotecas (favor revisar):
 
