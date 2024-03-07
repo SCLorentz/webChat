@@ -27,3 +27,5 @@ tentar adicionar compatibilidade com o docker
 ## ferramentas
 
 Imagem de usuario padrão --> imagem do google
+
+Hoje, dia 06/03/24 foi um dia especial, resolvi muitos bugs do meu site e ainda consegui criar uma pagina de login, futuramente adicionarei-a ao meu site. Porém, infelizmente, tive que apagar o diretorio original, pois o git começou a apresentar muitos erros e acabou regredindo meu projeto para a versão 3.15.0, algumas coisas que iria publicar na versão 3.20.1 foram perdidas. Estou tentando clonar o repositorio do github, mas como dito anteriormente, o meu git está apresentando falhas.
