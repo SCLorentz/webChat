@@ -310,7 +310,8 @@ class chat {
         }
         //Criar editor svg com animações pre-definidas e por script
         //rename group
-        this.rename = Obj('textarea', ['renameGroup'], this.chatConfig, 'rename');
+        this.rename = Obj('input', ['renameGroup'], this.chatConfig, 'rename');
+        this.rename.type = "text";
         this.rename.spellcheck = false;
         this.rename.value = this.name;
         this.rename.addEventListener("paste", e => {
