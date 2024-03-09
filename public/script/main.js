@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-window no-window-prefix no-unused-vars prefer-const
 //Aqui ficam todas as funções mais complexas da pagina (islands of interactivity)
 
 const chats = [],
@@ -617,7 +618,7 @@ class msg {
                         },
                     })
                     wavesurfer.on('ready', () => {
-                        var dur = wavesurfer.getDuration(),
+                        const dur = wavesurfer.getDuration(),
                             minutes = Math.floor(dur / 60),
                             seconds = Math.floor(dur % 60);
                         minutes = (minutes < 10 ? "0" : "") + minutes;
@@ -625,7 +626,7 @@ class msg {
                         playtime.innerText = minutes + ":" + seconds;
                     })
                     wavesurfer.on('timeupdate', () => {
-                        var currentTime = wavesurfer.getDuration() - wavesurfer.getCurrentTime(),
+                        const currentTime = wavesurfer.getDuration() - wavesurfer.getCurrentTime(),
                             minutes = Math.floor(currentTime / 60),
                             seconds = Math.floor(currentTime % 60);
                         minutes = (minutes < 10 ? "0" : "") + minutes;

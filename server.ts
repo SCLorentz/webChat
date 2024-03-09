@@ -1,15 +1,15 @@
-import { Application, Context, send, Router } from 'https://deno.land/x/oak/mod.ts'; //Servidor
-import { bold, cyan, green, yellow } from "https://deno.land/std@0.200.0/fmt/colors.ts"; //console
-import { DB } from "https://deno.land/x/sqlite/mod.ts"; //database
+// deno-lint-ignore no-unused-vars
+import { Application, Context, send, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts"; //Servidor
+import { yellow } from "https://deno.land/std@0.200.0/fmt/colors.ts"; //console
+import { DB } from "https://deno.land/x/sqlite@v3.8/mod.ts"; //database
 //import { compare, hash } from "https://deno.land/x/bcrypt/mod.ts"; //criptografia
 
 //import router from "./routes.ts";
 import { errorHandler } from "./routes/errorHandler.ts";
 
-const port = 8080;
-const app = new Application({ keys: ["data"] });
-
-const db = new DB('./database/data.db');
+const port = 8080,
+app = new Application({ keys: ["data"] }),
+db = new DB('./database/data.db');
 //const ejs = require('ejs');
 
 //chats
@@ -148,7 +148,7 @@ router
       ctx.response.status = error.status;
     }
   })
-  .get("/:folder/:item", async (ctx, next) => {
+  .get("/:folder/:item", async ctx => {
     if (ctx.request.headers.get("Referer")?.includes("http://")) {
       try {
         await send(ctx, `./public/${ctx.params.folder}/${ctx.params.item}`);

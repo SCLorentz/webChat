@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-window no-window-prefix prefer-const
 //Aqui ficam todas as propriedades interativas da pagina (islands of interactivity)
 
 import { chat, chats, user, alunos } from '/script/main.js';
