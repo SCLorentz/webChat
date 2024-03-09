@@ -10,7 +10,6 @@ import { errorHandler } from "./routes/errorHandler.ts";
 const port = 8080,
 app = new Application({ keys: ["data"] }),
 db = new DB('./database/data.db');
-//const ejs = require('ejs');
 
 //chats
 db.execute(`
