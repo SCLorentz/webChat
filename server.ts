@@ -1,15 +1,18 @@
-// deno-lint-ignore no-unused-vars
 import { Application, Context, send, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts"; //Servidor
 import { yellow } from "https://deno.land/std@0.200.0/fmt/colors.ts"; //console
 import { DB } from "https://deno.land/x/sqlite@v3.8/mod.ts"; //database
 //import { compare, hash } from "https://deno.land/x/bcrypt/mod.ts"; //criptografia
 
 //import router from "./routes.ts";
-import { errorHandler } from "./routes/errorHandler.ts";
+//import { errorHandler } from "./routes/errorHandler.ts";
 
 const port = 8080,
 app = new Application({ keys: ["data"] }),
 db = new DB('./database/data.db');
+
+interface CustomContext extends Context {
+  error: (message: string, error: Error) => void;
+}
 
 //chats
 db.execute(`
@@ -80,7 +83,7 @@ db.query(`
 
 //BLOB --> dados binarios para armazenamento de arquivos
 
-function DBData(data) {
+function DBData(data: Record<string, string>) {
   switch (data.type) {
     case "CREATE":
       db.query(`INSERT INTO ${data.target} (name, creation) VALUES (?, ?)`, [data.value, data.date]);
@@ -94,9 +97,9 @@ function DBData(data) {
   }
 }
 //corrigir bugs
-function sendData(c) {
+function sendData(c: CustomContext) {
   return async function () {
-    const body = await c.request.body();
+    const body = c.request.body();
     if (body.type === "json") {
       const data = await body.value;
       try {
@@ -131,7 +134,7 @@ router
   .get("/signout", async ctx => {
     return await signOut(request);
   })*/
-  .post("/enviar", async ctx => await sendData(ctx)() /*corrigir bugs*/)
+  .post("/enviar", async ctx => await sendData(ctx)())
   .get("/receber", ctx => ctx.response.body = { chats: db.query("SELECT name, id, img FROM chats") })
   .get("/:item", async ctx => {
     try {
@@ -164,7 +167,7 @@ router
 app
   .use(router.routes())
   .use(router.allowedMethods())
-  .use(errorHandler);
+  //.use(errorHandler); --> corrigir os erros de type
 
 console.log('HTTP server running. Access it at: ' + yellow(`http://localhost:${port}/`));
 
