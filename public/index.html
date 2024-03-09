@@ -59,7 +59,7 @@
                 <button class="material-symbols-outlined" tabindex="0" id='settings'>settings</button>
                 <button class="material-symbols-outlined" tabindex="0" id="home"
                     href="#User Name" style="text-decoration: none;">extension</button>
-                <button class="material-symbols-outlined" id="add">add</button>
+                <button class="material-symbols-outlined" id="add" popovertarget="newChatMenu">add</button>
             </div>
         </nav>
         <div id="contatos">
@@ -67,10 +67,9 @@
         </div>
     </nav>
     <!--New Group Menu-->
-    <div id="newChatMenu">
+    <div id="newChatMenu" popover>
         <h2 class='newGroupCreatorTitle'>Novo Grupo</h2>
-        <button class="material-symbols-outlined" id="exitCreateGroupMenu" tabindex="0"
-            onclick="this.parentNode.style.display = 'none'">close</button>
+        <button class="material-symbols-outlined" id="exitCreateGroupMenu" tabindex="0" onclick="this.parentNode.style.display = 'none'">close</button>
         <div id="menuInputs">
             <div style='display: flex;flex-direction: column;width: 100%;justify-content: center;'>
                 <input type="text" id="nameInput" placeholder="Escolha um Nome">
@@ -109,6 +108,9 @@
                 <!--Os temas personalizados podem mudar cores e desings basicos sem alterar muito o layout-->
             </button>
         </div>
+        <!--implementar em outros recursos html-->
+        <button popovertarget="heheBoy" class="material-symbols-outlined" tabindex="0">close</button>
+        <div popover id="heheBoy" style="width: 50%;height: 50%;"></div>
     </div>
     <div id="popup"></div>
     <script src="/script/main.js" type="module"></script>

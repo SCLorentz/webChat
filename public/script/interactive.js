@@ -91,10 +91,6 @@ document.addEventListener("DOMContentLoaded", () => {
 //criar chat
 const nameInput = document.getElementById('nameInput');
 document.getElementById('add').onclick = () => {
-    //adicionar context menu: fixar / marcar não lida / silenciar
-    groupCreator.style.display = 'grid';
-    groupCreator.style.left = `calc(50% - ${groupCreator.offsetWidth / 2}px)`;
-    //
     nameInput.addEventListener("keydown", e => {
         if (nameInput.value.length > 16 && e.key !== "Backspace" && e.key !== 13 && e.key !== 37 && e.key !== 39 && e.key !== 9 && e.key !== 116 && nameInput.selectionStart == nameInput.selectionEnd) {
             e.preventDefault();
@@ -131,7 +127,6 @@ document.getElementById('create').onclick = () => {
             .catch(error => console.error(error))
             .finally(() => {
                 chats.push(new chat(Math.random(), name, '/img/groupImg.svg', [user, alunos[1]], [user], true)); //obter ip gerado pelo DB
-                groupCreator.hideOnClick();
                 nameInput.value = '';
             });
     }

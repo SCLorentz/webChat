@@ -579,46 +579,45 @@ button {
     border: 2px solid;
     border-image: linear-gradient(to right, var(--theme-5), #0000ff00);
     border-image-slice: 1;
-    position: fixed;
-    z-index: 1;
     backdrop-filter: url(./filter.svg#waterEffect) blur(3px) brightness(0.8);
     width: -webkit-fill-available;
-    height: -webkit-fill-available;
+    height: 80%;
     color: white;
     padding: 50px 15px 15px 15px;
     user-select: none;
-    margin: 70px 0;
     box-shadow: 4px 4px 60px black;
     grid-template-columns: 1.2fr 0.8fr;
     grid-template-rows: repeat(2, 1fr);
     grid-column-gap: 0px;
     grid-row-gap: 0px;
-    display: none;
     max-width: 800px;
-    z-index: 2;
 }
+/*@container (min-width: 700px) {
+    #newChatMenu {
+        propriedades
+    }
+}*/
 
 #selecUsers {
     grid-area: 1 / 2 / 3 / 3;
     border-left: 3px solid;
     padding: 10px;
+    display: inline-flex;
 }
 
 #menuInputs {
-    display: flex;
+    display: inline-flex;
     padding: 10px;
-}
-
-#menuInputs img {
-    height: 200px;
-    border-radius: 50%;
-    -webkit-user-drag: none;
-}
-
-#menuInputs button {
-    background: none;
-    border: none;
-    outline: none;
+    button {
+        background: none;
+        border: none;
+        outline: none;
+    }
+    img {
+        height: 200px;
+        border-radius: 50%;
+        -webkit-user-drag: none;
+    }
 }
 
 #nameInput {
@@ -767,6 +766,12 @@ input:-internal-autofill-selected {
     border-radius: 0.5rem;
     /*min-height: 60px;*/
     /*Aplicar formatação de raio de borda para conectar menagens umas as outras como o google chat*/
+    video {
+        width: 100%;
+        border-radius: 0.5rem;
+        max-width: 350px;
+        /*aspect ratio*/
+    }
 }
 
 .msgList {
@@ -857,12 +862,6 @@ input:-internal-autofill-selected {
     max-height: 350px;
     min-width: 200px;
     /*min-height: 200px;*/
-}
-
-.msg video {
-    width: 100%;
-    border-radius: 0.5rem;
-    max-width: 350px;
 }
 
 .msgArea {
