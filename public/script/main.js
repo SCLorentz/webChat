@@ -2,7 +2,7 @@
 
 const chats = [],
     alunos = [],
-    user = { nome: "you", sobrenome: "user", img: 'img/user.svg', email: `${"user"}@example.com` },
+    user = { nome: "you", sobrenome: "user", img: '/img/User.svg', email: `${"user"}@example.com` },
     popup = document.getElementById('popup'),
     msgContext = Obj('div', ['msgContext'], document.body, "context");
 
@@ -25,7 +25,7 @@ for (let i = 0; i < 8; i++) {
     const aluno = {
         nome: 'nome' + i,
         sobrenome: 'sobrenome' + i,
-        img: 'img/user.svg',
+        img: '/img/User.svg',
         email: `nome${i}@example.com`,
         id: 1 + i,
     };
