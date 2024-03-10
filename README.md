@@ -2,8 +2,6 @@
 
 Version: 3.23.0
 
-tentar usar o react no front-end
-
 tentar adicionar compatibilidade com o docker
 
 ## Recomendações de bibliotecas (favor revisar):
