@@ -3,7 +3,7 @@
 
 import { chat, chats, user, alunos } from '/script/main.js';
 const search = document.getElementById('pesquisar'),
-    groupCreator = document.getElementById('newChatMenu');
+    creator = document.getElementById('newChatMenu');
 
 /*if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('offline.js');
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     configBtn.addEventListener('mouseover', rotateButton('10deg'));
     configBtn.addEventListener('mouseleave', rotateButton('0deg'));
     configBtn.addEventListener('click', () => {
-        if (groupCreator.style.display !== "grid") {
+        if (creator.style.display !== "grid") {
             settings.style.display = 'flex';
             requestAnimationFrame(() => settings.style.top = '0%');
         }
@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => settings.style.display = 'none', 1000);
     });
     search.addEventListener('click', e => {
-        if (groupCreator.style.display !== "grid") {
+        if (creator.style.display !== "grid") {
             e.stopPropagation();
             let b = search.lastElementChild;
             b.style.display = "block";
@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
 const nameInput = document.getElementById('nameInput');
 document.getElementById('add').onclick = () => {
     nameInput.addEventListener("keydown", e => {
-        if (nameInput.value.length > 16 && e.key !== "Backspace" && e.key !== 13 && e.key !== 37 && e.key !== 39 && e.key !== 9 && e.key !== 116 && nameInput.selectionStart == nameInput.selectionEnd) {
+        if (nameInput.value.length > 20 && e.key !== "Backspace" && e.key !== 13 && e.key !== 37 && e.key !== 39 && e.key !== 9 && e.key !== 116 && nameInput.selectionStart == nameInput.selectionEnd) {
             e.preventDefault();
         }
     });
@@ -108,7 +108,7 @@ document.getElementById('add').onclick = () => {
 };
 document.getElementById('create').onclick = () => {
     const name = nameInput.value.replace(/^\W+/, '');
-    if (name.value != '' && name.length < 16) {
+    if (name.value != '' && name.length < 20) {
         fetch('/enviar', {
             method: 'POST', // Método da requisição (pode ser GET, POST, PUT, DELETE, etc.)
             headers: {

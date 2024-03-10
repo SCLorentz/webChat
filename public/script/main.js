@@ -53,9 +53,9 @@ class chat {
         this.chatElement.id = this.id;
         //this.chatElement.addEventListener('contextmenu', e => e.preventDefault());
         this.thumbDiv = Obj('div', ['thumbDiv'], this.chatElement);
-        this.arrowBack = Obj('button', ['arrowBack', 'material-symbols-outlined'], this.thumbDiv, "arrow_back_ios"); //mobile
+        Obj('button', ['arrowBack', 'material-symbols-outlined'], this.thumbDiv, "arrow_back_ios"); //mobile
         //thumbPicture
-        this.thumbPicture = Obj('img', ['thumbPicture', 'chatImg'], this.thumbDiv, "chat image");
+        this.thumbPicture = Obj('img', ['chatImg'], this.thumbDiv, "chat image");
         this.thumbPicture.src = this.thumb;
         this.thumbDiv.innerHTML += this.name;
         this.thumbPicture = this.thumbDiv.children[1];
@@ -119,15 +119,16 @@ class chat {
     }
     Thumb() {
         const menu = document.getElementById('contatos');
-        this.thumbnail = Obj('button', ['thumbnail'], menu, this.name);
+        this.thumbnail = Obj('button', ['thumbnail'], menu);
         //
-        this.thumbBtnImg = Obj('img', ['chatImg'], this.thumbnail, this.name)
-        this.thumbBtnImg.src = this.thumb;
+        this.thumbBtnImg = Obj('img', ['chatImg'], this.thumbnail, this.name).src = this.thumb;
+        Obj('span',[],this.thumbnail, this.name);
         //
         this.thumbnail.onclick = () => {
             document.querySelectorAll('.chat, .chatConfigs, .picMenu, .newGuestMenu').forEach(e => e.disp = 'none');
             this.chatElement.disp = 'grid';
             localStorage.setItem('lastChat', this.id);
+            document.title = `Chat | ${this.name}`;
             //thumb
             document.querySelectorAll('.thumbnail').forEach(e => e.style.background = '');
             this.thumbnail.style.background = '#0000002b';
@@ -316,14 +317,14 @@ class chat {
         this.rename.value = this.name;
         this.rename.addEventListener("paste", e => {
             const c = e.clipboardData || window.Clipboard;
-            if (c.getData("text").length + this.rename.value.length > 17) {
+            if (c.getData("text").length + this.rename.value.length > 20) {
                 e.preventDefault();
-                alert('texto muito grande, você só tem mais ' + (17 - this.rename.value.length) + ' caracteres até o limite');
+                alert('texto muito grande, você só tem mais ' + (20 - this.rename.value.length) + ' caracteres até o limite');
             }
         });
         this.rename.addEventListener("keydown", e => {
             const keyList = [37, 39, 46, 9, 8, 116]
-            if (this.rename.value.length > 16 && !keyList.includes(e.keyCode) && this.rename.selectionStart == this.rename.selectionEnd) {
+            if (this.rename.value.length > 20 && !keyList.includes(e.keyCode) && this.rename.selectionStart == this.rename.selectionEnd) {
                 e.preventDefault();
             }
             if (e.keyCode == 13) {

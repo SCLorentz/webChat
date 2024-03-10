@@ -313,13 +313,6 @@ button {
     grid-area: 1 / 2 / 3 / 3;
 }
 
-.thumbPicture {
-    height: 50px;
-    width: 50px;
-    box-shadow: inset 4px 4px 15px #0000006b;
-    margin: 0 5px 0 0;
-}
-
 .thumbDiv {
     user-select: none;
     display: flex;
@@ -331,7 +324,14 @@ button {
     backdrop-filter: blur(5px);
     position: fixed;
     width: -webkit-fill-available;
-    font-size: 23px;
+    font-size: 18px;
+
+    img {
+        height: 50px;
+        width: 50px;
+        box-shadow: inset 4px 4px 15px #0000006b;
+        margin: 0 5px 0 0;
+    }
 }
 
 #salvos {
@@ -552,18 +552,24 @@ button {
     padding: 5px;
     height: 70px;
     display: flex;
-    flex-direction: row-reverse;
-    justify-content: flex-end;
+    flex-direction: row;
+    justify-content: flex-start;
     align-items: center;
     user-select: none;
     transition: all 1s ease;
     font-size: 18px;
+    white-space: nowrap;
 
     img {
         width: 60px;
         height: 60px;
         box-shadow: inset 4px 4px 15px #0000006b;
         margin: 0 5px 0 0;
+    }
+
+    span {
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 }
 
@@ -586,6 +592,7 @@ button {
     padding: 50px 15px 15px 15px;
     user-select: none;
     box-shadow: 4px 4px 60px black;
+    display: grid;
     grid-template-columns: 1.2fr 0.8fr;
     grid-template-rows: repeat(2, 1fr);
     grid-column-gap: 0px;
@@ -600,14 +607,15 @@ button {
 }*/
 
 #selecUsers {
-    grid-area: 1 / 2 / 3 / 3;
     border-left: 3px solid;
     padding: 10px;
-    display: inline-flex;
+    margin-top: 25px;
+    display: flex;
+    grid-area: 1 / 2 / 3 / 3;
 }
 
 #menuInputs {
-    display: inline-flex;
+    display: flex;
     padding: 10px;
 
     button {
@@ -679,16 +687,27 @@ input:-internal-autofill-selected {
 }
 
 #create {
-    width: 40px;
+    width: fit-content;
     height: 40px;
-    border-radius: 50%;
+    border-radius: 50rem;
     border: none;
     color: white;
     background: #040e0d;
     position: absolute;
-    left: calc(100% - 45px);
-    top: calc(0% + 5px);
+    right: 0;
+    top: 0;
+    margin: 5px;
     outline: none;
+    display: flex;
+    align-items: center;
+
+    span {
+        font-family: 'Roboto';
+        border-right: 2px solid;
+        font-size: 15px;
+        margin: 0 8px 0 0;
+        padding: 4px;
+    }
 }
 
 .inputChat {
