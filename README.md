@@ -1,6 +1,6 @@
 ﻿# chat Ⅲ
 
-Version: 3.22.1
+Version: 3.23.0
 
 tentar usar o react no front-end
 

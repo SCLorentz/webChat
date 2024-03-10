@@ -5,6 +5,8 @@ import { chat, chats, user, alunos } from '/script/main.js';
 const search = document.getElementById('pesquisar'),
     creator = document.getElementById('newChatMenu');
 
+console.log(userData)
+
 /*if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('offline.js');
 }*/ //offline
