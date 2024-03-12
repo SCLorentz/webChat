@@ -99,11 +99,15 @@ router
             );
             const contactsData = await contactsResponse.json();<--lidar com essa informação na database no server-side*/
             //send --> usar classe em "./custom/CHTML.ts"
-            const file = await Deno.readFile("./public/index.html");
-            let html = new TextDecoder().decode(file);
-            html = html.replace("<userData/>", `<script>const userData = ${JSON.stringify(userData)}</script>`);
-            ctx.response.headers.set("Content-Type", "text/html");
-            ctx.response.body = html;
+            if(Math.floor(Math.random() * 1000000000000) == 1) {
+                await send(ctx, "./view/err/777.html")
+            } else {
+                const file = await Deno.readFile("./public/index.html");
+                let html = new TextDecoder().decode(file);
+                html = html.replace("<userData/>", `<script>const userData = ${JSON.stringify(userData)}</script>`);
+                ctx.response.headers.set("Content-Type", "text/html");
+                ctx.response.body = html;
+            }
         } else {
             // Construir a URL para o redirecionamento de autorização e obter um codeVerifier
             const { uri, codeVerifier } = await oauth2Client.code.getAuthorizationUri();
