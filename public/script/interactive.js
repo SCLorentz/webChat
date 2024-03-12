@@ -5,8 +5,6 @@ import { chat, chats, user, alunos } from '/script/main.js';
 const search = document.getElementById('pesquisar'),
     creator = document.getElementById('newChatMenu');
 
-console.log(userData)
-
 /*if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('offline.js');
 }*/ //offline
@@ -94,6 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
 //criar chat
 const nameInput = document.getElementById('nameInput');
 document.getElementById('add').onclick = () => {
+    creator.style.display = "grid";
     nameInput.addEventListener("keydown", e => {
         if (nameInput.value.length > 20 && e.key !== "Backspace" && e.key !== 13 && e.key !== 37 && e.key !== 39 && e.key !== 9 && e.key !== 116 && nameInput.selectionStart == nameInput.selectionEnd) {
             e.preventDefault();

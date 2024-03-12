@@ -1,6 +1,6 @@
 ﻿# chat Ⅲ
 
-Version: 3.23.0
+Version: 3.24.0
 
 tentar adicionar compatibilidade com o docker
 
@@ -24,3 +24,9 @@ tentar adicionar compatibilidade com o docker
 para transição de paginas --> view Transitions API
 
 scroll --> animation-timeline
+
+## Login - ideias de serviços
+
+1. google
+2. microsoft
+3. github

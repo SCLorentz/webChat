@@ -590,9 +590,12 @@ button {
     height: 80%;
     color: white;
     padding: 50px 15px 15px 15px;
+    z-index: 2;
+    top: 50%;
+    translate: 0 -50%;
     user-select: none;
     box-shadow: 4px 4px 60px black;
-    display: grid;
+    display: none;
     grid-template-columns: 1.2fr 0.8fr;
     grid-template-rows: repeat(2, 1fr);
     grid-column-gap: 0px;

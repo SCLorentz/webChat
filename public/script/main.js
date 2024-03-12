@@ -3,7 +3,7 @@
 
 const chats = [],
     alunos = [],
-    user = { nome: "you", sobrenome: "user", img: '/img/User.svg', email: `${"user"}@example.com` },
+    user = { nome: userData.given_name, sobrenome: userData.family_name+" (você)", img: userData.picture, email: userData.email },
     popup = document.getElementById('popup'),
     msgContext = Obj('div', ['msgContext'], document.body, "context");
 
@@ -560,7 +560,7 @@ class msg {
             this.msgTop.style.marginBottom = "5px";
             this.msgOwnerPic = Obj('img', ['msgOwnerPic'/*, 'lazyload'*/], this.msgTop);
             this.msgOwner = Obj('p', ['msgOwner'], this.msgTop, `${this.owner.nome} ${this.owner.sobrenome}`);
-            this.msgOwnerPic.src = '/img/User.svg';
+            this.msgOwnerPic.src = this.owner.img;
         }
         if (LAST_MSG && LAST_MSG.time != this.time || this.chat.msgs.length == 0) {
             this.msgDate = Obj('p', ['msgDate'], this.msgTop, this.time);

@@ -4,11 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>login</title>
+    <!--css-->
+    <style>
+        @font-face {
+            font-family: "Roboto";
+            src: url("/font/RobotoMono-VariableFont_wght-1.ttf") format("truetype");
+            font-display: swap;
+        }
+        html {
+            height: -webkit-fill-available;
+        }
+
+        body {
+            background-image: url("/img/login.svg");
+            background-size: cover, contain;
+            user-select: none;
+            font-family: 'Roboto';
+            height: -webkit-fill-available;
+        }
+
+        div {
+            backdrop-filter: blur(10px);
+            border: 2px solid;
+            border-image: linear-gradient(-45deg, #2b577f73, #0000ff00);
+            border-image-slice: 1;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            flex-wrap: wrap;
+            align-content: center;
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+            padding: 30px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            translate: -50% -50%;
+        }
+        
+        h1 {
+            margin: 0 30px 60px 30px;
+        }
+    </style>
 </head>
 <body>
-    <input type="text" placeholder="email">
-    <input type="text" placeholder="senha">
-    <button>entrar</button>
-    <button>esqueci minha senha</button>
+    <div>
+        <h1>login</h1>
+        <nav>
+            <google/>
+            <!--<microsoft/>-->
+        </nav>
+    </div>
 </body>
 </html>

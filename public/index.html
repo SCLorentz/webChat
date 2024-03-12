@@ -66,7 +66,7 @@
         </div>
     </nav>
     <!--New Group Menu-->
-    <div id="newChatMenu" popover>
+    <dialog id="newChatMenu">
         <h2 class='newGroupCreatorTitle'>Novo Grupo</h2>
         <button class="material-symbols-outlined" id="exitCreateGroupMenu" tabindex="0" onclick="this.parentNode.style.display = 'none'">close</button>
         <div id="menuInputs">
@@ -86,7 +86,7 @@
         <div id="selecUsers">
             <h3 style="margin-top: 0;">users</h3>
         </div>
-    </div>
+    </dialog>
     <!--settings-->
     <div id='settingsMenu'>
         <button id='closeSettings' class="material-symbols-outlined" tabindex="0">close</button>
@@ -119,5 +119,11 @@
     <userData/>
     <script src="/script/main.js" type="module"></script>
     <script src="/script/interactive.js" type="module"></script>
+    <!--ideias de HTML personalizado-->
+    <!--
+        <chat/>
+        <msg/>
+        <thumb/>
+    -->
 </body>
 </html>
