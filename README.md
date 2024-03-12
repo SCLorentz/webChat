@@ -1,6 +1,6 @@
 ﻿# chat Ⅲ
 
-Version: 3.24.2
+Version: 3.24.3
 
 tentar adicionar compatibilidade com o docker
 
