@@ -121,7 +121,8 @@ class chat {
         const menu = document.getElementById('contatos');
         this.thumbnail = Obj('button', ['thumbnail'], menu);
         //
-        this.thumbBtnImg = Obj('img', ['chatImg'], this.thumbnail, this.name).src = this.thumb;
+        this.thumbBtnImg = Obj('img', ['chatImg'], this.thumbnail, this.name)
+        this.thumbBtnImg.src = this.thumb;
         Obj('span',[],this.thumbnail, this.name);
         //
         this.thumbnail.onclick = () => {
