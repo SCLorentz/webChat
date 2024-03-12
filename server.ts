@@ -111,7 +111,10 @@ router
             //usar classe em "./custom/CHTML.ts"
             const file = await Deno.readFile("./view/interface/login.html");
             let html = new TextDecoder().decode(file);
-            html = html.replace("<google/>", `<a href="${uri}"><img src="/img/google.svg" height="50"></a>`);
+            html = html
+            .replace(/<google\/>/g, `<a href="${uri}"><img src="/img/google.svg" height="50"></a>`)
+            .replace(/<microsoft\/>/g, `<a href="#microsoft" style="border-radius:0"><img src="/img/microsoft.svg" height="50" style="border-radius:0"></a>`)
+            .replace("<head>", `<head>\n<link rel="prefetch" href="${uri}">`)
             ctx.response.headers.set("Content-Type", "text/html");
             ctx.response.body = html;
         }

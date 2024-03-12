@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>login</title>
+    <link id="page-ico" rel="icon" type="image/x-icon" href="/img/key.svg">
     <!--css-->
     <style>
         @font-face {
@@ -41,19 +42,57 @@
             left: 50%;
             top: 50%;
             translate: -50% -50%;
+            transition: all 1s ease;
+        }
+
+        div:hover {
+            backdrop-filter: blur(20px);
+            h2 {
+                opacity: 1;
+            }
         }
         
         h1 {
-            margin: 0 30px 60px 30px;
+            margin: 0 30px 5px 30px;
+        }
+
+        h2 {
+            margin-bottom: 40px;
+            margin-top: 0;
+            color: #9b9a9a;
+            opacity: 0;
+            font-size: 20px;
+            transition: all 0.8s ease;
+        }
+
+        a {
+            display: flex;
+            background: #14395c;
+            border-radius: 5rem;
+            translate: -5px 5px;
+        }
+
+        img {
+            translate: 10px -10px;
+            border: 1px solid #ffffff40;
+            border-radius: 5rem;
+            backdrop-filter: brightness(0.3);
+            transition: all 1s ease;
+        }
+
+        a:hover img {
+            translate: 13px -13px;
         }
     </style>
 </head>
 <body>
     <div>
         <h1>login</h1>
-        <nav>
+        <h2>Entrar com:</h2>
+        <nav style="display: flex;">
             <google/>
-            <!--<microsoft/>-->
+            <span style="margin: 8px;"></span>
+            <microsoft/>
         </nav>
     </div>
 </body>

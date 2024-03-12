@@ -16,7 +16,7 @@ export class CustomHtml {
         try {
             const RFile = await Deno.readFile(this._file);
             this.html = new TextDecoder().decode(RFile);
-            this.html = this.html.replace(`<${this._replace}/>`, this._element);
+            this.html = this.html.replace(`<${this._replace}/>`, this._element); //<-- substituir globalmente
         } catch (error) {
             throw new Error(`Error reading file: ${error}`);
         }
