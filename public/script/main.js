@@ -168,13 +168,15 @@ class chat {
             guestInListImg.src = guest.img;
             //remove guest
             removeGuest.onclick = () => {
-                if (user == guest && confirm('deseja sair do grupo?')) {
-                    guestInList.parentNode.removeChild(guestInList);
-                    removeGuestFunc(guest, this)
-                } else if (user != guest && confirm('deseja remover ' + guest.nome + ' do grupo?')) {
-                    guestInList.parentNode.removeChild(guestInList);
-                    removeGuestFunc(guest, this)
+                if (user == guest && !confirm('deseja sair do grupo?')) {
+                    return
                 }
+                if (user != guest && !confirm('deseja remover ' + guest.nome + ' do grupo?')) {
+                    return
+                }
+                // remove
+                guestInList.parentNode.removeChild(guestInList);
+                removeGuestFunc(guest, this)
             }
             function removeGuestFunc(g, c) {
                 c.guests.splice(c.guests.indexOf(g), 1); //preciso adicionar o usuario removido para "add guests" novamente
@@ -281,6 +283,8 @@ class chat {
         //Dos arquivos
         this.picMenuUpload.onclick = () => this.imgInput.click();
         this.imgInput.addEventListener('change', e => {
+            //
+            this.picMenu.disp = "none";
             if (e.target.files[0].type.startsWith('image/svg+xml')) {
                 const reader = new FileReader();
                 reader.readAsDataURL(e.target.files[0]);
@@ -289,8 +293,9 @@ class chat {
                     //transformar em uma div para incorporar o svg diretamente na pagina, copiar conteudo do arquivo e colar dentro da div
                     changeImg(this);
                 }
-            } else alert('não é uma imagem tipo svg');
-            this.picMenu.disp = "none";
+                return
+            }
+            alert('não é uma imagem tipo svg');
         })
         function changeImg(c) {
             c.thumbBtnImg.src = c.img.src = c.thumbPicture.src = c.thumb;
@@ -390,7 +395,9 @@ class chat {
                 popup.style.top = '-20%';
                 popup.addEventListener('transitionend', () => popup.disp = "")
             }, 3000)
-        } else this.rename.value = this.name;
+            return
+        }
+        this.rename.value = this.name;
     }
     Msgs() {
         this.msgArea = Obj('div', ['msgArea'], this.chatElement);
@@ -423,13 +430,13 @@ class chat {
                 this.attach.disp = "none";
                 this.msgBalloon.disabled = true;
                 record = false;
-            } else {
-                this.inputAudio.classList.remove("recordingAudio");
-                this.inputAudio.innerText = "mic";
-                this.attach.disp = "inline-block";
-                this.msgBalloon.disabled = false;
-                record = true;
+                return
             }
+            this.inputAudio.classList.remove("recordingAudio");
+            this.inputAudio.innerText = "mic";
+            this.attach.disp = "inline-block";
+            this.msgBalloon.disabled = false;
+            record = true;
         }
         this.msgBalloon.addEventListener('drop', e => { //drop não funciona em this.msgArea, pesquisar o motivo e corrigir
             e.preventDefault();
@@ -442,15 +449,34 @@ class chat {
                 const reader = new FileReader();
                 reader.readAsDataURL(dataFile);
                 reader.onload = e => {
-                    if (dataFile.type.startsWith('image/')) {
+                    const dt = dataFile.type;
+                    /*switch (dt) {
+                        case dt.startsWith('image/'):
+                            this.preview = Obj('img', [], this.previewSlides);
+                            this.preview.src = e.target.result;
+                            break
+                        case dt.startsWith('audio/'):
+                            //lidar com uma biblioteca para deno
+                            this.preview = Obj('audio', [], this.previewSlides);
+                            this.preview.load();
+                            this.preview.src = e.target.result;
+                            break
+                        case dt.startsWith('video/'):
+                            //lidar com videos usando a API do youtube
+                            this.preview = Obj('video', [], this.previewSlides);
+                            this.preview.load();
+                            this.preview.src = e.target.result;
+                            break
+                    }*/
+                    if (dt.startsWith('image/')) {
                         this.preview = Obj('img', [], this.previewSlides);
                         this.preview.src = e.target.result;
-                    } else if (dataFile.type.startsWith('audio/')) {
+                    } else if (dt.startsWith('audio/')) {
                         //lidar com uma biblioteca para deno
                         this.preview = Obj('audio', [], this.previewSlides);
                         this.preview.load();
                         this.preview.src = e.target.result;
-                    } else if (dataFile.type.startsWith('video/')) {
+                    } else if (dt.startsWith('video/')) {
                         //lidar com videos usando a API do youtube
                         this.preview = Obj('video', [], this.previewSlides);
                         this.preview.load();
@@ -485,7 +511,10 @@ class chat {
                         this.previewSlides.disp = '';
                         this.msgs.push(new msg(this.msgBalloon.value, transferfiles, new Date(), user, this));
                         transferfiles = [];
-                    } else this.msgs.push(new msg(this.msgBalloon.value, null, new Date(), user, this));
+                        return
+                    }
+                    //
+                    this.msgs.push(new msg(this.msgBalloon.value, null, new Date(), user, this));
                 }
             }
         });
