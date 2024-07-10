@@ -3,7 +3,7 @@
 
 import { chat, chats, user, alunos } from '/script/main.js';
 const search = document.getElementById('pesquisar'),
-    creator = document.getElementById('newChatMenu');
+      creator = document.getElementById('newChatMenu');
 
 /*if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('offline.js');
@@ -52,23 +52,26 @@ document.addEventListener("DOMContentLoaded", () => {
     configBtn.addEventListener('mouseover', rotateButton('10deg'));
     configBtn.addEventListener('mouseleave', rotateButton('0deg'));
     configBtn.addEventListener('click', () => {
-        if (creator.style.display !== "grid") {
-            settings.style.display = 'flex';
-            requestAnimationFrame(() => settings.style.top = '0%');
+        if (creator.style.display == "grid") {
+            return
         }
+        settings.style.display = 'flex';
+        requestAnimationFrame(() => settings.style.top = '0%');
     });
     document.getElementById('closeSettings').addEventListener('click', () => {
         settings.style.top = '100%';
         setTimeout(() => settings.style.display = 'none', 1000);
     });
     search.addEventListener('click', e => {
-        if (creator.style.display !== "grid") {
-            e.stopPropagation();
-            let b = search.lastElementChild;
-            b.style.display = "block";
-            b.focus();
-            b.hideOnClick();
+        if (creator.style.display == "grid") {
+            return
         }
+        //
+        e.stopPropagation();
+        let b = search.lastElementChild;
+        b.style.display = "block";
+        b.focus();
+        b.hideOnClick();
     })
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
         document.getElementById('osTheme').style.background = "black";
@@ -100,10 +103,12 @@ document.getElementById('add').onclick = () => {
     });
     nameInput.addEventListener("paste", e => {
         const clipboardData = e.clipboardData || window.Clipboard;
-        if (clipboardData.getData("text").length + nameInput.value.length > 17) {
-            e.preventDefault();
-            alert('texto muito grande, você só tem mais ' + (17 - nameInput.value.length) + ' caracteres até o limite');
+        if (clipboardData.getData("text").length + nameInput.value.length < 17) {
+            return
         }
+        //
+        e.preventDefault();
+        alert('texto muito grande, você só tem mais ' + (17 - nameInput.value.length) + ' caracteres até o limite');
     });
     nameInput.addEventListener('drop', e => e.preventDefault());
 };

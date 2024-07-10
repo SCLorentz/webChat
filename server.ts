@@ -56,20 +56,22 @@ function DBData(data: Record<string, string>) {
 function sendData(c: CustomContext) {
     return async function () {
         const body = c.request.body();
-        if (body.type === "json") {
-            const data = await body.value;
-            try {
-                DBData(data);
-                c.response.body = { message: "Dados recebidos com sucesso! :)" };
-            } catch (error) {
-                c.error("Erro ao executar a consulta SQL:", error);
-                c.response.body = {
-                    message: "Erro ao inserir dados no banco de dados",
-                };
-            }
-        } else {
+        // is json? The response should be json
+        if (body.type != "json") {
             c.response.status = 400;
-            c.response.body = { message: "ooops, parece que algo deu errado! :(" };
+            c.response.body = { message: "Ooops, parece que algo deu errado. Sua resposta deveria estar no formato JSON!" };
+            return
+        }
+        const data = await body.value;
+        // check the db
+        try {
+            DBData(data);
+            c.response.body = { message: "Dados recebidos com sucesso! :)" };
+        } catch (error) {
+            c.error("Erro ao executar a consulta SQL: ", error);
+            c.response.body = {
+                message: "Erro ao inserir dados no banco de dados",
+            };
         }
     };
 }
