@@ -100,28 +100,29 @@ router
             const contactsData = await contactsResponse.json();<--lidar com essa informação na database no server-side*/
             //send --> usar classe em "./custom/CHTML.ts"
             if(Math.floor(Math.random() * 1000000000000) == 1) {
-                await send(ctx, "./view/err/777.html")
-            } else {
-                const file = await Deno.readFile("./public/index.html");
-                let html = new TextDecoder().decode(file);
-                html = html.replace("<userData/>", `<script>const userData = ${JSON.stringify(userData)}</script>`);
-                ctx.response.headers.set("Content-Type", "text/html");
-                ctx.response.body = html;
+                await send(ctx, "./view/err/777.html");
+                return
             }
-        } else {
-            // Construir a URL para o redirecionamento de autorização e obter um codeVerifier
-            const { uri, codeVerifier } = await oauth2Client.code.getAuthorizationUri();
-            ctx.state.session.flash("codeVerifier", codeVerifier);
-            //usar classe em "./custom/CHTML.ts"
-            const file = await Deno.readFile("./view/interface/login.html");
+            const file = await Deno.readFile("./public/index.html");
+            //
             let html = new TextDecoder().decode(file);
-            html = html
-            .replace(/<google\/>/g, `<a href="${uri}"><img src="/img/google.svg" height="50"></a>`)
-            .replace(/<microsoft\/>/g, `<a href="#microsoft" style="border-radius:0"><img src="/img/microsoft.svg" height="50" style="border-radius:0"></a>`)
-            .replace("<head>", `<head>\n<link rel="prefetch" href="${uri}">`)
+            html = html.replace("<userData/>", `<script>const userData = ${JSON.stringify(userData)}</script>`);
             ctx.response.headers.set("Content-Type", "text/html");
             ctx.response.body = html;
+            return
         }
+        // Construir a URL para o redirecionamento de autorização e obter um codeVerifier
+        const { uri, codeVerifier } = await oauth2Client.code.getAuthorizationUri();
+        ctx.state.session.flash("codeVerifier", codeVerifier);
+        //usar classe em "./custom/CHTML.ts"
+        const file = await Deno.readFile("./view/interface/login.html");
+        let html = new TextDecoder().decode(file);
+        html = html
+        .replace(/<google\/>/g, `<a href="${uri}"><img src="/img/google.svg" height="50"></a>`)
+        .replace(/<microsoft\/>/g, `<a href="#microsoft" style="border-radius:0"><img src="/img/microsoft.svg" height="50" style="border-radius:0"></a>`)
+        .replace("<head>", `<head>\n<link rel="prefetch" href="${uri}">`)
+        ctx.response.headers.set("Content-Type", "text/html");
+        ctx.response.body = html;
     })
     .get("/oauth2/callback", async (ctx) => {
         // Verificar se o codeVerifier está presente na sessão do usuário
@@ -173,11 +174,11 @@ router
             } catch (error) {
                 ctx.response.status = error.status;
             }
-        } else {
-            ctx.response.status = 403;
-            const fileContent = await Deno.readTextFile("./view/err/403.html");
-            ctx.response.body = fileContent;
+            return
         }
+        ctx.response.status = 403;
+        const fileContent = await Deno.readTextFile("./view/err/403.html");
+        ctx.response.body = fileContent;
     });
 
 const app = new Application<AppState>();

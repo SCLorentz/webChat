@@ -329,7 +329,7 @@ class chat {
             }
         });
         this.rename.addEventListener("keydown", e => {
-            const keyList = [37, 39, 46, 9, 8, 116]
+            const keyList = [37, 39, 46, 9, 8, 116];
             if (this.rename.value.length > 20 && !keyList.includes(e.keyCode) && this.rename.selectionStart == this.rename.selectionEnd) {
                 e.preventDefault();
             }
@@ -366,38 +366,39 @@ class chat {
         }
     }
     renameGroup() {
-        if (this.rename.value != this.name && this.rename.value.replace(/^\W+/, '') !== '') {
-            this.thumbDiv.childNodes[2].nodeValue = this.thumbnail.firstChild.nodeValue = this.name = this.rename.value;
-            this.rename.value = this.rename.value.replace(/^\W+/, '');
-            //
-            fetch('/enviar', {
-                method: 'POST', // Método da requisição (pode ser GET, POST, PUT, DELETE, etc.)
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    type: "EDIT",
-                    target: "chats",
-                    column: "name",
-                    value: this.rename.value,
-                    id: this.id.replace(/^chat:\s*/, "")
-                })
-            }).then(response => response.json())
-                .then(responseData => console.log(responseData))
-                .catch(error => console.error(error))
-            //corrigir bugs de renomeio muito rapido (0.3sec), aplicar delay para mostrar o pop-up
-            //mudar a mensagem do pop-up caso haja um erro como "erro ao enviar os dados"
-            popup.innerText = "Grupo Renomeado!";
-            popup.disp = "flex";
-            popup.style.top = '0%';
-            popup.style.left = `calc(50% - ${popup.offsetWidth / 2}px)`;
-            setTimeout(() => {
-                popup.style.top = '-20%';
-                popup.addEventListener('transitionend', () => popup.disp = "")
-            }, 3000)
+        if (this.rename.value != this.name && this.rename.value.replace(/^\W+/, '') == '') {
+            this.rename.value = this.name;
             return
         }
-        this.rename.value = this.name;
+        //
+        this.thumbDiv.childNodes[2].nodeValue = this.thumbnail.firstChild.nodeValue = this.name = this.rename.value;
+        this.rename.value = this.rename.value.replace(/^\W+/, '');
+        //
+        fetch('/enviar', {
+            method: 'POST', // Método da requisição (pode ser GET, POST, PUT, DELETE, etc.)
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                type: "EDIT",
+                target: "chats",
+                column: "name",
+                value: this.rename.value,
+                id: this.id.replace(/^chat:\s*/, "")
+            })
+        }).then(response => response.json())
+            .then(responseData => console.log(responseData))
+            .catch(error => console.error(error))
+        //corrigir bugs de renomeio muito rapido (0.3sec), aplicar delay para mostrar o pop-up
+        //mudar a mensagem do pop-up caso haja um erro como "erro ao enviar os dados"
+        popup.innerText = "Grupo Renomeado!";
+        popup.disp = "flex";
+        popup.style.top = '0%';
+        popup.style.left = `calc(50% - ${popup.offsetWidth / 2}px)`;
+        setTimeout(() => {
+            popup.style.top = '-20%';
+            popup.addEventListener('transitionend', () => popup.disp = "")
+        }, 3000)
     }
     Msgs() {
         this.msgArea = Obj('div', ['msgArea'], this.chatElement);
@@ -450,7 +451,8 @@ class chat {
                 reader.readAsDataURL(dataFile);
                 reader.onload = e => {
                     const dt = dataFile.type;
-                    /*switch (dt) {
+                    //
+                    switch (true) {
                         case dt.startsWith('image/'):
                             this.preview = Obj('img', [], this.previewSlides);
                             this.preview.src = e.target.result;
@@ -462,26 +464,13 @@ class chat {
                             this.preview.src = e.target.result;
                             break
                         case dt.startsWith('video/'):
-                            //lidar com videos usando a API do youtube
+                           //lidar com videos usando a API do youtube
                             this.preview = Obj('video', [], this.previewSlides);
                             this.preview.load();
                             this.preview.src = e.target.result;
                             break
-                    }*/
-                    if (dt.startsWith('image/')) {
-                        this.preview = Obj('img', [], this.previewSlides);
-                        this.preview.src = e.target.result;
-                    } else if (dt.startsWith('audio/')) {
-                        //lidar com uma biblioteca para deno
-                        this.preview = Obj('audio', [], this.previewSlides);
-                        this.preview.load();
-                        this.preview.src = e.target.result;
-                    } else if (dt.startsWith('video/')) {
-                        //lidar com videos usando a API do youtube
-                        this.preview = Obj('video', [], this.previewSlides);
-                        this.preview.load();
-                        this.preview.src = e.target.result;
                     }
+                    //
                     this.preview.disp = 'none';
                     this.previewSlides.disp = 'flex';
                     this.previewSlides.childNodes[0].disp = 'block';
@@ -504,7 +493,7 @@ class chat {
             keys[e.key] = true;
             if (keys['Enter'] && !keys['Shift']) {
                 e.preventDefault();
-                if (this.msgBalloon.value.replace(/^\s+/, "").replace(/[\u200E\s⠀ㅤ]/g, "") !== '' || transferfiles.length !== 0) {
+                if (this.msgBalloon.value.replace(/^\s+/, "").replace(/[\u200E\s⠀ㅤ]/g, "") != '' || transferfiles.length != 0) {
                     if (transferfiles.length > 0) {
                         this.preview.parentNode.removeChild(this.preview);
                         this.inputChat.style.height = '';
