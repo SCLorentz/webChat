@@ -71,6 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
         //
         e.stopPropagation();
         let b = search.lastElementChild;
+        //
         b.style.display = "block";
         b.focus();
         b.hideOnClick();

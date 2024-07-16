@@ -9,10 +9,12 @@ const chats = [],
 
 function Obj(type, classes, father, txt) {
     const e = document.createElement(type);
+    //
     e.classList.add(...classes);
     father.appendChild(e);
     if (txt) e.innerText = e.placeholder = e.alt = txt;
     if (type == 'button') e.tabIndex = '0';
+    //
     return e;
 }
 
@@ -126,13 +128,18 @@ class chat {
         Obj('span',[],this.thumbnail, this.name);
         //
         this.thumbnail.onclick = () => {
+            // close prev. chats
             document.querySelectorAll('.chat, .chatConfigs, .picMenu, .newGuestMenu').forEach(e => e.disp = 'none');
+            // open the chat
             this.chatElement.disp = 'grid';
+            // set cookie 'lastChat' as this chat id
             localStorage.setItem('lastChat', this.id);
+            //
             document.title = `Chat | ${this.name}`;
-            //thumb
+            //thumbnail, set colors
             document.querySelectorAll('.thumbnail').forEach(e => e.style.background = '');
             this.thumbnail.style.background = '#0000002b';
+            //
             if (window.innerWidth <= 850) document.getElementById('salvos').disp = 'none';
         }
         menu.scrollTop = menu.scrollHeight;
@@ -149,6 +156,7 @@ class chat {
                 guestInListImg = Obj('img', [], guestInList),
                 removeGuest = Obj('p', ['removeGuest', 'material-symbols-outlined'], guestInfo, "person_remove"),
                 toAdm = Obj('p', ['tornarAdm', 'material-symbols-outlined'], guestInfo);
+            //
             guestInList.addEventListener('contextmenu', e => {
                 e.preventDefault();
                 guestInfo.disp = 'flex';
@@ -158,6 +166,7 @@ class chat {
             //email
             this.guestEmail = Obj('span', ['email'], guestInfo, guest.email);
             this.guestEmail.title = 'copy';
+            // copy the email
             this.guestEmail.onclick = () => {
                 try {
                     navigator.clipboard.writeText(guest.email);
@@ -168,26 +177,25 @@ class chat {
             guestInListImg.src = guest.img;
             //remove guest
             removeGuest.onclick = () => {
-                if (user == guest && !confirm('deseja sair do grupo?')) {
-                    return
-                }
-                if (user != guest && !confirm('deseja remover ' + guest.nome + ' do grupo?')) {
-                    return
-                }
+                // confirm the action
+                if (user == guest && !confirm('deseja sair do grupo?')) { return }
+                if (user != guest && !confirm('deseja remover ' + guest.nome + ' do grupo?')) { return }
                 // remove
                 guestInList.parentNode.removeChild(guestInList);
-                removeGuestFunc(guest, this)
+                this.guests.splice(this.guests.indexOf(guest), 1); //preciso adicionar o usuario removido para "add guests" novamente
+                if (this.adm.indexOf(guest) != -1) this.adm.splice(this.adm.indexOf(guest), 1);
             }
-            function removeGuestFunc(g, c) {
-                c.guests.splice(c.guests.indexOf(g), 1); //preciso adicionar o usuario removido para "add guests" novamente
-                if (c.adm.indexOf(g) != -1) c.adm.splice(c.adm.indexOf(g), 1);
-            }
+            //
             toAdm.innerText = this.adm.includes(guest) ? 'gpp_bad' : 'shield_person';
             toAdm.onclick = () => {
                 if (this.adm.includes(user)) {
-                    if (this.adm.includes(guest)) this.adm.splice(this.adm.indexOf(guest), 1);
-                    else this.adm.push(guest);
                     toAdm.innerText = this.adm.includes(guest) ? 'gpp_bad' : 'shield_person';
+                    //
+                    if (this.adm.includes(guest)) {
+                        this.adm.splice(this.adm.indexOf(guest), 1);
+                        return
+                    }
+                    this.adm.push(guest);
                 }
             }
         })
@@ -204,21 +212,21 @@ class chat {
         //add
         this.guestsToAdd = Obj('div', ['guestsToAdd'], this.newGuestMenu);
         alunos.forEach(aluno => {
-            if (!this.guests.includes(aluno)) {
-                const add = Obj('button', [], this.guestsToAdd, `${aluno.nome} ${aluno.sobrenome}`), img = Obj('img', ['addUserImg'], add);
-                img.src = aluno.img;
-                add.onclick = () => {
-                    this.guests.push(aluno);
-                    add.parentNode.removeChild(add);
-                    this.guestListFunction() //corrigir bugs
-                    //atualizar para verção posts
-                    fetch('/enviar', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                    }).then().catch(error => console.error('Erro ao enviar os dados:', error));
-                }
+            if (this.guests.includes(aluno)) { return }
+            //
+            const add = Obj('button', [], this.guestsToAdd, `${aluno.nome} ${aluno.sobrenome}`), img = Obj('img', ['addUserImg'], add);
+            img.src = aluno.img;
+            add.onclick = () => {
+                this.guests.push(aluno);
+                add.parentNode.removeChild(add);
+                this.guestListFunction() //corrigir bugs
+                //atualizar para verção posts
+                fetch('/enviar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }).then().catch(error => console.error('Erro ao enviar os dados:', error));
             }
         })
     }
@@ -258,18 +266,23 @@ class chat {
         this.picMenuCanvas = Obj('canvas', ['picMenuCanvas'], this.picMenu);
         this.picMenuCanvas.height = "300";
         this.picMenuCanvas.width = "400";
+        // picMenuCam does exist, don't worry
         this.picMenuCam.addEventListener('click', () => {
-            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                navigator.mediaDevices.getUserMedia({ video: true })
-                    .then(stream => {
-                        Array.from(document.getElementsByClassName('picMenuVidCap')).forEach(e => e.disp = "flex");
-                        this.capture.srcObject = stream;
-                        Array.from(document.getElementsByClassName('picMenuBtn')).forEach(e => e.disp = "none");
-                        this.picMenu.style.top = `calc(50% - ${this.picMenu.offsetHeight / 2}px)`;
-                        this.picMenu.style.left = `calc(50% - ${this.picMenu.offsetWidth / 2}px)`;
-                    })
-                    .catch(error => console.error("Erro ao acessar a câmera: ", error));
+            if (!navigator.mediaDevices && !navigator.mediaDevices.getUserMedia) {
+                console.error("no media device founded!");
+                return
             }
+            //
+            navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                Array.from(document.getElementsByClassName('picMenuVidCap')).forEach(e => e.disp = "flex");
+                this.capture.srcObject = stream;
+                Array.from(document.getElementsByClassName('picMenuBtn')).forEach(e => e.disp = "none");
+                this.picMenu.style.top = `calc(50% - ${this.picMenu.offsetHeight / 2}px)`;
+                this.picMenu.style.left = `calc(50% - ${this.picMenu.offsetWidth / 2}px)`;
+            })
+            .catch(error => console.error("Erro ao acessar a câmera: ", error));
+            //
             this.CaptureBtn.addEventListener('click', () => {
                 this.picMenuCanvas.getContext('2d').drawImage(this.capture, 0, 0, 400, 300);
                 this.picMenuCanvas.disp = 'flex';
@@ -285,17 +298,18 @@ class chat {
         this.imgInput.addEventListener('change', e => {
             //
             this.picMenu.disp = "none";
-            if (e.target.files[0].type.startsWith('image/svg+xml')) {
-                const reader = new FileReader();
-                reader.readAsDataURL(e.target.files[0]);
-                reader.onload = () => {
-                    this.thumb = reader.result;
-                    //transformar em uma div para incorporar o svg diretamente na pagina, copiar conteudo do arquivo e colar dentro da div
-                    changeImg(this);
-                }
+            if (!e.target.files[0].type.startsWith('image/svg+xml')) {
+                alert('não é uma imagem tipo svg!');
                 return
             }
-            alert('não é uma imagem tipo svg');
+            //
+            const reader = new FileReader();
+            reader.readAsDataURL(e.target.files[0]);
+            reader.onload = () => {
+                this.thumb = reader.result;
+                //transformar em uma div para incorporar o svg diretamente na pagina, copiar conteudo do arquivo e colar dentro da div
+                changeImg(this);
+            }
         })
         function changeImg(c) {
             c.thumbBtnImg.src = c.img.src = c.thumbPicture.src = c.thumb;
@@ -323,20 +337,21 @@ class chat {
         this.rename.value = this.name;
         this.rename.addEventListener("paste", e => {
             const c = e.clipboardData || window.Clipboard;
-            if (c.getData("text").length + this.rename.value.length > 20) {
-                e.preventDefault();
-                alert('texto muito grande, você só tem mais ' + (20 - this.rename.value.length) + ' caracteres até o limite');
-            }
+            if (!c.getData("text").length + this.rename.value.length > 20) { return }
+            //
+            e.preventDefault();
+            alert('texto muito grande, você só tem mais ' + (20 - this.rename.value.length) + ' caracteres até o limite');
         });
         this.rename.addEventListener("keydown", e => {
             const keyList = [37, 39, 46, 9, 8, 116];
+            //
             if (this.rename.value.length > 20 && !keyList.includes(e.keyCode) && this.rename.selectionStart == this.rename.selectionEnd) {
                 e.preventDefault();
             }
-            if (e.keyCode == 13) {
-                e.preventDefault();
-                this.renameGroup();
-            }
+            if (e.keyCode != 13) { return } // if the pressed key is not enter return
+            //
+            e.preventDefault();
+            this.renameGroup();
         });
         this.rename.onblur = () => this.renameGroup();
         this.rename.addEventListener('drop', e => e.preventDefault());
@@ -345,24 +360,24 @@ class chat {
         this.delete = Obj('button', ['deleteGroup', 'material-symbols-outlined'], this.chatConfig, 'delete');
         this.delete.title = 'burn everything';
         this.delete.onclick = () => {
-            if (confirm("deseja apagar este grupo?")) {
-                ["chatElement", "chatConfig", "thumbnail"].forEach(e => this[e].parentNode.removeChild(this[e]))
-                chats.splice(this.id - 1, 1);
-                //server DB
-                fetch('/enviar', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        type: "DELETE",
-                        target: "chats",
-                        id: this.id.replace(/^chat:\s*/, "")
-                    })
-                }).then(response => response.json())
-                    .then(responseData => console.log(responseData))
-                    .catch(error => console.error(error))
-            }
+            if (!confirm("deseja apagar este grupo?")) { return }
+            //
+            ["chatElement", "chatConfig", "thumbnail"].forEach(e => this[e].parentNode.removeChild(this[e]))
+            chats.splice(this.id - 1, 1);
+            //server DB
+            fetch('/enviar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    type: "DELETE",
+                    target: "chats",
+                    id: this.id.replace(/^chat:\s*/, "")
+                })
+            }).then(response => response.json())
+                .then(responseData => console.log(responseData))
+                .catch(error => console.error(error))
         }
     }
     renameGroup() {
@@ -480,12 +495,13 @@ class chat {
             }
             let i = 0;
             function changeSlide(index, e) {
-                if (index < e.childNodes.length && index >= 0) {
-                    if (e.childNodes[i].nodeName == 'VIDEO' || e.childNodes[i].nodeName == 'AUDIO') e.childNodes[i].pause();
-                    e.childNodes[i].disp = 'none';
-                    i = index;
-                    e.childNodes[i].disp = 'block';
-                }
+                if (index > e.childNodes.length && index <= 0) { return }
+                // pause videos / audios
+                if (e.childNodes[i].nodeName == 'VIDEO' || e.childNodes[i].nodeName == 'AUDIO') e.childNodes[i].pause();
+                //
+                e.childNodes[i].disp = 'none';
+                i = index;
+                e.childNodes[i].disp = 'block';
             }
         });
         let keys = {};
@@ -494,16 +510,17 @@ class chat {
             if (keys['Enter'] && !keys['Shift']) {
                 e.preventDefault();
                 if (this.msgBalloon.value.replace(/^\s+/, "").replace(/[\u200E\s⠀ㅤ]/g, "") != '' || transferfiles.length != 0) {
-                    if (transferfiles.length > 0) {
-                        this.preview.parentNode.removeChild(this.preview);
-                        this.inputChat.style.height = '';
-                        this.previewSlides.disp = '';
-                        this.msgs.push(new msg(this.msgBalloon.value, transferfiles, new Date(), user, this));
-                        transferfiles = [];
+                    //
+                    this.preview.parentNode.removeChild(this.preview);
+                    this.inputChat.style.height = '';
+                    this.previewSlides.disp = '';
+                    this.msgs.push(new msg(this.msgBalloon.value, transferfiles, new Date(), user, this));
+                    transferfiles = [];
+                    //
+                    if (transferfiles.length < 0) {
+                        this.msgs.push(new msg(this.msgBalloon.value, null, new Date(), user, this));
                         return
                     }
-                    //
-                    this.msgs.push(new msg(this.msgBalloon.value, null, new Date(), user, this));
                 }
             }
         });
@@ -593,80 +610,81 @@ class msg {
         if (this.file) {
             this.file.forEach(file => {
                 file.disp = 'flex'
-                if (file.tagName.toLowerCase() == "audio") {
-                    const playtime = Obj('span', ['playTime'], this.filePlaceHolder)
-                    const wavesurfer = WaveSurfer.create({
-                        height: 45,
-                        width: 240,
-                        container: this.filePlaceHolder,
-                        waveColor: 'white',
-                        progressColor: '#9d9e9d',
-                        cursorWidth: 2,
-                        url: file.src,
-                        minPxPerSec: 1,
-                        //codigo disponivel em https://wavesurfer.xyz, modificado por AI, formatado e otimizado por mim:
-                        renderFunction: (channels, ctx) => {
-                            const { width, height } = ctx.canvas,
-                                scale = channels[0].length / width,
-                                step = 10,
-                                // Encontrar o valor máximo absoluto nos samples do áudio
-                                maxAmplitude = Math.max(...channels[0].map(value => Math.abs(value))),
-                                // Ajustar a escala dinamicamente
-                                dynamicScale = height / (2 * maxAmplitude);
-                            ctx.translate(0, height / 2);
-                            ctx.strokeStyle = ctx.fillStyle;
-                            ctx.beginPath();
-                            for (let i = 0; i < width; i += step * 2) {
-                                const index = Math.floor(i * scale),
-                                    value = Math.abs(channels[0][index]),
-                                    // Aplicar o fator de escala dinâmica
-                                    scaleValue = value * dynamicScale;
-                                let x = i,
-                                    y = scaleValue;
-                                ctx.moveTo(x, 0);
-                                ctx.lineTo(x, y);
-                                ctx.arc(x + step / 2, y, step / 2, Math.PI, 0, true);
-                                ctx.lineTo(x + step, 0);
-                                x = x + step;
-                                y = -y;
-                                ctx.moveTo(x, 0);
-                                ctx.lineTo(x, y);
-                                ctx.arc(x + step / 2, y, step / 2, Math.PI, 0, false);
-                                ctx.lineTo(x + step, 0);
-                            }
-                            ctx.stroke();
-                            ctx.closePath();
-                        },
-                    })
-                    wavesurfer.on('ready', () => {
-                        const dur = wavesurfer.getDuration(),
-                            minutes = Math.floor(dur / 60),
-                            seconds = Math.floor(dur % 60);
-                        minutes = (minutes < 10 ? "0" : "") + minutes;
-                        seconds = (seconds < 10 ? "0" : "") + seconds;
-                        playtime.innerText = minutes + ":" + seconds;
-                    })
-                    wavesurfer.on('timeupdate', () => {
-                        const currentTime = wavesurfer.getDuration() - wavesurfer.getCurrentTime(),
-                            minutes = Math.floor(currentTime / 60),
-                            seconds = Math.floor(currentTime % 60);
-                        minutes = (minutes < 10 ? "0" : "") + minutes;
-                        seconds = (seconds < 10 ? "0" : "") + seconds;
-                        playtime.innerText = minutes + ":" + seconds;
-                    })
-                    wavesurfer.on('interaction', () => wavesurfer.play())
-                    wavesurfer.on('finish', () => {
-                        wavesurfer.setTime(0);
-                        play.innerText = "play_arrow";
-                    })
-                    const play = Obj('button', ['material-symbols-outlined', 'playPause'], this.filePlaceHolder, 'play_arrow');
-                    play.addEventListener('click', () => {
-                        wavesurfer.playPause();
-                        play.innerText = wavesurfer.isPlaying() ? "pause" : "play_arrow";
-                    })
-                } else {
+                if (file.tagName.toLowerCase() != "audio") {
                     this.filePlaceHolder.appendChild(file);
+                    return
                 }
+                //
+                const playtime = Obj('span', ['playTime'], this.filePlaceHolder)
+                const wavesurfer = WaveSurfer.create({
+                    height: 45,
+                    width: 240,
+                    container: this.filePlaceHolder,
+                    waveColor: 'white',
+                    progressColor: '#9d9e9d',
+                    cursorWidth: 2,
+                    url: file.src,
+                    minPxPerSec: 1,
+                    //codigo disponivel em https://wavesurfer.xyz, modificado por AI, formatado e otimizado por mim:
+                    renderFunction: (channels, ctx) => {
+                        const { width, height } = ctx.canvas,
+                            scale = channels[0].length / width,
+                            step = 10,
+                            // Encontrar o valor máximo absoluto nos samples do áudio
+                            maxAmplitude = Math.max(...channels[0].map(value => Math.abs(value))),
+                            // Ajustar a escala dinamicamente
+                            dynamicScale = height / (2 * maxAmplitude);
+                        ctx.translate(0, height / 2);
+                        ctx.strokeStyle = ctx.fillStyle;
+                        ctx.beginPath();
+                        for (let i = 0; i < width; i += step * 2) {
+                            const index = Math.floor(i * scale),
+                                value = Math.abs(channels[0][index]),
+                                // Aplicar o fator de escala dinâmica
+                                scaleValue = value * dynamicScale;
+                            let x = i,
+                                y = scaleValue;
+                            ctx.moveTo(x, 0);
+                            ctx.lineTo(x, y);
+                            ctx.arc(x + step / 2, y, step / 2, Math.PI, 0, true);
+                            ctx.lineTo(x + step, 0);
+                            x = x + step;
+                            y = -y;
+                            ctx.moveTo(x, 0);
+                            ctx.lineTo(x, y);
+                            ctx.arc(x + step / 2, y, step / 2, Math.PI, 0, false);
+                            ctx.lineTo(x + step, 0);
+                        }
+                        ctx.stroke();
+                        ctx.closePath();
+                    },
+                })
+                wavesurfer.on('ready', () => {
+                    const dur = wavesurfer.getDuration(),
+                        minutes = Math.floor(dur / 60),
+                        seconds = Math.floor(dur % 60);
+                    minutes = (minutes < 10 ? "0" : "") + minutes;
+                    seconds = (seconds < 10 ? "0" : "") + seconds;
+                    playtime.innerText = minutes + ":" + seconds;
+                })
+                wavesurfer.on('timeupdate', () => {
+                    const currentTime = wavesurfer.getDuration() - wavesurfer.getCurrentTime(),
+                        minutes = Math.floor(currentTime / 60),
+                        seconds = Math.floor(currentTime % 60);
+                    minutes = (minutes < 10 ? "0" : "") + minutes;
+                    seconds = (seconds < 10 ? "0" : "") + seconds;
+                    playtime.innerText = minutes + ":" + seconds;
+                })
+                wavesurfer.on('interaction', () => wavesurfer.play())
+                wavesurfer.on('finish', () => {
+                    wavesurfer.setTime(0);
+                    play.innerText = "play_arrow";
+                })
+                const play = Obj('button', ['material-symbols-outlined', 'playPause'], this.filePlaceHolder, 'play_arrow');
+                play.addEventListener('click', () => {
+                    wavesurfer.playPause();
+                    play.innerText = wavesurfer.isPlaying() ? "pause" : "play_arrow";
+                })
                 /*file.addEventListener('click',()=>{
                     abrir arquivo em grande escala
                 })*/
@@ -681,6 +699,7 @@ class msg {
                 { regex: /(\%)(.*?)(\%)/g, tag: 'i' },
                 { regex: /(\~~)(.*?)(\~~)/g, tag: 'a', style: 'text-decoration: line-through 2px;' }
             ];
+        // verify if it does have any email or url
         if (emails) emails.forEach(m => this.content = this.content.replace(m, `<a href="mailto:${m}" title="email" target="_blank">${m}</a>`));
         if (links) links.forEach(l => this.content = this.content.replace(l, l.link(l)));
         //text decorations
@@ -704,11 +723,13 @@ class msg {
         reader.readAsText(this.file);
         reader.onload = e => {
             const result = e.target.result;
+            //
             if (this.file.type === 'text/html') {
                 this.htmlFileElement = Obj('a', ['htmlFileBtn'], this.filePlaceHolder, this.file.name);
                 this.htmlFileElement.href = URL.createObjectURL(new Blob([result], { type: 'text/html' }));
                 this.htmlFileElement.target = '_blank';
-            } else if (this.file.type === 'text/plain') {
+            }
+            if (this.file.type === 'text/plain') {
                 this.filePlaceHolder.innerText = result;
             }
         }
@@ -744,7 +765,7 @@ let ldpalavrões = {
     ' ': new Set(["⠀", "ㅤ", "￿"]),
     '2': new Set(['ƻ'])
 };
-function sinonimos(synonyms) {
+/*function sinonimos(synonyms) {
     return synonyms.split('').map(synonym => {
         let lowerCaseSynonym = synonym.toLowerCase();
         for (let letter in ldpalavrões) {
@@ -752,4 +773,4 @@ function sinonimos(synonyms) {
         }
         return synonym; // retorna o sinônimo original se não for encontrado
     }).join('');
-};
+};*/
