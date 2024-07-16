@@ -10,17 +10,17 @@ const search = document.getElementById('pesquisar'),
 }*/ //offline
 
 window.addEventListener("keydown", e => {
-    switch (e.ctrlKey && e.key) {
+    if (!e.ctrlKey) { return }
+    e.preventDefault();
+    //
+    switch (e.key) {
         case 's':
-            e.preventDefault();
             document.getElementById('settings').click();
             break
         case 'g':
-            e.preventDefault();
             document.getElementById('add').click();
             break
         case 'h': //futuramente transformar em pesquisa por mensagens global, ou seja, proucura em todas as conversas
-            e.preventDefault();
             search.click();
             break
     }
@@ -38,34 +38,36 @@ document.addEventListener("DOMContentLoaded", () => {
     //
     document.getElementById('sort').onclick = e => {
         e.stopPropagation();
+        //
         const sortNav = document.getElementById('sortNav');
         sortNav.style.display = "flex";
         sortNav.hideOnClick();
     }
     //
-    const configBtn = document.getElementById('settings'), settings = document.getElementById("settingsMenu");
-    function rotateButton(deg) {
+    const configBtn = document.getElementById('settings'),
+          settings = document.getElementById("settingsMenu");
+    //
+    function rotate(deg) {
         return function () { //o return em uma função me deu uma ideia para o server.ts
             configBtn.style.transform = `rotate(${deg})`;
         }
     }
-    configBtn.addEventListener('mouseover', rotateButton('10deg'));
-    configBtn.addEventListener('mouseleave', rotateButton('0deg'));
+    configBtn.addEventListener('mouseover', rotate('10deg'));
+    configBtn.addEventListener('mouseleave', rotate('0deg'));
+    // open settings menu
     configBtn.addEventListener('click', () => {
-        if (creator.style.display == "grid") {
-            return
-        }
+        if (creator.style.display == "grid") { return }
+        //
         settings.style.display = 'flex';
         requestAnimationFrame(() => settings.style.top = '0%');
     });
+    // close settings menu
     document.getElementById('closeSettings').addEventListener('click', () => {
         settings.style.top = '100%';
         setTimeout(() => settings.style.display = 'none', 1000);
     });
     search.addEventListener('click', e => {
-        if (creator.style.display == "grid") {
-            return
-        }
+        if (creator.style.display == "grid") { return }
         //
         e.stopPropagation();
         let b = search.lastElementChild;
@@ -81,21 +83,20 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(response => response.json()) // Converte a resposta em formato JSON
         .then(data => {
             //console.log(data)
-            for (let i = 0; i < data.chats.length; i++) {
-                chats.push(new chat(data.chats[i][1], data.chats[i][0], data.chats[i][2], [user, alunos[1]], [user], true));
+            for (const c of data.chats) {
+                chats.push(new chat(c[1], c[0], c[2], [user, alunos[1]], [user], true))
             }
         })
         .catch(error => console.error(error))
-        .finally(() => {
-            const valor = localStorage.getItem('lastChat');
-            document.getElementById(valor).style.display = 'grid';
-        });
+        // get last chat opened using the coockie 'lastChat', and set it to be open
+        .finally(() => document.getElementById(localStorage.getItem('lastChat')).style.display = 'grid');
 });
 
 //criar chat
 const nameInput = document.getElementById('nameInput');
 document.getElementById('add').onclick = () => {
     creator.style.display = "grid";
+    //
     nameInput.addEventListener("keydown", e => {
         if (nameInput.value.length > 20 && e.key !== "Backspace" && e.key !== 13 && e.key !== 37 && e.key !== 39 && e.key !== 9 && e.key !== 116 && nameInput.selectionStart == nameInput.selectionEnd) {
             e.preventDefault();
@@ -103,9 +104,7 @@ document.getElementById('add').onclick = () => {
     });
     nameInput.addEventListener("paste", e => {
         const clipboardData = e.clipboardData || window.Clipboard;
-        if (clipboardData.getData("text").length + nameInput.value.length < 17) {
-            return
-        }
+        if (clipboardData.getData("text").length + nameInput.value.length < 17) { return }
         //
         e.preventDefault();
         alert('texto muito grande, você só tem mais ' + (17 - nameInput.value.length) + ' caracteres até o limite');

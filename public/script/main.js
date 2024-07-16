@@ -3,7 +3,7 @@
 
 const chats = [],
     alunos = [],
-    user = { nome: userData.given_name, sobrenome: userData.family_name+" (você)", img: userData.picture, email: userData.email },
+    user = { nome: userData.given_name, sobrenome: `${userData.family_name} (você)`, img: userData.picture, email: userData.email },
     popup = document.getElementById('popup'),
     msgContext = Obj('div', ['msgContext'], document.body, "context");
 
