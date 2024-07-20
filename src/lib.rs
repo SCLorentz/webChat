@@ -3,11 +3,13 @@ use wasm_bindgen::prelude::*;
 #[wasm_bindgen]
 extern {
     pub fn alert(s: &str);
+    pub fn confirm(s: &str) -> bool;
 }
 
 #[wasm_bindgen]
 pub fn greet(name: &str) {
-    alert(&format!("Hello, {}!", name));
+    alert(&format!("Hello w, {}!", name));
+    confirm(&format!("Are you sure?"));
 }
 
 #[wasm_bindgen(start)]
