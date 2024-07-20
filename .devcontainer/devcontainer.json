@@ -21,7 +21,8 @@
 	// Configure tool-specific properties.
 	"customizations": {
 		"vscode": {
-		  "extensions": [
+			// preinstalled extensions for vscode
+		  	"extensions": [
 				"eamodio.gitlens",
 				"seepine.md-editor",
 				"PKief.material-icon-theme",
@@ -33,6 +34,7 @@
 				"supermaven.supermaven",
 				"rcore.rcore-unused-css-classes"
 			],
+			// settings for vscode (other than .vscode/extensions.json)
 			"settings": {
 				"markdown.preview.openMarkdownLinks": "inEditor",
 				"window.menuBarVisibility": "classic",

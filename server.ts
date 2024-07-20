@@ -2,8 +2,7 @@ import { Application, Context, Router, send } from "https://deno.land/x/oak@v12.
 import { Session } from "https://deno.land/x/oak_sessions@v4.0.5/mod.ts";
 import { OAuth2Client } from "https://deno.land/x/oauth2_client@v1.0.2/mod.ts";
 import { DB } from "https://deno.land/x/sqlite@v3.8/mod.ts"; //database
-// deno-lint-ignore no-unused-vars
-import { CustomHtml } from "./custom/CHTML.ts";
+//import { CustomHtml } from "./custom/CHTML.ts";
 
 /*const obj = new CustomHtml(
     "<div id='user'></div>",
@@ -52,7 +51,7 @@ function DBData(data: Record<string, string>) {
             break;
     }
 }
-//corrigir bugs
+//transformar em classe
 function sendData(c: CustomContext) {
     return async function () {
         const body = c.request.body();
