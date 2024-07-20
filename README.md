@@ -16,21 +16,8 @@ start the server: `./start.sh`, if this dosen't work, try to use `chmod +x start
 4. https://deno.land/x/deno_webp_converter@0.0.4 --> converter imagens para webp
 5. https://developers.google.com/youtube/iframe_api_reference?hl=pt-br --> player do youtube
 
-## Opcional
-
-1. Tradutor nativo na plataforma
-2. AI generativa
-3. WASM
-4. JSX
-
-## Development
+## Algumas ideias para usar na página
 
 para transição de paginas --> view Transitions API
 
 scroll --> animation-timeline
-
-## Login - ideias de serviços
-
-1. google
-2. microsoft
-3. github
