@@ -1,0 +1,17 @@
+[package]
+name = "chat-4"
+description = "WASM code in my web chat (I don't have a name for it yet)"
+version = "4.0.0"
+edition = "2021"
+authors = ["S.C. Lorentz <113468900+SCLorentz@users.noreply.github.com>"]
+
+[dependencies]
+wasm-bindgen = "0.2"
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.dev]
+opt-level = "z"
+strip = true  # Automatically strip symbols from the binary.
+lto = true
