@@ -52,27 +52,26 @@ function DBData(data: Record<string, string>) {
     }
 }
 //transformar em classe
-function sendData(c: CustomContext) {
-    return async function () {
-        const body = c.request.body();
-        // is json? The response should be json
-        if (body.type != "json") {
-            c.response.status = 400;
-            c.response.body = { message: "Ooops, parece que algo deu errado. Sua resposta deveria estar no formato JSON!" };
-            return
-        }
-        const data = await body.value;
-        // check the db
-        try {
-            DBData(data);
-            c.response.body = { message: "Dados recebidos com sucesso! :)" };
-        } catch (error) {
-            console.error("Erro ao executar a consulta SQL: ", error);
-            c.response.body = {
-                message: "Erro ao inserir dados no banco de dados",
-            };
-        }
-    };
+async function sendData(c: CustomContext) {
+    const body = c.request.body();
+    // is json? The response should be json
+    if (body.type != "json") {
+        c.response.status = 400;
+        c.response.body = { message: "Ooops, parece que algo deu errado. Sua resposta deveria estar no formato JSON!" };
+        return
+    }
+    // the type of the body is json
+    const data = await body.value /*?? {message: "Erro ao inserir dados no banco de dados"}*/;
+    // check the db for the data
+    try {
+        DBData(data);
+        c.response.body = { message: "Dados recebidos com sucesso! :)" };
+    } catch (error) {
+        console.error("Erro ao executar a consulta SQL: ", error);
+        c.response.body = {
+            message: "Erro ao inserir dados no banco de dados",
+        };
+    }
 }
 
 const router = new Router<AppState>();
@@ -144,7 +143,7 @@ router
         ctx.response.redirect("/");
     })
     // enviar dados (back-end --> front-end)
-    .post("/enviar", async (ctx) => await sendData(ctx)())
+    .post("/enviar", async (ctx) => await sendData(ctx))
     // receber dados
     .get("/receber", (ctx) => ctx.response.body = {
             chats: db.query("SELECT name, id, img FROM chats"),
