@@ -1,6 +1,12 @@
 // deno-lint-ignore-file no-window no-window-prefix no-unused-vars prefer-const
 //Aqui ficam todas as funções mais complexas da pagina (islands of interactivity)
 
+// the path appears to be wrong, but it isn't, ignore this error. I will try to fix it later
+import init, { obj } from "/script/chat_4.js";
+init().then(() => {
+    obj('div', ["test"], document.body, "hello");
+});
+
 const chats = [],
     alunos = [],
     user = { nome: userData.given_name, sobrenome: `${userData.family_name} (você)`, img: userData.picture, email: userData.email },
