@@ -22,5 +22,8 @@
   },
   "[html]": {
     "editor.defaultFormatter": "vscode.html-language-features"
-  }
+  },
+  "deno.enablePaths": [
+    "./public/script/script.js",
+  ],
 }
