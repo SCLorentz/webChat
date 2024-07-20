@@ -9,7 +9,12 @@ extern {
 #[wasm_bindgen]
 pub fn greet(name: &str) {
     alert(&format!("Hello w, {}!", name));
-    confirm(&format!("Are you sure?"));
+    //
+    if confirm(&format!("Are you sure?")) {
+        alert("You are sure!");
+    } else {
+        alert("You are not sure :(");
+    }
 }
 
 #[wasm_bindgen(start)]
@@ -18,13 +23,14 @@ fn run() -> Result<(), JsValue> {
     // window object.
     let window = web_sys::window().expect("no global `window` exists");
     let document = window.document().expect("should have a document on window");
-    let body = document.body().expect("document should have a body");
+    let _body = document.body().expect("document should have a body");
 
     // Manufacture the element we're gonna append
     let val = document.create_element("p")?;
     val.set_text_content(Some("Hello from Rust!"));
-
-    body.append_child(&val)?;
+    
+    let contatos = document.get_element_by_id("contatos");
+    contatos.unwrap().append_child(&val)?;
 
     Ok(())
 }

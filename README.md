@@ -4,8 +4,6 @@ Version: 4.0.0
 
 ## Commands
 
-install wasm pack `cargo install wasm-pack`;
-
 start the server: `./start.sh`, if this dosen't work, try to use `chmod +x start.sh` and run again.
 
 ## Recomendações de bibliotecas (favor revisar):
