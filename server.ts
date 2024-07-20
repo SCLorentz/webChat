@@ -2,6 +2,9 @@ import { Application, Context, Router, send } from "https://deno.land/x/oak@v12.
 import { Session } from "https://deno.land/x/oak_sessions@v4.0.5/mod.ts";
 import { OAuth2Client } from "https://deno.land/x/oauth2_client@v1.0.2/mod.ts";
 import { DB } from "https://deno.land/x/sqlite@v3.8/mod.ts"; //database
+
+import * as fs from "node:fs";
+
 //import { CustomHtml } from "./custom/CHTML.ts";
 
 /*const obj = new CustomHtml(
@@ -149,9 +152,24 @@ router
             chats: db.query("SELECT name, id, img FROM chats"),
     })
     .get("/:item", async (ctx) => {
-        // review
+        //
+        const extensionMatch = ctx.params.item.match(/\.(\w+)$/);
+        const extension = extensionMatch ? extensionMatch[1] : null;
+        //
+        let path = "./public/pages/" + ctx.params.item.replace(/\.(\w+)$/,"") + ".html";
+        // if the file extension is not html or the html file dosen't exist
+        if (extension !== 'html' && extension !== null || !fs.existsSync(path)) {
+            // handle with other files
+            for (const file of fs.readdirSync('./public/pages')) {
+                if (!file.includes(ctx.params.item)) { continue }
+                //
+                path = "./public/pages/" + file;
+                break;
+            }
+        }
+        // review try catch, it can be improved
         try {
-            await send(ctx, `./public/pages/${ctx.params.item}.html`.replace(/\\/g,"/",));
+            await send(ctx, path.replace(/\\/g,"/"));
         } catch (error) {
             // reavaliar funcionamento desse trecho, parece confuso e ineficiente
             try {
@@ -164,7 +182,8 @@ router
         }
     })
     // err 403 not working properly
-    .get("/:folder/:item", async (ctx) => {
+    .get("/:folder/(.+)", async (ctx) => {
+        //console.log(ctx.params[0]);
         // the user is acessing the file directly by the url?
         if (!ctx.request.headers.get("Referer")?.includes("http://")) {
             // handle the request
@@ -175,7 +194,7 @@ router
         }
         // no, send file
         try {
-            await send(ctx, `./public/${ctx.params.folder}/${ctx.params.item}`);
+            await send(ctx, `./public/${ctx.params.folder}/${ctx.params[0]}`);
         } catch (error) {
             ctx.response.status = error.status;
         }
