@@ -91,7 +91,7 @@ router
             const file = await Deno.readFile("./view/interface/login.html");
             //
             let html = new TextDecoder().decode(file);
-            // replace custom html
+            // replace html with custom html
             html = html
                 .replace(/<google\/>/g, `<a href="${uri}"><img src="/img/google.svg" height="50"></a>`)
                 .replace(/<microsoft\/>/g, `<a href="#microsoft" style="border-radius:0"><img src="/img/microsoft.svg" height="50" style="border-radius:0"></a>`)
@@ -148,16 +148,17 @@ router
     // enviar dados (back-end --> front-end)
     .post("/enviar", async (ctx) => await sendData(ctx))
     // receber dados
-    .get("/receber", (ctx) => ctx.response.body = {
-            chats: db.query("SELECT name, id, img FROM chats"),
-    })
+    .get("/receber", (ctx) => ctx.response.body = { chats: db.query("SELECT name, id, img FROM chats") })
+    // file server (pages)
     .get("/:item", async (ctx) => {
         //
-        const extensionMatch = ctx.params.item.match(/\.(\w+)$/);
-        const extension = extensionMatch ? extensionMatch[1] : null;
+        const extensionMatch = ctx.params.item.match(/\.(\w+)$/),
+              extension = extensionMatch ? extensionMatch[1] : null;
         //
         let path = "./public/pages/" + ctx.params.item.replace(/\.(\w+)$/,"") + ".html";
         // if the file extension is not html or the html file dosen't exist
+        // preference: use the file with the same name in the public/pages folder if the extension is not html
+        // html files are the ones with the most priority
         if (extension !== 'html' && extension !== null || !fs.existsSync(path)) {
             // handle with other files
             for (const file of fs.readdirSync('./public/pages')) {
@@ -169,18 +170,17 @@ router
         }
         // review try catch, it can be improved
         try {
-            await send(ctx, path.replace(/\\/g,"/"));
+            await send(ctx, path);
         } catch (error) {
-            // reavaliar funcionamento desse trecho, parece confuso e ineficiente
-            try {
-                await send(ctx, `./view/err/${error.status}.html`);
-            } catch (error) {
-                ctx.response.body =
-                    `<html><head><title>${error.status}</title></head><body><h1>${error.status}</h1></body></html>`;
-            }
             ctx.response.status = error.status;
+            if (!fs.existsSync(`./view/err/${error.status}.html`)) {
+                ctx.response.body = `<html><head><title>${error.status}</title></head><body><h1>${error.status}</h1></body></html>`;
+                return
+            }
+            await send(ctx, `./view/err/${error.status}.html`);
         }
     })
+    // files server (folders and general files)
     // err 403 not working properly
     .get("/:folder/(.+)", async (ctx) => {
         //console.log(ctx.params[0]);
