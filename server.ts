@@ -3,16 +3,7 @@ import { Session } from "https://deno.land/x/oak_sessions@v4.0.5/mod.ts";
 import { OAuth2Client } from "https://deno.land/x/oauth2_client@v1.0.2/mod.ts";
 import { DB } from "https://deno.land/x/sqlite@v3.8/mod.ts"; //database
 
-import * as fs from "node:fs";
-
-//import { CustomHtml } from "./custom/CHTML.ts";
-
-/*const obj = new CustomHtml(
-    "<div id='user'></div>",
-    "./public/index.html",
-    "userData"
-);
-obj.build().then(() => console.log(obj.value));*/
+import * as fs from "node:fs"; //files info
 
 const oauth2Client = new OAuth2Client({
     clientId: "38057856247-sh5mjb39qop277fcgisa9c2sq2nioofd.apps.googleusercontent.com",
@@ -23,8 +14,7 @@ const oauth2Client = new OAuth2Client({
     defaults: {
         scope: ["email", "profile", "https://www.googleapis.com/auth/contacts"],
     },
-});
-const db = new DB("./database/data.db");
+}), db = new DB("./database/data.db");
 
 interface CustomContext extends Context {
     error: (message: string, error: Error) => void;
@@ -83,34 +73,28 @@ router
         // is user logged in?
         const tokens = ctx.state.session.get("tokens") as | { accessToken: string } | undefined;
         //
+        let html = new TextDecoder().decode(await Deno.readFile("./public/index.html"));
+        //
         if (!tokens) {
-            // Construir a URL para o redirecionamento de autorização e obter um codeVerifier
+            // Construir a URL para o redirecionamento de autorização e obter um codeVerifier para o login
             const { uri, codeVerifier } = await oauth2Client.code.getAuthorizationUri();
             ctx.state.session.flash("codeVerifier", codeVerifier);
-            //usar classe em "./custom/CHTML.ts"
-            const file = await Deno.readFile("./view/interface/login.html");
             //
-            let html = new TextDecoder().decode(file);
-            // replace html with custom html
-            html = html
+            html = new TextDecoder().decode(await Deno.readFile("./view/interface/login.html"))
                 .replace(/<google\/>/g, `<a href="${uri}"><img src="/img/google.svg" height="50"></a>`)
                 .replace(/<microsoft\/>/g, `<a href="#microsoft" style="border-radius:0"><img src="/img/microsoft.svg" height="50" style="border-radius:0"></a>`)
-                .replace("<head>", `<head>\n<link rel="prefetch" href="${uri}">`)
-            //
-            ctx.response.headers.set("Content-Type", "text/html");
-            ctx.response.body = html;
-            return
+                .replace("<head>", `<head>\n<link rel="prefetch" href="${uri}">`);
         }
         //descobrir forma de enviar para o cliente
-        const userResponse = await fetch(
+        const userResponse = tokens ? await fetch(
             "https://www.googleapis.com/oauth2/v2/userinfo",
             {
                 headers: {
                     Authorization: `Bearer ${tokens.accessToken}`,
                 },
             },
-        );
-        const userData = await userResponse.json();
+        ): null;
+        const userData = userResponse ? await userResponse.json() : null;
         /*const contactsResponse = await fetch(
           "https://people.googleapis.com/v1/people/me/connections?personFields=emailAddresses",
           {
@@ -120,10 +104,7 @@ router
           },
         );
         const contactsData = await contactsResponse.json();<--lidar com essa informação na database no server-side*/
-        // send --> usar classe em "./custom/CHTML.ts"
-        //
-        let html = new TextDecoder().decode(await Deno.readFile("./public/index.html"));
-        // replace custom html
+        // there should be a better way to do this:
         html = html.replace("<userData/>", `<script>const userData = ${JSON.stringify(userData)}</script>`);
         //
         ctx.response.headers.set("Content-Type", "text/html");
@@ -138,9 +119,7 @@ router
         }
 
         // Trocar o código de autorização por um token de acesso
-        const tokens = await oauth2Client.code.getToken(ctx.request.url, {
-            codeVerifier,
-        });
+        const tokens = await oauth2Client.code.getToken(ctx.request.url, { codeVerifier });
         ctx.state.session.flash("tokens", tokens);
 
         ctx.response.redirect("/");
@@ -181,18 +160,8 @@ router
         }
     })
     // files server (folders and general files)
-    // err 403 not working properly
     .get("/:folder/(.+)", async (ctx) => {
         //console.log(ctx.params[0]);
-        // the user is acessing the file directly by the url?
-        if (!ctx.request.headers.get("Referer")?.includes("http://")) {
-            // handle the request
-            ctx.response.status = 403;
-            await send(ctx, `./view/err/403.html`);
-            //
-            return
-        }
-        // no, send file
         try {
             await send(ctx, `./public/${ctx.params.folder}/${ctx.params[0]}`);
         } catch (error) {
