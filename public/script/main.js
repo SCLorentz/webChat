@@ -13,6 +13,7 @@ const chats = [],
     popup = document.getElementById('popup'),
     msgContext = Obj('div', ['msgContext'], document.body, "context");
 
+// substitur pela função wasm
 function Obj(type, classes, father, txt) {
     const e = document.createElement(type);
     //
