@@ -27,4 +27,7 @@
     "server.ts",
     "routes/errorHandler.ts"
   ],
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
 }

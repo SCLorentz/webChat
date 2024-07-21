@@ -41,6 +41,7 @@ for (let i = 0; i < 8; i++) {
     alunos.push(aluno);
 }
 
+// refazer usando rust e wasm
 class chat {
     constructor(id, name, thumb, guests, adm) {
         this.id = "chat:" + id;
