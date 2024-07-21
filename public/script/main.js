@@ -1,28 +1,14 @@
 // deno-lint-ignore-file no-window no-window-prefix no-unused-vars prefer-const
 //Aqui ficam todas as funções mais complexas da pagina (islands of interactivity)
-import init, { obj, greet } from "/script/chat_4.js";
-init().then(() => {
-    greet("essa porra n tá compilando")
-})
-
+import init, { obj } from "/script/webchat.js";
 
 const chats = [],
     alunos = [],
     user = { nome: userData.given_name, sobrenome: `${userData.family_name} (você)`, img: userData.picture, email: userData.email },
     popup = document.getElementById('popup'),
-    msgContext = Obj('div', ['msgContext'], document.body, "context");
-
-// substitur pela função wasm
-function Obj(type, classes, father, txt) {
-    const e = document.createElement(type);
-    //
-    e.classList.add(...classes);
-    father.appendChild(e);
-    if (txt) e.innerText = e.placeholder = e.alt = txt;
-    if (type == 'button') e.tabIndex = '0';
-    //
-    return e;
-}
+    msgContext = init().then(() => {
+        obj('div', ['msgContext'], document.body, "context");
+    })
 
 Object.defineProperty(Element.prototype, 'disp', {
     set: function (s) {
@@ -58,18 +44,13 @@ class chat {
         //obter palavras banidas do grupo e globais
     }
     build() {
-        this.chatElement = Obj('div', ['chat', 'chatMenu'], document.body);
+        this.chatElement = obj('div', ['chat', 'chatMenu'], document.body, "");
         this.chatElement.id = this.id;
-        //
-        init().then(() => {
-            this.ok = obj('div', ['chat', 'chatMenu'], document.body, "");
-            console.log("fuck: ", this.ok);
-        });
         //this.chatElement.addEventListener('contextmenu', e => e.preventDefault());
-        this.thumbDiv = Obj('div', ['thumbDiv'], this.chatElement);
-        Obj('button', ['arrowBack', 'material-symbols-outlined'], this.thumbDiv, "arrow_back_ios"); //mobile
+        this.thumbDiv = obj('div', ['thumbDiv'], this.chatElement, "");
+        obj('button', ['arrowBack', 'material-symbols-outlined'], this.thumbDiv, "arrow_back_ios", ""); //mobile
         //thumbPicture
-        this.thumbPicture = Obj('img', ['chatImg'], this.thumbDiv, "chat image");
+        this.thumbPicture = obj('img', ['chatImg'], this.thumbDiv, "chat image");
         this.thumbPicture.src = this.thumb;
         this.thumbDiv.innerHTML += this.name;
         this.thumbPicture = this.thumbDiv.children[1];
@@ -84,8 +65,8 @@ class chat {
             })
         })
         //pesquisar
-        this.searchBtn = Obj('button', ['searchOnGroupBtn', 'material-symbols-outlined'], this.thumbDiv, 'search');
-        this.searchInput = Obj('input', ['searchOnGroupInput'], this.searchBtn, 'pesquisar...');
+        this.searchBtn = obj('button', ['searchOnGroupBtn', 'material-symbols-outlined'], this.thumbDiv, 'search');
+        this.searchInput = obj('input', ['searchOnGroupInput'], this.searchBtn, 'pesquisar...');
         //search action
         this.searchBtn.onclick = () => {
             this.searchInput.style.width = this.thumbDiv.offsetWidth / 6 + 'px';
@@ -107,17 +88,18 @@ class chat {
             }
         })
         //video call
-        this.call = Obj('button', ['videoCam', 'material-symbols-outlined'], this.thumbDiv, 'videocam');
+        this.call = obj('button', ['videoCam', 'material-symbols-outlined'], this.thumbDiv, 'videocam');
         this.call.onclick = () => {
             window.open('/call')
         }
-        this.imageOpened = Obj('div', ['imageOpened'], this.chatElement);
-        Obj('button', ['material-symbols-outlined'], this.imageOpened, 'close').style.height = 'fit-content';
+        this.imageOpened = obj('div', ['imageOpened'], this.chatElement, "");
+        obj('button', ['material-symbols-outlined'], this.imageOpened, 'close').style.height = 'fit-content';
     }
     ChatConfigs() {
-        this.openConfig = Obj('button', ['groupInfo', 'material-symbols-outlined'], this.thumbDiv, "more_vert");
-        this.chatConfig = Obj('div', ['chatConfigs', 'chatMenu'], document.body);
-        this.back = Obj('button', ['material-symbols-outlined', 'back'], this.chatConfig, 'arrow_back_ios')
+        this.openConfig = obj('button', ['groupInfo', 'material-symbols-outlined'], this.thumbDiv, "more_vert");
+        this.chatConfig = obj('div', ['chatConfigs', 'chatMenu'], document.body, "");
+        //
+        this.back = obj('button', ['material-symbols-outlined', 'back'], this.chatConfig, 'arrow_back_ios')
         this.back.onclick = () => config(false, this);
         this.openConfig.onclick = () => config(true, this);
         function config(v, e) {
@@ -133,11 +115,11 @@ class chat {
     }
     Thumb() {
         const menu = document.getElementById('contatos');
-        this.thumbnail = Obj('button', ['thumbnail'], menu);
+        this.thumbnail = obj('button', ['thumbnail'], menu, "");
         //
-        this.thumbBtnImg = Obj('img', ['chatImg'], this.thumbnail, this.name)
+        this.thumbBtnImg = obj('img', ['chatImg'], this.thumbnail, this.name)
         this.thumbBtnImg.src = this.thumb;
-        Obj('span',[],this.thumbnail, this.name);
+        obj('span',[],this.thumbnail, this.name, "");
         //
         this.thumbnail.onclick = () => {
             // close prev. chats
@@ -160,23 +142,23 @@ class chat {
         document.querySelectorAll('.guestInList, .addGuest').forEach(e => {
             if (e.parentNode == this.guestList) e.parentNode.removeChild(e)
         })
-        this.addGuest = Obj('button', ['material-symbols-outlined', 'addGuest'], this.guestList, 'person_add');
+        this.addGuest = obj('button', ['material-symbols-outlined', 'addGuest'], this.guestList, 'person_add');
         this.addGuest.onclick = () => this.newGuestMenu.disp = 'flex';
         this.guests.forEach(guest => {
-            const guestInList = Obj('button', ['guestInList'], this.guestList, guest.nome + ' ' + guest.sobrenome),
-                guestInfo = Obj('div', ['guestInfo'], guestInList),
-                guestInListImg = Obj('img', [], guestInList),
-                removeGuest = Obj('p', ['removeGuest', 'material-symbols-outlined'], guestInfo, "person_remove"),
-                toAdm = Obj('p', ['tornarAdm', 'material-symbols-outlined'], guestInfo);
+            const guestInList = obj('button', ['guestInList'], this.guestList, guest.nome + ' ' + guest.sobrenome),
+                  guestInfo = obj('div', ['guestInfo'], guestInList, ""),
+                  guestInListImg = obj('img', [], guestInList, ""),
+                  removeGuest = obj('p', ['removeGuest', 'material-symbols-outlined'], guestInfo, "person_remove"),
+                  toAdm = obj('p', ['tornarAdm', 'material-symbols-outlined'], guestInfo, "");
             //
             guestInList.addEventListener('contextmenu', e => {
                 e.preventDefault();
                 guestInfo.disp = 'flex';
                 guestInList.addEventListener('mouseleave', () => guestInfo.disp = '');
             });
-            Obj('img', [], Obj('div', [], guestInfo, `${guest.nome} ${guest.sobrenome}`)).src = guest.img;
+            obj('img', [], obj('div', [], guestInfo, `${guest.nome} ${guest.sobrenome}`), "").src = guest.img;
             //email
-            this.guestEmail = Obj('span', ['email'], guestInfo, guest.email);
+            this.guestEmail = obj('span', ['email'], guestInfo, guest.email);
             this.guestEmail.title = 'copy';
             // copy the email
             this.guestEmail.onclick = () => {
@@ -213,20 +195,20 @@ class chat {
         })
     }
     GuestList() {
-        this.guestList = Obj('div', ['guestList'], this.chatConfig)
+        this.guestList = obj('div', ['guestList'], this.chatConfig, "")
         this.guestList.innerHTML = '<h3 id="titleGuests">guests</h3>';
         this.guestListFunction()
         //guestList add btn
-        this.newGuestMenu = Obj('div', ['newGuestMenu'], this.chatConfig);
-        this.closeNewGuestMenu = Obj('button', ['closeBtn', 'material-symbols-outlined'], this.newGuestMenu, 'close');
+        this.newGuestMenu = obj('div', ['newGuestMenu'], this.chatConfig, "");
+        this.closeNewGuestMenu = obj('button', ['closeBtn', 'material-symbols-outlined'], this.newGuestMenu, 'close');
         this.closeNewGuestMenu.onclick = () => this.newGuestMenu.disp = 'none';
-        this.addNewGuestTitle = Obj('h2', [], this.newGuestMenu, 'add guests');
+        this.addNewGuestTitle = obj('h2', [], this.newGuestMenu, 'add guests');
         //add
-        this.guestsToAdd = Obj('div', ['guestsToAdd'], this.newGuestMenu);
+        this.guestsToAdd = obj('div', ['guestsToAdd'], this.newGuestMenu, "");
         alunos.forEach(aluno => {
             if (this.guests.includes(aluno)) { return }
             //
-            const add = Obj('button', [], this.guestsToAdd, `${aluno.nome} ${aluno.sobrenome}`), img = Obj('img', ['addUserImg'], add);
+            const add = obj('button', [], this.guestsToAdd, `${aluno.nome} ${aluno.sobrenome}`), img = obj('img', ['addUserImg'], add, "");
             img.src = aluno.img;
             add.onclick = () => {
                 this.guests.push(aluno);
@@ -244,15 +226,15 @@ class chat {
     }
     editGroup() {
         //edit group img
-        this.img = Obj('img', ['groupImg', 'chatImg'], this.chatConfig);
+        this.img = obj('img', ['groupImg', 'chatImg'], this.chatConfig, "");
         this.img.src = this.thumb;
         //
-        this.imgInput = Obj("input", [], this.chatConfig);
+        this.imgInput = obj("input", [], this.chatConfig, "");
         this.imgInput.type = 'file';
         this.imgInput.accept = "image/svg+xml";
         this.imgInput.disp = 'none';
         //this.picMenuOff.element.addEventListener('click',()=> this.picMenuOff.element.disp = "none");
-        this.picMenu = Obj('div', ['picMenu'], this.chatConfig);
+        this.picMenu = obj('div', ['picMenu'], this.chatConfig, "");
         this.buttons = [
             { name: 'picMenuUpload', ico: 'upload' },
             { name: 'picMenuCam', ico: 'photo_camera' },
@@ -260,7 +242,7 @@ class chat {
             { name: 'picMenuEdit', ico: 'edit' },
             { name: 'picMenuDel', ico: 'delete' }
         ];
-        this.buttons.forEach(btn => this[btn.name] = Obj('button', ['picMenuBtn', 'material-symbols-outlined'], this.picMenu, btn.ico));
+        this.buttons.forEach(btn => this[btn.name] = obj('button', ['picMenuBtn', 'material-symbols-outlined'], this.picMenu, btn.ico));
         document.addEventListener('click', e => {
             e.stopPropagation();
             if (!this.picMenu.contains(e.target) && e.target !== this.picMenu && e.target !== this.img) this.picMenu.disp = '';
@@ -272,10 +254,10 @@ class chat {
             //comando para fechar o menu
         });
         //foto
-        this.capture = Obj('video', ['picMenuVidCap'], this.picMenu);
+        this.capture = obj('video', ['picMenuVidCap'], this.picMenu, "");
         this.capture.autoplay = true;
-        this.CaptureBtn = Obj('button', ['vidCapBtn', 'picMenuVidCap', 'material-symbols-outlined'], this.picMenu, "add_a_photo");
-        this.picMenuCanvas = Obj('canvas', ['picMenuCanvas'], this.picMenu);
+        this.CaptureBtn = obj('button', ['vidCapBtn', 'picMenuVidCap', 'material-symbols-outlined'], this.picMenu, "add_a_photo");
+        this.picMenuCanvas = obj('canvas', ['picMenuCanvas'], this.picMenu, "");
         this.picMenuCanvas.height = "300";
         this.picMenuCanvas.width = "400";
         // picMenuCam does exist, don't worry
@@ -343,7 +325,7 @@ class chat {
         }
         //Criar editor svg com animações pre-definidas e por script
         //rename group
-        this.rename = Obj('input', ['renameGroup'], this.chatConfig, 'rename');
+        this.rename = obj('input', ['renameGroup'], this.chatConfig, 'rename');
         this.rename.type = "text";
         this.rename.spellcheck = false;
         this.rename.value = this.name;
@@ -367,9 +349,9 @@ class chat {
         });
         this.rename.onblur = () => this.renameGroup();
         this.rename.addEventListener('drop', e => e.preventDefault());
-        this.desc = Obj('input', ['groupDesc'], this.chatConfig, 'description');
+        this.desc = obj('input', ['groupDesc'], this.chatConfig, 'description');
         //del group
-        this.delete = Obj('button', ['deleteGroup', 'material-symbols-outlined'], this.chatConfig, 'delete');
+        this.delete = obj('button', ['deleteGroup', 'material-symbols-outlined'], this.chatConfig, 'delete');
         this.delete.title = 'burn everything';
         this.delete.onclick = () => {
             if (!confirm("deseja apagar este grupo?")) { return }
@@ -428,28 +410,28 @@ class chat {
         }, 3000)
     }
     Msgs() {
-        this.msgArea = Obj('div', ['msgArea'], this.chatElement);
+        this.msgArea = obj('div', ['msgArea'], this.chatElement, "");
         //scroll to the bottom
-        this.toBottom = Obj('button', ['toBottom', 'material-symbols-outlined'], this.msgArea, 'arrow_downward');
+        this.toBottom = obj('button', ['toBottom', 'material-symbols-outlined'], this.msgArea, 'arrow_downward');
         this.msgArea.onscroll = () => this.toBottom.disp = (this.msgArea.scrollTop < this.msgArea.scrollHeight - 800) ? "block" : "none";
         this.toBottom.onclick = () => this.msgArea.scrollTop = this.msgArea.scrollHeight;
         //file preview
-        this.inputChat = Obj('div', ['inputChat'], this.chatElement);
-        this.previewSlides = Obj('div', ['previewSlides'], this.inputChat);
-        this.previewArrowBackward = Obj('button', ['material-symbols-outlined', 'previewArrow'], this.inputChat, 'arrow_back_ios_new');
-        this.previewArrowFoward = Obj('button', ['material-symbols-outlined', 'previewArrow'], this.inputChat, 'arrow_forward_ios');
+        this.inputChat = obj('div', ['inputChat'], this.chatElement, "");
+        this.previewSlides = obj('div', ['previewSlides'], this.inputChat, "");
+        this.previewArrowBackward = obj('button', ['material-symbols-outlined', 'previewArrow'], this.inputChat, 'arrow_back_ios_new');
+        this.previewArrowFoward = obj('button', ['material-symbols-outlined', 'previewArrow'], this.inputChat, 'arrow_forward_ios');
         this.previewArrowFoward.style.left = '95%';
         //msgBallon
         //adicionar corretor automatico e sujestão de palavras
         //Ao começar a digitar, primeira letra em maiusculo (exeto quando o shift está ativado)
         //adicionar menu de emojis e codigos de emojis (#-EMOJI-#) 
-        this.msgBalloon = Obj('textarea', ['msgBalloon'], this.inputChat);
+        this.msgBalloon = obj('textarea', ['msgBalloon'], this.inputChat, "");
         this.msgBalloon.placeholder = 'vontade de falar...';
-        this.attach = Obj('button', ['attach', 'material-symbols-outlined'], this.inputChat, "attach_file");
+        this.attach = obj('button', ['attach', 'material-symbols-outlined'], this.inputChat, "attach_file");
         //audio recorder
         //gravação de audio
         //recursos de legendas para quem não puder ouvir o audio
-        this.inputAudio = Obj('button', ['material-symbols-outlined', 'inputAudio'], this.inputChat, 'mic');
+        this.inputAudio = obj('button', ['material-symbols-outlined', 'inputAudio'], this.inputChat, 'mic');
         let transferfiles = [], record = true;
         this.inputAudio.onclick = () => {
             if (record) {
@@ -481,18 +463,18 @@ class chat {
                     //
                     switch (true) {
                         case dt.startsWith('image/'):
-                            this.preview = Obj('img', [], this.previewSlides);
+                            this.preview = obj('img', [], this.previewSlides, "");
                             this.preview.src = e.target.result;
                             break
                         case dt.startsWith('audio/'):
                             //lidar com uma biblioteca para deno
-                            this.preview = Obj('audio', [], this.previewSlides);
+                            this.preview = obj('audio', [], this.previewSlides, "");
                             this.preview.load();
                             this.preview.src = e.target.result;
                             break
                         case dt.startsWith('video/'):
                            //lidar com videos usando a API do youtube
-                            this.preview = Obj('video', [], this.previewSlides);
+                            this.preview = obj('video', [], this.previewSlides, "");
                             this.preview.load();
                             this.preview.src = e.target.result;
                             break
@@ -560,7 +542,7 @@ value -> lista de elementos e sub elementos:
     }
 */
 
-export { chats, alunos, Obj, user, chat }
+export { chats, alunos, user, chat }
 
 class msg {
     constructor(content, file, time, owner, chat) {
@@ -578,7 +560,7 @@ class msg {
     Msgs() {
         //Adicionar opção de editar
         this.chat.msgBalloon.value = '';
-        this.msg = Obj('div', ['msg', 'sended'], this.chat.msgArea);
+        this.msg = obj('div', ['msg', 'sended'], this.chat.msgArea, "");
         this.msg.translate = 'yes';
         //criar propriedade de arrasto, pressionando ctrl e selecionando uma mensagem lhe pemitindo a arrastar
         //A propriedade permitirá ao usuario responder mensagens arrastando-as para o input de mensagem ou encaminha-las
@@ -598,7 +580,7 @@ class msg {
             document.addEventListener('click', () => msgContext.disp = '');
         })
         //owner
-        this.msgTop = Obj('div', ['msgTop'], this.msg);
+        this.msgTop = obj('div', ['msgTop'], this.msg, "");
         //improved whith AI:
         const LAST_MSG = this.chat.msgs.length > 0 ? this.chat.msgs[this.chat.msgs.length - 1] : null;
         if (LAST_MSG && LAST_MSG.owner == user) {
@@ -606,17 +588,17 @@ class msg {
             this.msg.classList.add('msgList');
         } else {
             this.msgTop.style.marginBottom = "5px";
-            this.msgOwnerPic = Obj('img', ['msgOwnerPic'/*, 'lazyload'*/], this.msgTop);
-            this.msgOwner = Obj('p', ['msgOwner'], this.msgTop, `${this.owner.nome} ${this.owner.sobrenome}`);
+            this.msgOwnerPic = obj('img', ['msgOwnerPic'/*, 'lazyload'*/], this.msgTop, "");
+            this.msgOwner = obj('p', ['msgOwner'], this.msgTop, `${this.owner.nome} ${this.owner.sobrenome}`);
             this.msgOwnerPic.src = this.owner.img;
         }
         if (LAST_MSG && LAST_MSG.time != this.time || this.chat.msgs.length == 0) {
-            this.msgDate = Obj('p', ['msgDate'], this.msgTop, this.time);
+            this.msgDate = obj('p', ['msgDate'], this.msgTop, this.time, "");
         } else {
             this.msg.classList.remove('msgList');
         }
         //
-        this.filePlaceHolder = Obj('div', ['filePlaceholder'], this.msg);
+        this.filePlaceHolder = obj('div', ['filePlaceholder'], this.msg, "");
         //file --> carregamento de novas mensagens.
         //O carregamento de arquivos em mensagens antigas deve ser feito dentro da classe msg, pois não há previsualização do envio.
         if (this.file) {
@@ -627,7 +609,7 @@ class msg {
                     return
                 }
                 //
-                const playtime = Obj('span', ['playTime'], this.filePlaceHolder)
+                const playtime = obj('span', ['playTime'], this.filePlaceHolder, "")
                 const wavesurfer = WaveSurfer.create({
                     height: 45,
                     width: 240,
@@ -692,7 +674,7 @@ class msg {
                     wavesurfer.setTime(0);
                     play.innerText = "play_arrow";
                 })
-                const play = Obj('button', ['material-symbols-outlined', 'playPause'], this.filePlaceHolder, 'play_arrow');
+                const play = obj('button', ['material-symbols-outlined', 'playPause'], this.filePlaceHolder, 'play_arrow');
                 play.addEventListener('click', () => {
                     wavesurfer.playPause();
                     play.innerText = wavesurfer.isPlaying() ? "pause" : "play_arrow";
@@ -727,7 +709,7 @@ class msg {
         //let bannedWordsRegex = new RegExp(this.chat.bannedWords.join("|"), "gi");
         //this.content = sinonimos(binaryToText(this.content)).replace(bannedWordsRegex, matchedWord => '*'.repeat(matchedWord.length));
         //Text Content
-        this.msgTextContent = Obj('span', ['msgTextContent'], this.msg);
+        this.msgTextContent = obj('span', ['msgTextContent'], this.msg, "");
         this.msgTextContent.innerHTML = this.content;
     }
     readTextFile() {
@@ -737,7 +719,7 @@ class msg {
             const result = e.target.result;
             //
             if (this.file.type === 'text/html') {
-                this.htmlFileElement = Obj('a', ['htmlFileBtn'], this.filePlaceHolder, this.file.name);
+                this.htmlFileElement = obj('a', ['htmlFileBtn'], this.filePlaceHolder, this.file.name);
                 this.htmlFileElement.href = URL.createObjectURL(new Blob([result], { type: 'text/html' }));
                 this.htmlFileElement.target = '_blank';
             }

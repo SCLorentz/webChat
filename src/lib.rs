@@ -13,6 +13,7 @@ extern {
 
 #[wasm_bindgen]
 pub fn greet(name: &str) {
+    alert("Hello, world!");
     if confirm(&format!("Are you sure?")) {
         alert(&format!("fuck yourself! {}", name));
     } else {

@@ -1,5 +1,6 @@
 // deno-lint-ignore-file no-window no-window-prefix prefer-const
 //Aqui ficam todas as propriedades interativas da pagina (islands of interactivity)
+import init, { obj } from "/script/webchat.js";
 
 import { chat, chats, user, alunos } from '/script/main.js';
 const search = document.getElementById('pesquisar'),
@@ -84,9 +85,11 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(response => response.json()) // Converte a resposta em formato JSON
         .then(data => {
             //console.log(data)
-            for (const c of data.chats) {
-                chats.push(new chat(c[1], c[0], c[2], [user, alunos[1]], [user], true))
-            }
+            init().then(() => {
+                for (const c of data.chats) {
+                    chats.push(new chat(c[1], c[0], c[2], [user, alunos[1]], [user], true))
+                }
+            })
         })
         .catch(error => console.error(error))
         // get last chat opened using the coockie 'lastChat', and set it to be open
