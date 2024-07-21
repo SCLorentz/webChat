@@ -1,7 +1,0 @@
-{
-    "compilerOptions": {
-        "paths": {
-            "/script/main.js": ["./public/script/main.js"]
-        }
-    }
-}
