@@ -6,6 +6,7 @@ edition = "2021"
 authors = ["S.C. Lorentz <113468900+SCLorentz@users.noreply.github.com>"]
 
 [dependencies]
+getrandom = { version = "0.2", features = ["js"] }
 wasm-bindgen = "0.2"
 
 [dependencies.web-sys]
@@ -18,9 +19,13 @@ features = [
   'Window',
 ]
 
-#[dependencies.uuid]
-#version = "1.10.0"
-#eatures = ["v4", "fast-rng", "macro-diagnostics"]
+[dependencies.uuid]
+version = "1.10.0"
+features = [
+    "v4",                # Lets you generate random UUIDs
+    "fast-rng",          # Use a faster (but still sufficiently random) RNG
+    "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
+]
 
 [lib]
 crate-type = ["cdylib"]

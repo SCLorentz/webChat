@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-window no-window-prefix prefer-const
 //Aqui ficam todas as propriedades interativas da pagina (islands of interactivity)
-import init, { obj } from "/script/webchat.js";
+import init, { obj, id } from "/script/webchat.js";
 
 import { chat, chats, user, alunos } from '/script/main.js';
 const search = document.getElementById('pesquisar'),
@@ -136,7 +136,7 @@ document.getElementById('create').onclick = () => {
             })
             .catch(error => console.error(error))
             .finally(() => {
-                chats.push(new chat(Math.random(), name, '/img/groupImg.svg', [user, alunos[1]], [user], true)); //obter ip gerado pelo DB
+                chats.push(new chat(id(), name, '/img/groupImg.svg', [user, alunos[1]], [user], true)); //obter ip gerado pelo DB
                 nameInput.value = '';
             });
     }

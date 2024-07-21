@@ -808,7 +808,7 @@ input:-internal-autofill-selected {
 .msgContext {
     display: none;
     background: #0c2724c2;
-    border-radius: 0.5rem;
+    border-radius: 0.2rem 0.5rem 0.5rem 0.5rem;
     padding: 5px;
     position: fixed;
     z-index: 1;
@@ -1277,6 +1277,7 @@ input:-internal-autofill-selected {
     (inclui script para ativação e desativação do titlebar)*/
 }
 
+/*por algum motiva a barra de contatos não volta a aparecer ao redimensionar o navegador de volta a um tamanho maior*/
 @media only screen and (max-width: 850px) {
     body {
         grid-template-columns: 1fr;

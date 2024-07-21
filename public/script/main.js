@@ -1,14 +1,16 @@
 // deno-lint-ignore-file no-window no-window-prefix no-unused-vars prefer-const
 //Aqui ficam todas as funções mais complexas da pagina (islands of interactivity)
-import init, { obj } from "/script/webchat.js";
+import init, { obj, id } from "/script/webchat.js";
 
 const chats = [],
     alunos = [],
     user = { nome: userData.given_name, sobrenome: `${userData.family_name} (você)`, img: userData.picture, email: userData.email },
-    popup = document.getElementById('popup'),
-    msgContext = init().then(() => {
-        obj('div', ['msgContext'], document.body, "context");
-    })
+    popup = document.getElementById('popup');
+
+let msgContext = null;
+init().then(() => {
+    msgContext = obj('div', ['msgContext'], document.body, "context");
+})
 
 Object.defineProperty(Element.prototype, 'disp', {
     set: function (s) {
@@ -30,7 +32,7 @@ for (let i = 0; i < 8; i++) {
 // refazer usando rust e wasm
 class chat {
     constructor(id, name, thumb, guests, adm) {
-        this.id = "chat:" + id;
+        this.id = id;
         this.name = name;
         this.thumb = thumb;
         this.guests = guests;
@@ -572,9 +574,12 @@ class msg {
         this.msg.addEventListener('contextmenu', e => {
             e.preventDefault();
             e.stopPropagation();
+            // style
+            console.log(msgContext);
             msgContext.disp = 'flex';
-            msgContext.style.left = `calc(${e.screenX}px)`;
+            msgContext.style.left = `calc(${e.screenX}px - ${msgContext.offsetWidth / 2}px)`;
             msgContext.style.top = `calc(${e.clientY}px)`;
+            //
             document.addEventListener('contextmenu', e => {
                 if (e.target.classList != 'msgContext') msgContext.disp = '';
             })

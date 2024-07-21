@@ -1,6 +1,5 @@
 // the UUIDs won't be generated using SQLite, they will be generated in Rust. That will provide a better IDs system.
-/*extern crate uuid;
-use uuid::Uuid;*/
+use uuid::Uuid;
 
 use wasm_bindgen::prelude::*;
 use web_sys::Element;
@@ -37,6 +36,11 @@ pub fn obj(ty: String, classes: Vec<String>, father: web_sys::Document, txt: Str
     father.append_child(&e)?;
 
     return Ok(e);
+}
+
+#[wasm_bindgen]
+pub fn id() -> String {
+    return Uuid::new_v4().to_string();
 }
 
 /*#[wasm_bindgen]

@@ -72,11 +72,14 @@ router
         const tokens = ctx.state.session.get("tokens") as | { accessToken: string } | undefined;
         //
         let html = new TextDecoder().decode(await Deno.readFile("./public/index.html"));
+        let session_cookie = null;
+        //ctx.request.headers.get("Cookie");
         //
         if (!tokens) {
             // Construir a URL para o redirecionamento de autorização e obter um codeVerifier para o login
             const { uri, codeVerifier } = await oauth2Client.code.getAuthorizationUri();
             ctx.state.session.flash("codeVerifier", codeVerifier);
+            session_cookie = codeVerifier;
             //
             html = new TextDecoder().decode(await Deno.readFile("./view/interface/login.html"))
                 .replace(/<google\/>/g, `<a href="${uri}"><img src="/img/google.svg" height="50"></a>`)
@@ -103,7 +106,8 @@ router
         );
         const contactsData = await contactsResponse.json();<--lidar com essa informação na database no server-side*/
         // there should be a better way to do this:
-        html = html.replace("<userData/>", `<script>const userData = ${JSON.stringify(userData)}</script>`);
+        // this dosent'look secure, but it works
+        html = html.replace("<userData/>", `<script>const userData = ${JSON.stringify(userData)};\nlocalStorage.setItem('session', ${session_cookie});</script>`);
         //
         ctx.response.headers.set("Content-Type", "text/html");
         ctx.response.body = html;
