@@ -1,9 +1,6 @@
 ﻿# web chat
 
-Version: 4.1.2
-
-## Why am I doing this?
-simple, because I don't trust other companies like google, apple or meta and I don't want to share my data with them
+Version: 4.1.3
 
 ## Commands
 
