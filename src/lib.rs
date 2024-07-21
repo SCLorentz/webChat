@@ -1,3 +1,4 @@
+// the UUIDs won't be generated using SQLite, they will be generated in Rust. That will provide a better IDs system.
 extern crate uuid;
 use uuid::Uuid;
 
@@ -11,7 +12,7 @@ extern {
 
 #[wasm_bindgen]
 pub fn greet(name: &str) {
-    if confirm(&format!("Are you sure?")) {
+    if confirm(&format!("Are you sure? {}", Uuid::new_v4())) {
         alert(&format!("You are sure! {}", name));
     } else {
         alert("You are not sure :(");
@@ -95,20 +96,5 @@ impl Chat {
     }
 }*/
 
-/*#[wasm_bindgen(start)]
-fn run() -> Result<(), JsValue> {
-    // Use `web_sys`'s global `window` function to get a handle on the global
-    // window object.
-    let window = web_sys::window().expect("no global `window` exists");
-    let document = window.document().expect("should have a document on window");
-    let _body = document.body().expect("document should have a body");
-
-    // Manufacture the element we're gonna append
-    let val = document.create_element("p")?;
-    val.set_text_content(Some("Hello from Rust!"));
-    
-    let contatos = document.get_element_by_id("contatos");
-    contatos.unwrap().append_child(&val)?;
-
-    Ok(())
-}*/
+// this is executed once when the wasm module is loaded
+// #[wasm_bindgen(start)] <-- this is necessary to run the function in the start of the wasm module
