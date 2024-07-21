@@ -18,9 +18,9 @@ features = [
   'Window',
 ]
 
-[dependencies.uuid]
-version = "1.10.0"
-features = ["v4", "fast-rng", "macro-diagnostics"]
+#[dependencies.uuid]
+#version = "1.10.0"
+#eatures = ["v4", "fast-rng", "macro-diagnostics"]
 
 [lib]
 crate-type = ["cdylib"]

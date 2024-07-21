@@ -1,10 +1,10 @@
 // deno-lint-ignore-file no-window no-window-prefix no-unused-vars prefer-const
 //Aqui ficam todas as funções mais complexas da pagina (islands of interactivity)
-
-import init, { obj } from "/script/chat_4.js";
+import init, { obj, greet } from "/script/chat_4.js";
 init().then(() => {
-    obj('div', ["test"], document.body, "hello");
-});
+    greet("essa porra n tá compilando")
+})
+
 
 const chats = [],
     alunos = [],
@@ -60,6 +60,11 @@ class chat {
     build() {
         this.chatElement = Obj('div', ['chat', 'chatMenu'], document.body);
         this.chatElement.id = this.id;
+        //
+        init().then(() => {
+            this.ok = obj('div', ['chat', 'chatMenu'], document.body, "");
+            console.log("fuck: ", this.ok);
+        });
         //this.chatElement.addEventListener('contextmenu', e => e.preventDefault());
         this.thumbDiv = Obj('div', ['thumbDiv'], this.chatElement);
         Obj('button', ['arrowBack', 'material-symbols-outlined'], this.thumbDiv, "arrow_back_ios"); //mobile

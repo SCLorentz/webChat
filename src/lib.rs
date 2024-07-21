@@ -1,8 +1,9 @@
 // the UUIDs won't be generated using SQLite, they will be generated in Rust. That will provide a better IDs system.
-extern crate uuid;
-use uuid::Uuid;
+/*extern crate uuid;
+use uuid::Uuid;*/
 
 use wasm_bindgen::prelude::*;
+use web_sys::Element;
 
 #[wasm_bindgen]
 extern {
@@ -12,38 +13,35 @@ extern {
 
 #[wasm_bindgen]
 pub fn greet(name: &str) {
-    if confirm(&format!("Are you sure? {}", Uuid::new_v4())) {
-        alert(&format!("You are sure! {}", name));
+    if confirm(&format!("Are you sure?")) {
+        alert(&format!("fuck yourself! {}", name));
     } else {
         alert("You are not sure :(");
     }
 }
 
 #[wasm_bindgen]
-pub fn obj(ty: String, classes: Vec<String>, father: web_sys::Document, txt: String) -> Result<(), JsValue> {
+pub fn obj(ty: String, classes: Vec<String>, father: web_sys::Document, txt: String) -> Result<Element, JsValue> {
     let window = web_sys::window().expect("no global `window` exists");
     let document = window.document().expect("should have a document on window");
     let _body = document.body().expect("document should have a body");
 
     // Manufacture the element we're gonna append
-    let val = document.create_element(&ty)?;
-    val.set_text_content(Some(&txt));
-
+    let e = document.create_element(&ty)?;
+    e.set_text_content(Some(&txt));
     // set classes
-    val.set_class_name(&classes.join(" "));
+    e.set_class_name(&classes.join(" "));
 
-    //et contatos = document.get_element_by_id(father);
-    father.append_child(&val)?;
+    //let contatos = document.get_element_by_id(father);
+    father.append_child(&e)?;
 
-    Ok(())
+    return Ok(e);
 }
 
 /*#[wasm_bindgen]
-struct Chat {
-    // criar um type personalizado para IDs
-    id: String,
+pub struct Chats {
+    id: i32,
     name: String,
-    // base64 de imagem
     thumb: String,
     guests: Vec<String>,
     adms: Vec<String>,
@@ -51,48 +49,25 @@ struct Chat {
 }
 
 #[wasm_bindgen]
-impl Chat {
-    // constructor
-    pub fn new(id: &str, name: &str, thumb: &str, guests: Vec<String>, adms: Vec<String>) -> Self {
-        let id = format!("chat:{}", id);
-        let msgs = Vec::new();
-        
-        let mut chat = Chat {
-            id,
-            name: name.to_string(),
-            thumb: thumb.to_string(),
-            guests,
-            adms,
-            msgs,
-        };
+impl Chats {
+    #[wasm_bindgen(constructor)]
+    pub fn new(id: i32, name: String, thumb: String, guests: Vec<String>, adms: Vec<String>) -> Self {
+        Chats { 
+            id: id,
+            name: name,
+            thumb: thumb,
+            guests: guests,
+            adms: adms,
+            msgs: Vec::new(),
+        }
+    }
 
-        chat.build();               // handle chat creation
-        chat.settings();            // handle chat configurations
-        chat.msgs();                // handle messages
-        
-        chat
+    pub fn id(&self) -> i32 {
+        self.id
     }
-    // functions
-    fn build(&mut self) {
-        //
-        let window = web_sys::window().expect("no global `window` exists");
-        let document = window.document().expect("should have a document on window");
-        let body = document.body().expect("document should have a body");
-        // generate id
-        self.id = format!("chat:{}", Uuid::new_v4());
-        // generate name
-        self.name = format!("Chat {}", self.name);
-        // generate base for the chat
-        //obj("div".to_string(), vec![format!("chat_{}", self.id.clone())], document.body, format!("Chat {}", self.name));
-        // generate thumb
-        //obj("img", vec![format!("img_{}",self.id.clone())], self.thumb.clone());
-    }
-    fn settings(&mut self) {
-        // buold chat configurations
-        //obj("div".to_string(), vec![format!("chat_{}", self.id.clone())], body);
-    }
-    fn msgs(&mut self) {
-        // Implementation of msgs
+
+    pub fn set_name(&mut self, new: String) {
+        self.name = new;
     }
 }*/
 
