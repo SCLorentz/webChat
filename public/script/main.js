@@ -505,7 +505,8 @@ class chat {
                 e.preventDefault();
                 if (this.msgBalloon.value.replace(/^\s+/, "").replace(/[\u200E\s⠀ㅤ]/g, "") != '' || transferfiles.length != 0) {
                     //
-                    this.preview.parentNode.removeChild(this.preview);
+                    // fix the issue before adding this back:
+                    //this.preview.parentNode.removeChild(this.preview);
                     this.inputChat.style.height = '';
                     this.previewSlides.disp = '';
                     this.msgs.push(new msg(this.msgBalloon.value, transferfiles, new Date(), user, this));
