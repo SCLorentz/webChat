@@ -61,9 +61,7 @@ async function sendData(c: CustomContext) {
         c.response.body = { message: "Dados recebidos com sucesso! :)" };
     } catch (error) {
         console.error("Erro ao executar a consulta SQL: ", error);
-        c.response.body = {
-            message: "Erro ao inserir dados no banco de dados",
-        };
+        c.response.body = { message: "Erro ao inserir dados no banco de dados" };
     }
 }
 
