@@ -2,6 +2,9 @@
 
 Version: 4.1.2
 
+## Why am I doing this?
+simple, because I don't trust other companies like google, apple or meta and I don't want to share my data with them
+
 ## Commands
 
 start the server: `./start.sh`, if this dosen't work, try to use `chmod +x start.sh` and run again.
