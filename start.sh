@@ -1,3 +1,5 @@
+# kill any running server
+pkill deno
 # build WASM
 echo building wasm...
 echo ""
@@ -6,7 +8,7 @@ wasm-pack build --target web --out-dir ./public/script
 
 echo starting the server...
 echo ""
+
 deno task start
 
-echo "opening http://localhost:8000 in your browser"
-open http://localhost:8000
+# adicionar metodo para abrir no browser fora do container
