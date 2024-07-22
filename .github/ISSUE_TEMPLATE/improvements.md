@@ -10,7 +10,7 @@ assignees: ''
 **Describe the what should be better**
 A clear and concise description of what should be added or modified
 
-**How can we make this happend?**
+**How can we make this happen?**
 Steps to reproduce the behavior:
 1. Go to '...'
 2. Click on '....'
