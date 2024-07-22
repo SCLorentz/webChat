@@ -21,3 +21,11 @@ start the server: `./start.sh`, if this dosen't work, try to use `chmod +x start
 para transição de paginas --> view Transitions API
 
 scroll --> animation-timeline
+
+**V. 1.0.0 --> I rewrite the entire front-end with object orientation**
+
+**V. 2.0.0 --> I added the back-end in nodeJS**
+
+**V. 3.0.0 --> I change the runtime (Node --> Deno), language (JS --> TS) and framework (Express --> Oak) in the back-end**
+
+**V. 4.0.0 --> I'm adding WASM features in the front-end (and am planning to re-write some parts of the old front-end in rust)**
