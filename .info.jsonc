@@ -8,7 +8,7 @@
     // information about the project
     "name": "Webchat 4",
     "description": "Opensource Webchat v.4 for communication",
-    "version": "4.1.3",
+    "version": "4.1.4",
     // back-end
     "back-end": {
         // language
