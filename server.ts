@@ -1,4 +1,4 @@
-import { Application, Context, Router, send } from "https://deno.land/x/oak@v12.6.1/mod.ts"; //Servidor
+import { Application, Router, send, Cookies } from "https://deno.land/x/oak@v12.6.1/mod.ts"; //Servidor
 import { Session } from "https://deno.land/x/oak_sessions@v4.0.5/mod.ts";
 import { OAuth2Client } from "https://deno.land/x/oauth2_client@v1.0.2/mod.ts";
 import { DB } from "https://deno.land/x/sqlite@v3.8/mod.ts"; //database
@@ -15,10 +15,6 @@ const oauth2Client = new OAuth2Client({
         scope: ["email", "profile", "https://www.googleapis.com/auth/contacts"],
     },
 }), db = new DB("./database/data.db");
-
-interface CustomContext extends Context {
-    error: (message: string, error: Error) => void;
-}
 
 type AppState = {
     session: Session;
@@ -44,48 +40,32 @@ function DBData(data: Record<string, string>) {
             break;
     }
 }
-//transformar em classe
-async function sendData(c: CustomContext) {
-    const body = c.request.body();
-    // is json? The response should be json
-    if (body.type != "json") {
-        c.response.status = 400;
-        c.response.body = { message: "Ooops, parece que algo deu errado. Sua resposta deveria estar no formato JSON!" };
-        return
-    }
-    // the type of the body is json
-    const data = await body.value /*?? {message: "Erro ao inserir dados no banco de dados"}*/;
-    // check the db for the data
-    try {
-        DBData(data);
-        c.response.body = { message: "Dados recebidos com sucesso! :)" };
-    } catch (error) {
-        console.error("Erro ao executar a consulta SQL: ", error);
-        c.response.body = { message: "Erro ao inserir dados no banco de dados" };
-    }
-}
 
 const router = new Router<AppState>();
 router
     .get("/", async (ctx) => {
         // information about the collected data
-        if (ctx.request.url.toString().includes("data")) {
+        if (ctx.request.url.toString().includes("?data")) {
             ctx.response.body = await Deno.readFile("./view/interface/collected_data.html");
             return
         }
         // is user logged in?
         // the cookies autnetication is not secure, but it works, review later
-        const tokens = ctx.state.session.get("tokens") as | { accessToken: string } | undefined || ctx.request.headers.get("Cookie") as unknown as | { accessToken: string } | undefined;
+        const tokens = ctx.state.session.get("tokens") as | { accessToken: string } | undefined || ctx.request.headers.get("login") as unknown as | { accessToken: string } | undefined;
         //
         let html = new TextDecoder().decode(await Deno.readFile("./public/index.html"));
-        let session_cookie = null;
         //
         // this dosen't verfy if the tokens are valid
         if (!tokens) {
             // Construir a URL para o redirecionamento de autorização e obter um codeVerifier para o login
             const { uri, codeVerifier } = await oauth2Client.code.getAuthorizationUri();
             ctx.state.session.flash("codeVerifier", codeVerifier);
-            session_cookie = codeVerifier;
+            //
+            const cookies = new Cookies(ctx.request.headers, { secure: true }); // Marcado como seguro (opcional)
+            cookies.set("login", codeVerifier, { maxAge: 600000 }); // Expira em 1 hora
+
+            // Adicione o cookie à resposta
+            ctx.response.headers.set("Set-Cookie", cookies.toString());
             //
             html = new TextDecoder().decode(await Deno.readFile("./view/interface/login.html"))
                 .replace(/<google\/>/g, `<a href="${uri}"><img src="/img/google.svg" height="50"></a>`)
@@ -113,7 +93,7 @@ router
         const contactsData = await contactsResponse.json();<--lidar com essa informação na database no server-side*/
         // there should be a better way to do this:
         // this dosent'look secure, but it works
-        html = html.replace("<userData/>", `<script>const userData = ${JSON.stringify(userData)};\nlocalStorage.setItem('session', ${session_cookie});</script>`);
+        html = html.replace("<userData/>", `<script>const userData = ${JSON.stringify(userData)};</script>`);
         //
         ctx.response.headers.set("Content-Type", "text/html");
         ctx.response.body = html;
@@ -133,7 +113,25 @@ router
         ctx.response.redirect("/");
     })
     // enviar dados (back-end --> front-end)
-    .post("/enviar", async (ctx) => await sendData(ctx))
+    .post("/enviar", async (ctx) => {
+        const body = ctx.request.body();
+        // is json? The response should be json
+        if (body.type != "json") {
+            ctx.response.status = 400;
+            ctx.response.body = { message: "Ooops... parece que algo deu errado. Sua resposta deveria estar no formato JSON!" };
+            return
+        }
+        // the type of the body is json
+        const data = await body.value /*?? {message: "Erro ao inserir dados no banco de dados"}*/;
+        // check the db for the data
+        try {
+            DBData(data);
+            ctx.response.body = { message: "Dados recebidos com sucesso! :)" };
+        } catch (error) {
+            console.error("Erro ao executar a consulta SQL: ", error);
+            ctx.response.body = { message: "Erro ao inserir dados no banco de dados" };
+        }
+    })
     // receber dados
     .get("/receber", (ctx) => ctx.response.body = { chats: db.query("SELECT name, id, img FROM chats") })
     // file server (pages)
