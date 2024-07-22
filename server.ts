@@ -68,13 +68,19 @@ async function sendData(c: CustomContext) {
 const router = new Router<AppState>();
 router
     .get("/", async (ctx) => {
+        // information about the collected data
+        if (ctx.request.url.toString().includes("data")) {
+            ctx.response.body = await Deno.readFile("./view/interface/collected_data.html");
+            return
+        }
         // is user logged in?
-        const tokens = ctx.state.session.get("tokens") as | { accessToken: string } | undefined;
+        // the cookies autnetication is not secure, but it works, review later
+        const tokens = ctx.state.session.get("tokens") as | { accessToken: string } | undefined || ctx.request.headers.get("Cookie") as unknown as | { accessToken: string } | undefined;
         //
         let html = new TextDecoder().decode(await Deno.readFile("./public/index.html"));
         let session_cookie = null;
-        //ctx.request.headers.get("Cookie");
         //
+        // this dosen't verfy if the tokens are valid
         if (!tokens) {
             // Construir a URL para o redirecionamento de autorização e obter um codeVerifier para o login
             const { uri, codeVerifier } = await oauth2Client.code.getAuthorizationUri();

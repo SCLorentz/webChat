@@ -1,0 +1,20 @@
+{   
+    // routes: page > access
+    // this will redirect the user to the login page
+    "/": "login",
+    // you need to be logged in to access these pages --> 401 error
+    "/call": "loggedIn",
+    "/favorites": "loggedIn",
+    // scripts and styles are only accessible to logged in users
+    // '...' refers to all the files in the folder
+    "/script/...": "loggedIn",
+    "/style/...": "loggedIn",
+    // you can access these pages without logging in, but you won't be able to download the extensions
+    "/plugins": "limitedAccess",
+    // blocked pages --> 403 error
+    // this will be more important than the '/script/...' route, since it has a higher priority
+    "/script/README.md": "blocked",
+    "/script/.gitignore": "blocked",
+    "/adm": "blocked"
+    // priority: blocked > loggedIn > limitedAccess
+}
