@@ -2,6 +2,8 @@
 
 Version: 4.1.3
 
+This is still been developed, so it has some bugs. I would appreciate if you want to contribute with the project
+
 ## Commands
 
 start the server: `./start.sh`, if this dosen't work, try to use `chmod +x start.sh` and run again.
