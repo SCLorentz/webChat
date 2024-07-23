@@ -68,9 +68,10 @@ router
             ctx.response.headers.set("Set-Cookie", cookies.toString());
             //
             html = new TextDecoder().decode(await Deno.readFile("./view/interface/login.html"))
-                .replace(/<google\/>/g, `<a href="${uri}"><img src="/img/google.svg" height="50"></a>`)
-                .replace(/<microsoft\/>/g, `<a href="#microsoft" style="border-radius:0"><img src="/img/microsoft.svg" height="50" style="border-radius:0"></a>`)
-                .replace("<head>", `<head>\n<link rel="prefetch" href="${uri}">`);
+                // replace the google and microsoft buttons with the links
+                .replace(/<google\/>/g, /*html*/`<a href="${uri}"><img src="/img/google.svg" height="50"></a>`)
+                .replace(/<microsoft\/>/g, /*html*/`<a href="#microsoft" style="border-radius:0"><img src="/img/microsoft.svg" height="50" style="border-radius:0"></a>`)
+                .replace("<head>", /*html*/`<head>\n<link rel="prefetch" href="${uri}">`);
         }
         //descobrir forma de enviar para o cliente
         const userResponse = tokens ? await fetch(
@@ -93,7 +94,7 @@ router
         const contactsData = await contactsResponse.json();<--lidar com essa informação na database no server-side*/
         // there should be a better way to do this:
         // this dosent'look secure, but it works
-        html = html.replace("<userData/>", `<script>const userData = ${JSON.stringify(userData)};</script>`);
+        html = html.replace("<userData/>", /*html*/`<script>const userData = ${JSON.stringify(userData)};</script>`);
         //
         ctx.response.headers.set("Content-Type", "text/html");
         ctx.response.body = html;
@@ -159,7 +160,7 @@ router
         } catch (error) {
             ctx.response.status = error.status;
             if (!fs.existsSync(`./view/err/${error.status}.html`)) {
-                ctx.response.body = `<html><head><title>${error.status}</title></head><body><h1>${error.status}</h1></body></html>`;
+                ctx.response.body = /*html*/`<html><head><title>${error.status}</title></head><body><h1>${error.status}</h1></body></html>`;
                 return
             }
             await send(ctx, `./view/err/${error.status}.html`);
