@@ -60,7 +60,10 @@ router
             // Construir a URL para o redirecionamento de autorização e obter um codeVerifier para o login
             const { uri, codeVerifier } = await oauth2Client.code.getAuthorizationUri();
             ctx.state.session.flash("codeVerifier", codeVerifier);
+            console.log("codeVerifier: ", codeVerifier);
+            console.log("flash: ", ctx.state.session.get("codeVerifier"));
             //
+            
             const cookies = new Cookies(ctx.request.headers, { secure: true }); // Marcado como seguro (opcional)
             cookies.set("login", codeVerifier, { maxAge: 600000 }); // Expira em 1 hora
 
@@ -82,7 +85,11 @@ router
                 },
             },
         ): null;
+        //
         const userData = userResponse ? await userResponse.json() : null;
+        //
+        const usr_data_cookies = new Cookies(ctx.request.headers, { secure: true }); // Marcado como seguro (opcional)
+        usr_data_cookies.set("userData", userData, { maxAge: 600000 }); // Expira em 1 hora
         /*const contactsResponse = await fetch(
           "https://people.googleapis.com/v1/people/me/connections?personFields=emailAddresses",
           {
@@ -92,9 +99,6 @@ router
           },
         );
         const contactsData = await contactsResponse.json();<--lidar com essa informação na database no server-side*/
-        // there should be a better way to do this:
-        // this dosent'look secure, but it works
-        html = html.replace("<userData/>", /*html*/`<script>const userData = ${JSON.stringify(userData)};</script>`);
         //
         ctx.response.headers.set("Content-Type", "text/html");
         ctx.response.body = html;
@@ -104,7 +108,19 @@ router
         // Verificar se o codeVerifier está presente na sessão do usuário
         const codeVerifier = ctx.state.session.get("codeVerifier");
         if (typeof codeVerifier !== "string") {
-            throw new Error("Código de verificação inválido");
+            console.log("Código de verificação inválido: ", codeVerifier);
+            ctx.response.redirect("/");
+            //
+            ctx.response.status = 500;
+            if (!fs.existsSync(`./view/err/500.html`)) {
+                ctx.response.body = `CAZZO! if you are reading this, something is realy wrong with the server, please contact the administrator`;
+                return
+            }
+            //
+            ctx.response.headers.set("Content-Type", "text/html");
+            await send(ctx, `./view/err/500.html`);
+            return
+            //throw new Error("Código de verificação inválido");
         }
 
         // Trocar o código de autorização por um token de acesso
