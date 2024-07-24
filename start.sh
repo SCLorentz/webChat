@@ -1,6 +1,5 @@
 # kill any running server
 pkill deno
-deno upgrade
 # build WASM
 echo building wasm...
 echo ""

@@ -41,6 +41,13 @@ function DBData(data: Record<string, string>) {
     }
 }
 
+async function page(url: string) {
+    if (!fs.existsSync(url)) {
+        return await Deno.readFile("./view/err/404.html");
+    }
+    return await Deno.readFile(url);
+}
+
 const router = new Router<AppState>();
 router
     .get("/", async (ctx) => {
@@ -105,22 +112,24 @@ router
     })
     // login
     .get("/oauth2/callback", async (ctx) => {
+        console.log("login");
         // Verificar se o codeVerifier está presente na sessão do usuário
         const codeVerifier = ctx.state.session.get("codeVerifier");
         if (typeof codeVerifier !== "string") {
             console.log("Código de verificação inválido: ", codeVerifier);
-            ctx.response.redirect("/");
             //
             ctx.response.status = 500;
             if (!fs.existsSync(`./view/err/500.html`)) {
                 ctx.response.body = `CAZZO! if you are reading this, something is realy wrong with the server, please contact the administrator`;
                 return
             }
+            //page("./view/err/500.html")
+            //
+            throw new Error("Código de verificação inválido");
             //
             ctx.response.headers.set("Content-Type", "text/html");
             await send(ctx, `./view/err/500.html`);
             return
-            //throw new Error("Código de verificação inválido");
         }
 
         // Trocar o código de autorização por um token de acesso
@@ -198,5 +207,5 @@ app
     .use(Session.initMiddleware())
     .use(router.allowedMethods(), router.routes());
 
-console.log(`HTTP server running. Access it at: http://localhost:8080/`);
-await app.listen({ port: 8080 });
+console.log(`HTTP server running. Access it at: http://localhost:5959/`);
+await app.listen({ port: 5959 });
