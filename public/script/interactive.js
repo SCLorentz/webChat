@@ -2,6 +2,8 @@
 //Aqui ficam todas as propriedades interativas da pagina (islands of interactivity)
 import init, { obj, id } from "/script/webchat.js";
 
+console.log(document.cookie);
+
 import { chat, chats, user, alunos } from '/script/main.js';
 const search = document.getElementById('pesquisar'),
       creator = document.getElementById('newChatMenu');

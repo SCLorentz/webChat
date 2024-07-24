@@ -41,6 +41,13 @@ function DBData(data: Record<string, string>) {
     }
 }
 
+async function page(url: string) {
+    if (!fs.existsSync(url)) {
+        return await Deno.readFile("./view/err/404.html");
+    }
+    return await Deno.readFile(url);
+}
+
 const router = new Router<AppState>();
 router
     .get("/", async (ctx) => {
@@ -60,7 +67,10 @@ router
             // Construir a URL para o redirecionamento de autorização e obter um codeVerifier para o login
             const { uri, codeVerifier } = await oauth2Client.code.getAuthorizationUri();
             ctx.state.session.flash("codeVerifier", codeVerifier);
+            console.log("codeVerifier: ", codeVerifier);
+            console.log("flash: ", ctx.state.session.get("codeVerifier"));
             //
+            
             const cookies = new Cookies(ctx.request.headers, { secure: true }); // Marcado como seguro (opcional)
             cookies.set("login", codeVerifier, { maxAge: 600000 }); // Expira em 1 hora
 
@@ -68,9 +78,10 @@ router
             ctx.response.headers.set("Set-Cookie", cookies.toString());
             //
             html = new TextDecoder().decode(await Deno.readFile("./view/interface/login.html"))
-                .replace(/<google\/>/g, `<a href="${uri}"><img src="/img/google.svg" height="50"></a>`)
-                .replace(/<microsoft\/>/g, `<a href="#microsoft" style="border-radius:0"><img src="/img/microsoft.svg" height="50" style="border-radius:0"></a>`)
-                .replace("<head>", `<head>\n<link rel="prefetch" href="${uri}">`);
+                // replace the google and microsoft buttons with the links
+                .replace(/<google\/>/g, /*html*/`<a href="${uri}"><img src="/img/google.svg" height="50"></a>`)
+                .replace(/<microsoft\/>/g, /*html*/`<a href="#microsoft" style="border-radius:0"><img src="/img/microsoft.svg" height="50" style="border-radius:0"></a>`)
+                .replace("<head>", /*html*/`<head>\n<link rel="prefetch" href="${uri}">`);
         }
         //descobrir forma de enviar para o cliente
         const userResponse = tokens ? await fetch(
@@ -81,7 +92,11 @@ router
                 },
             },
         ): null;
+        //
         const userData = userResponse ? await userResponse.json() : null;
+        //
+        const usr_data_cookies = new Cookies(ctx.request.headers, { secure: true }); // Marcado como seguro (opcional)
+        usr_data_cookies.set("userData", userData, { maxAge: 600000 }); // Expira em 1 hora
         /*const contactsResponse = await fetch(
           "https://people.googleapis.com/v1/people/me/connections?personFields=emailAddresses",
           {
@@ -91,22 +106,20 @@ router
           },
         );
         const contactsData = await contactsResponse.json();<--lidar com essa informação na database no server-side*/
-        // there should be a better way to do this:
-        // this dosent'look secure, but it works
-        html = html.replace("<userData/>", `<script>const userData = ${JSON.stringify(userData)};</script>`);
         //
         ctx.response.headers.set("Content-Type", "text/html");
         ctx.response.body = html;
     })
     // login
     .get("/oauth2/callback", async (ctx) => {
+        console.log("login");
         // Verificar se o codeVerifier está presente na sessão do usuário
         const codeVerifier = ctx.state.session.get("codeVerifier");
         if (typeof codeVerifier !== "string") {
-            ctx.response.headers.set("Content-Type", "text/html");
-            ctx.response.body = await Deno.readFile("./view/err/500.html");
-            return Error("Código de verificação inválido");
-            //throw new Error("Código de verificação inválido");
+        ctx.response.headers.set("Content-Type", "text/html");
+        ctx.response.body = await Deno.readFile("./view/err/500.html");
+        return Error("Código de verificação inválido");
+        //throw new Error("Código de verificação inválido");
         }
 
         // Trocar o código de autorização por um token de acesso
@@ -162,7 +175,7 @@ router
         } catch (error) {
             ctx.response.status = error.status;
             if (!fs.existsSync(`./view/err/${error.status}.html`)) {
-                ctx.response.body = `<html><head><title>${error.status}</title></head><body><h1>${error.status}</h1></body></html>`;
+                ctx.response.body = /*html*/`<html><head><title>${error.status}</title></head><body><h1>${error.status}</h1></body></html>`;
                 return
             }
             await send(ctx, `./view/err/${error.status}.html`);
@@ -184,5 +197,5 @@ app
     .use(Session.initMiddleware())
     .use(router.allowedMethods(), router.routes());
 
-console.log(`HTTP server running. Access it at: http://localhost:8080/`);
-await app.listen({ port: 8080 });
+console.log(`HTTP server running. Access it at: http://localhost:5959/`);
+await app.listen({ port: 5959 });
