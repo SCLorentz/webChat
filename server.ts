@@ -116,26 +116,16 @@ router
         // Verificar se o codeVerifier está presente na sessão do usuário
         const codeVerifier = ctx.state.session.get("codeVerifier");
         if (typeof codeVerifier !== "string") {
-            console.log("Código de verificação inválido: ", codeVerifier);
-            //
-            ctx.response.status = 500;
-            if (!fs.existsSync(`./view/err/500.html`)) {
-                ctx.response.body = `CAZZO! if you are reading this, something is realy wrong with the server, please contact the administrator`;
-                return
-            }
-            //page("./view/err/500.html")
-            //
-            throw new Error("Código de verificação inválido");
-            //
-            ctx.response.headers.set("Content-Type", "text/html");
-            await send(ctx, `./view/err/500.html`);
-            return
+        ctx.response.headers.set("Content-Type", "text/html");
+        ctx.response.body = await Deno.readFile("./view/err/500.html");
+        return Error("Código de verificação inválido");
+        //throw new Error("Código de verificação inválido");
         }
 
         // Trocar o código de autorização por um token de acesso
         const tokens = await oauth2Client.code.getToken(ctx.request.url, { codeVerifier });
         ctx.state.session.flash("tokens", tokens);
-
+        // git, cade meu commit?
         ctx.response.redirect("/");
     })
     // enviar dados (back-end --> front-end)
