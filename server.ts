@@ -112,7 +112,7 @@ router
         // Trocar o código de autorização por um token de acesso
         const tokens = await oauth2Client.code.getToken(ctx.request.url, { codeVerifier });
         ctx.state.session.flash("tokens", tokens);
-
+        // git, cade meu commit?
         ctx.response.redirect("/");
     })
     // enviar dados (back-end --> front-end)
