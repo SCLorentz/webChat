@@ -41,13 +41,6 @@ function DBData(data: Record<string, string>) {
     }
 }
 
-async function page(url: string) {
-    if (!fs.existsSync(url)) {
-        return await Deno.readFile("./view/err/404.html");
-    }
-    return await Deno.readFile(url);
-}
-
 const router = new Router<AppState>();
 router
     .get("/", async (ctx) => {
