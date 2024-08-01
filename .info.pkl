@@ -21,7 +21,7 @@ backend {
         Auth = "OAuth",
         Sessions = "google",
         // front-end
-        frontend = {
+        frontend {
             // language
             language = "JavaScript",
             features {
@@ -55,7 +55,7 @@ backend {
     // build and run the website
     build {
         language = "Shell",
-        features = {
+        features {
             // wasm build
             build = "wasm-pack",
             // execute the server
