@@ -6,14 +6,14 @@ files {
     "./README.md"
 },
 // information about the project
-name = "Webchat 4",
-description = "Opensource Webchat v.4 for communication",
-version = "4.1.4",
+version: Int(this > 4) = 4.1.4,
+name: String = "Webchat \(version)",
+description = "Opensource Webchat v.\(version) for communication",
 // back-end
 backend {
     // language
-    language = "TypeScript",
-    features = {
+    language: String = "TypeScript",
+    features {
         // database
         DB = "SQLite",
         Routes = "Oak",
