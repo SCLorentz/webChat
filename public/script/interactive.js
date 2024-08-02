@@ -4,7 +4,7 @@ import init, { obj, id } from "/script/webchat.js";
 
 console.log(document.cookie);
 
-import { chat, chats, user, alunos } from '/script/main.js';
+import { chat, chats, user, alunos } from '/script';
 const search = document.getElementById('pesquisar'),
       creator = document.getElementById('newChatMenu');
 

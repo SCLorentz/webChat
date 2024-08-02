@@ -4,7 +4,8 @@ import init, { obj, id } from "/script/webchat.js";
 
 const chats = [],
     alunos = [],
-    user = { nome: userData.given_name, sobrenome: `${userData.family_name} (você)`, img: userData.picture, email: userData.email },
+    user = { nome: "Felipe", sobrenome: "Lorentz", img: null, email: "user.email@domain.org.br"}
+    //user = { nome: userData.given_name, sobrenome: `${userData.family_name} (você)`, img: userData.picture, email: userData.email },
     popup = document.getElementById('popup');
 
 let msgContext = null;
