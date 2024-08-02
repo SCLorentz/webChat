@@ -8,6 +8,8 @@ This is still been developed, so it has some bugs. I would appreciate if you wan
 
 start the server: `./start.sh`, if this dosen't work, try to use `chmod +x start.sh` and run again.
 
+transpile *.info.pkl* into json: `pkl eval -f json .info.pkl`
+
 ## Recomendações de bibliotecas (favor revisar):
 
 1. https://deno.land/x/png2svg@0.0.1 --> converter imagens de perfil em svg
