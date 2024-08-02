@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"log"
+	"strings"
 )
 
 func main() {
@@ -14,9 +15,21 @@ func main() {
 	// file handle
 	fileServer := http.FileServer(http.Dir("./public"))
 	script := http.FileServer(http.Dir("./public/script"))
+	css := http.FileServer(http.Dir("./public/style"))
 
-    http.Handle("/", fileServer)
-	http.HandleFunc("/script", script.ServeHTTP)
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		// Extraindo o caminho do arquivo da URL
+		path := r.URL.Path
+	
+		switch strings.ToLower(path[strings.LastIndexByte(path, '.')+1:]) {
+		case "js":
+			script.ServeHTTP(w, r)
+		case "css":
+			css.ServeHTTP(w, r)
+		default:
+			fileServer.ServeHTTP(w, r)
+		}
+	})
 
 	if err := http.ListenAndServe(":8080", nil); err != nil {
         log.Fatal(err)

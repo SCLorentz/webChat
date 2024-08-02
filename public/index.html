@@ -10,13 +10,13 @@
     <meta name="description" content="Chat">
     <meta charset="UTF-8">
     <!--WaveSurfer-->
-    <script src="/script/wavesurfer.min.js" media="all" defer></script>
+    <script src="/wavesurfer.min.js" media="all" defer></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!--name & ico-->
     <link id="page-ico" rel="icon" type="image/x-icon" href="/img/icon/chat.ico">
     <title>Chat</title>
     <!--css-->
-    <link rel="stylesheet" href="/style/style.css" media="all">
+    <link rel="stylesheet" href="/style.css" media="all">
 </head>
 <body translate="no">
     <div id="titlebar"></div>
@@ -118,16 +118,10 @@
     <!---->
     <userData/>
     <!--scripts-->
-    <script src="/script" type="module"></script>
-    <script src="/script/interactive.js" type="module"></script>
-    <!--ideias de HTML personalizado-->
-    <!--
-        <chat/>
-        <msg/>
-        <thumb/>
-    -->
+    <script src="/main.js" type="module"></script>
+    <script src="/interactive.js" type="module"></script>
     <!--<script type="module">
-        import init, { greet, obj } from "/script/chat_4.js";
+        import init, { greet, obj } from "/webchat.js";
         init().then(() => {
             greet("WebAssembly");
         });
