@@ -1,4 +1,4 @@
-@import url("/style/font.css");
+@import url("/font.css");
 
 .test {
     color: var(--text-dark);
