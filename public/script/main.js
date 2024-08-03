@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-window no-window-prefix no-unused-vars prefer-const
 //Aqui ficam todas as funções mais complexas da pagina (islands of interactivity)
-import init, { obj } from "/webchat.js";
+import init, { obj } from "/wasm/webchat.js";
 
 const chats = [],
     alunos = [],

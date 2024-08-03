@@ -9,7 +9,15 @@ import (
 	"net/http"
 	"log"
 	"strings"
+	"errors"
+	"os"
 )
+
+func checkFileExists(filePath string) bool {
+	_, error := os.Stat(filePath)
+	//return !os.IsNotExist(err)
+	return !errors.Is(error, os.ErrNotExist)
+}
 
 var tpl *template.Template
 
@@ -32,19 +40,26 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		// Extraindo o caminho do arquivo da URL
 		path := r.URL.Path
-
-		if r.URL.Path != "/" {
-			custom404Handler(w, r)
-			return
-		}
 	
 		switch strings.ToLower(path[strings.LastIndexByte(path, '.')+1:]) {
 			case "js":
-				script.ServeHTTP(w, r)
+				if checkFileExists(r.URL.Path) {
+					script.ServeHTTP(w, r)
+					return
+				}
+				custom404Handler(w, r)
 			case "css":
-				css.ServeHTTP(w, r)
+				if checkFileExists(r.URL.Path) {
+					css.ServeHTTP(w, r)
+					return
+				}
+				custom404Handler(w, r)
 			default:
-				fileServer.ServeHTTP(w, r)
+				if checkFileExists(r.URL.Path) {
+					fileServer.ServeHTTP(w, r)
+					return
+				}
+				custom404Handler(w, r)
 		}
 	})
 
