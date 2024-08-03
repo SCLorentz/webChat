@@ -31,3 +31,6 @@ scroll --> animation-timeline
 **V. 3.0.0 --> I change the runtime (Node --> Deno), language (JS --> TS) and framework (Express --> Oak) in the back-end**
 
 **V. 4.0.0 --> I'm adding WASM features in the front-end (and am planning to re-write some parts of the old front-end in rust)**
+
+
+ontem eu fiz duas contribuições, mas não foi muito, pois estava viajando de volta para o brasil, mas mesmo assim o github havia considerado como uma contribuição. Hoje, porém, ele a removeu, motivo: nenhum. Eu gravei um video mostrando isso. PAIA
