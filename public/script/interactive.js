@@ -1,10 +1,10 @@
 // deno-lint-ignore-file no-window no-window-prefix prefer-const
 //Aqui ficam todas as propriedades interativas da pagina (islands of interactivity)
-import init, { obj, id } from "/script/webchat.js";
+import init, { id } from "/wasm/webchat.js";
 
 console.log(document.cookie);
 
-import { chat, chats, user, alunos } from '/script/main.js';
+import { chat, chats, user, alunos } from '/main.js';
 const search = document.getElementById('pesquisar'),
       creator = document.getElementById('newChatMenu');
 

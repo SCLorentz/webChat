@@ -1,14 +1,14 @@
 # kill any running server
-pkill deno
+# ...
 # build WASM
 echo building wasm...
 echo ""
 cargo install wasm-pack
-wasm-pack build --target web --out-dir ./public/script
+wasm-pack build --target web --out-dir ./public/wasm
 
 echo starting the server...
 echo ""
 
-deno task start
+go run .
 
 # adicionar metodo para abrir no browser fora do container

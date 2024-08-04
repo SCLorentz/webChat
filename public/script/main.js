@@ -1,10 +1,11 @@
 // deno-lint-ignore-file no-window no-window-prefix no-unused-vars prefer-const
 //Aqui ficam todas as funções mais complexas da pagina (islands of interactivity)
-import init, { obj, id } from "/script/webchat.js";
+import init, { obj } from "/wasm/webchat.js";
 
 const chats = [],
     alunos = [],
-    user = { nome: userData.given_name, sobrenome: `${userData.family_name} (você)`, img: userData.picture, email: userData.email },
+    user = { nome: "Felipe", sobrenome: "Lorentz", img: null, email: "user.email@domain.org.br"}
+    //user = { nome: userData.given_name, sobrenome: `${userData.family_name} (você)`, img: userData.picture, email: userData.email },
     popup = document.getElementById('popup');
 
 let msgContext = null;

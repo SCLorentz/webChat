@@ -108,11 +108,13 @@ router
         console.log("login");
         // Verificar se o codeVerifier está presente na sessão do usuário
         const codeVerifier = ctx.state.session.get("codeVerifier");
+        /*if (typeof codeVerifier !== "string") {
+            ctx.response.headers.set("Content-Type", "text/html");
+            ctx.response.body = await Deno.readFile("./view/err/500.html");
+            return Error("Código de verificação inválido");
+        }*/
         if (typeof codeVerifier !== "string") {
-        ctx.response.headers.set("Content-Type", "text/html");
-        ctx.response.body = await Deno.readFile("./view/err/500.html");
-        return Error("Código de verificação inválido");
-        //throw new Error("Código de verificação inválido");
+            throw new Error("Código de verificação inválido");
         }
 
         // Trocar o código de autorização por um token de acesso
