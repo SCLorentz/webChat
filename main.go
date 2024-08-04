@@ -40,16 +40,18 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		// Extraindo o caminho do arquivo da URL
 		path := r.URL.Path
+		//fmt.Println("path:", path)
 	
 		switch strings.ToLower(path[strings.LastIndexByte(path, '.')+1:]) {
 			case "js":
-				if checkFileExists(r.URL.Path) {
+				if checkFileExists("./public/script" + r.URL.Path) {
 					script.ServeHTTP(w, r)
 					return
 				}
+				fmt.Println("404")
 				custom404Handler(w, r)
 			case "css":
-				if checkFileExists(r.URL.Path) {
+				if checkFileExists("./public/style" + r.URL.Path) {
 					css.ServeHTTP(w, r)
 					return
 				}
