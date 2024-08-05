@@ -46,7 +46,7 @@ func main() {
 		if file == "html" {
 			file = "static"
 		}
-		fmt.Println("path:", file + r.URL.Path)
+		//fmt.Println("path:", file + r.URL.Path)
 		
 		send(file + r.URL.Path, w, r, http.FileServer(http.Dir("./public/" + file)))
 	})
@@ -54,6 +54,39 @@ func main() {
 	http.HandleFunc("/059", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html")
 		w.Write([]byte("<h1>59</h1>"))
+	})
+
+	// por algum motivo, essa foi a unica forma de enviar o script que funcionou
+	http.HandleFunc("/webchat", func(w http.ResponseWriter, r *http.Request) {
+		filename := "./public/script/webchat.js"
+
+		// Open the file and check for errors
+		file, err := os.Open(filename)
+		if err != nil {
+			fmt.Println("Erro ao abrir o arquivo:", err)
+			return
+		}
+		defer file.Close() // Close the file even on errors
+
+		// Get the file size
+		info, err := os.Stat(filename)
+		if err != nil {
+			fmt.Println("Erro ao obter informações do arquivo:", err)
+			return
+		}
+
+		// Read the file content
+		data := make([]byte, info.Size())
+		count, err := file.Read(data)
+		if err != nil {
+			fmt.Println("Erro ao ler o arquivo:", err)
+			return
+		}
+
+		//fmt.Printf("read %d bytes: %q\n", count, data[:count])
+		// send the file content
+		w.Header().Set("Content-Type", "text/javascript")
+		w.Write([]byte(data[:count]))
 	})
 
 	if err := http.ListenAndServe(":8080", nil); err != nil {
