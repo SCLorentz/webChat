@@ -23,19 +23,9 @@ func init() {
 	err403 = template.Must(template.ParseFiles("templates/err/403.html"));
 }
 
-func custom404Handler(w http.ResponseWriter, _ *http.Request) {
-	w.WriteHeader(http.StatusNotFound)
-	err404.Execute(w, nil)
-}
-
-func custom500Handler(w http.ResponseWriter, _ *http.Request) {
-	w.WriteHeader(http.StatusNotFound)
-	err500.Execute(w, nil)
-}
-
-func custom403Handler(w http.ResponseWriter, _ *http.Request) {
-	w.WriteHeader(http.StatusNotFound)
-	err403.Execute(w, nil)
+func errorHandler(w http.ResponseWriter, _ *http.Request, err int, template *template.Template) {
+	w.WriteHeader(err)
+	template.Execute(w, nil)
 }
 
 func send(path string, w http.ResponseWriter, r *http.Request, file_type string) {
@@ -44,7 +34,7 @@ func send(path string, w http.ResponseWriter, r *http.Request, file_type string)
 	exist := !errors.Is(error, os.ErrNotExist)
 
 	if !exist {
-		custom404Handler(w, r)
+		errorHandler(w, r, http.StatusNotFound, err404)
 		fmt.Println("error 404: " + filename + " from: " + r.Header.Get("Referer"))
 		return
 	}
@@ -53,7 +43,7 @@ func send(path string, w http.ResponseWriter, r *http.Request, file_type string)
 	file, err := os.Open(filename)
 	if err != nil {
 		fmt.Println("Erro ao abrir o arquivo:", err)
-		custom500Handler(w, r)	// change to 500 error
+		errorHandler(w, r, http.StatusInternalServerError, err500)
 		return
 	}
 	defer file.Close() // Close the file even on errors
@@ -62,7 +52,7 @@ func send(path string, w http.ResponseWriter, r *http.Request, file_type string)
 	info, err := os.Stat(filename)
 	if err != nil {
 		fmt.Println("Erro ao obter informações do arquivo:", err)
-		custom500Handler(w, r) // change to 500 error
+		errorHandler(w, r, http.StatusInternalServerError, err500)
 		return
 	}
 
@@ -71,7 +61,7 @@ func send(path string, w http.ResponseWriter, r *http.Request, file_type string)
 	count, err := file.Read(data)
 	if err != nil {
 		fmt.Println("Erro ao ler o arquivo:", err)
-		custom500Handler(w, r)	// change to 500 error
+		errorHandler(w, r, http.StatusInternalServerError, err500)
 		return
 	}
 
@@ -122,7 +112,7 @@ func main() {
 		
 		if file != "static" && r.Header.Get("Referer") == "" {
 			fmt.Println(file)
-			custom403Handler(w, r)
+			errorHandler(w, r, http.StatusForbidden, err403)
 			return
         }
 
