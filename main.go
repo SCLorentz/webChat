@@ -13,22 +13,29 @@ import (
 	"os"
 )
 
-var tpl *template.Template
-var internal_err *template.Template
+var err404 *template.Template
+var err500 *template.Template
+var err403 *template.Template
 
 func init() {
-    tpl = template.Must(template.ParseFiles("templates/err/404.html"));
-	internal_err = template.Must(template.ParseFiles("templates/err/500.html"));
+    err404 = template.Must(template.ParseFiles("templates/err/404.html"));
+	err500 = template.Must(template.ParseFiles("templates/err/500.html"));
+	err403 = template.Must(template.ParseFiles("templates/err/403.html"));
 }
 
 func custom404Handler(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
-	tpl.Execute(w, nil)
+	err404.Execute(w, nil)
 }
 
 func custom500Handler(w http.ResponseWriter, _ *http.Request) {
 	w.WriteHeader(http.StatusNotFound)
-	internal_err.Execute(w, nil)
+	err500.Execute(w, nil)
+}
+
+func custom403Handler(w http.ResponseWriter, _ *http.Request) {
+	w.WriteHeader(http.StatusNotFound)
+	err403.Execute(w, nil)
 }
 
 func send(path string, w http.ResponseWriter, r *http.Request, file_type string) {
@@ -38,7 +45,7 @@ func send(path string, w http.ResponseWriter, r *http.Request, file_type string)
 
 	if !exist {
 		custom404Handler(w, r)
-		fmt.Println(filename)
+		fmt.Println("error 404: " + filename + " from: " + r.Header.Get("Referer"))
 		return
 	}
 	
@@ -91,23 +98,27 @@ func main() {
 		file := strings.ToLower(path[strings.LastIndexByte(path, '.')+1:])
 		url := file + r.URL.Path
 
+		// the most important route
 		if path == "/" {
 			send("index.html", w, r, "html")
 			return
 		}
-		
+
+		// verify if the user can access directly the file, remember, the code is public and it can be acessed in the devtools or in my github
 		if file == "html" {
 			file = "static"
-		}
+		} else if r.Header.Get("Referer") == "" {
+			custom403Handler(w, r)
+			return
+        }
 
-		//fmt.Println("path:", file + r.URL.Path)
+		// other custom routes
+		if path == "/webchat" {
+			send("/wasm/webchat.js", w, r, "js")
+			return
+		}
 		
 		send(url, w, r, file)
-	})
-
-	// por algum motivo, essa foi a unica forma de enviar o script que funcionou
-	http.HandleFunc("/webchat", func(w http.ResponseWriter, r *http.Request) {
-		send("/wasm/webchat.js", w, r, "js")
 	})
 
 	if err := http.ListenAndServe(":8080", nil); err != nil {
