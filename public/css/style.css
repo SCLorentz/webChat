@@ -575,7 +575,7 @@ button {
     border: 2px solid;
     border-image: linear-gradient(to right, var(--theme-5), #0000ff00);
     border-image-slice: 1;
-    backdrop-filter: url(./filter.svg#waterEffect) blur(3px) brightness(0.8);
+    backdrop-filter: url(/filter.svg#waterEffect) blur(3px) brightness(0.8);
     width: -webkit-fill-available;
     height: 80%;
     color: white;

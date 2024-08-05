@@ -44,7 +44,7 @@ class chat {
         this.Thumb();
         this.Msgs();
         this.msgs = [];
-        //obter palavras banidas do grupo e globais
+        // obter palavras banidas do grupo e globais
     }
     build() {
         this.chatElement = obj('div', ['chat', 'chatMenu'], document.body, "");
@@ -52,7 +52,7 @@ class chat {
         //this.chatElement.addEventListener('contextmenu', e => e.preventDefault());
         this.thumbDiv = obj('div', ['thumbDiv'], this.chatElement, "");
         obj('button', ['arrowBack', 'material-symbols-outlined'], this.thumbDiv, "arrow_back_ios", ""); //mobile
-        //thumbPicture
+        // thumbPicture
         this.thumbPicture = obj('img', ['chatImg'], this.thumbDiv, "chat image");
         this.thumbPicture.src = this.thumb;
         this.thumbDiv.innerHTML += this.name;
@@ -67,10 +67,10 @@ class chat {
                 e.onclick = () => salvos.disp = "grid";
             })
         })
-        //pesquisar
+        // pesquisar
         this.searchBtn = obj('button', ['searchOnGroupBtn', 'material-symbols-outlined'], this.thumbDiv, 'search');
         this.searchInput = obj('input', ['searchOnGroupInput'], this.searchBtn, 'pesquisar...');
-        //search action
+        // search action
         this.searchBtn.onclick = () => {
             this.searchInput.style.width = this.thumbDiv.offsetWidth / 6 + 'px';
             this.searchInput.focus();
@@ -86,11 +86,11 @@ class chat {
                     msg.getMsg.disp = (
                         [...msg.content].filter((char, index) => char == this.searchInput.value.charAt(index)).length / msg.content.length < 0.7 && this.searchInput.value !== '' && msg.content
                     ) ? 'none' : 'block'
-                    //verificar se o input !== '' && conteudo da mensagem ~=(70%) input
+                    // verificar se o input !== '' && conteudo da mensagem ~=(70%) input
                 )
             }
         })
-        //video call
+        // video call
         this.call = obj('button', ['videoCam', 'material-symbols-outlined'], this.thumbDiv, 'videocam');
         this.call.onclick = () => {
             window.open('/call')
@@ -133,7 +133,7 @@ class chat {
             localStorage.setItem('lastChat', this.id);
             //
             document.title = `Chat | ${this.name}`;
-            //thumbnail, set colors
+            // thumbnail, set colors
             document.querySelectorAll('.thumbnail').forEach(e => e.style.background = '');
             this.thumbnail.style.background = '#0000002b';
             //

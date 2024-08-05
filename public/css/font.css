@@ -1,12 +1,12 @@
 @font-face {
     font-family: "Roboto";
-    src: url("/RobotoMono-VariableFont_wght-1.ttf") format("truetype");
+    src: url("/RobotoMono-VariableFont_wght-1.woff2") format("woff2");
     font-display: swap;
 }
 
 @font-face {
     font-family: "Emoji";
-    src: url("/NotoEmoji-Regular.ttf") format("truetype");
+    src: url("/NotoEmoji-Regular.woff2") format("woff2");
     font-display: swap;
 }
 
@@ -14,6 +14,5 @@
     font-family: 'Material Symbols Outlined';
     font-style: normal;
     font-weight: 100 700;
-    src: url("/kJEhBvYX7BgnkSrUwT8OhrdQw4oELdPIeeII9v6oFsI.ttf") format('truetype');
-    font-display: swap;
+    src: url("/kJEhBvYX7BgnkSrUwT8OhrdQw4oELdPIeeII9v6oFsI.woff2") format('woff2');
 }
