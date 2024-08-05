@@ -120,7 +120,7 @@ func main() {
 				extension = ".html"
 		}
 		
-		if file != "html" && file != "" && r.Header.Get("Referer") == "" {
+		if file != "static" && r.Header.Get("Referer") == "" {
 			fmt.Println(file)
 			custom403Handler(w, r)
 			return
