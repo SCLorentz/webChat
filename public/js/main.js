@@ -23,7 +23,7 @@ for (let i = 0; i < 8; i++) {
     const aluno = {
         nome: 'nome' + i,
         sobrenome: 'sobrenome' + i,
-        img: '/img/User.svg',
+        img: '/User.svg',
         email: `nome${i}@example.com`,
         id: 1 + i,
     };
