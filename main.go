@@ -82,6 +82,8 @@ func send(path string, w http.ResponseWriter, r *http.Request, file_type string)
 			w.Header().Set("Content-Type", "text/javascript")
 		case "wasm":
 			w.Header().Set("Content-Type", "application/wasm")
+		case "static":
+			w.Header().Set("Content-Type", "text/html")
 		default:
 			w.Header().Set("Content-Type", "text/" + file_type)
 	}
@@ -95,8 +97,12 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		// Extraindo o caminho do arquivo da URL
 		path := r.URL.Path
-		file := strings.ToLower(path[strings.LastIndexByte(path, '.')+1:])
-		url := file + r.URL.Path
+
+		// gemini helped me with this, but I have modifiied it
+		// transformar em algo mais parecido com o meus codigos em rust com o equivalente de Some() e None()
+		lastIndex := strings.LastIndexByte(path, '.')
+		file := ""
+        if lastIndex > 0 && lastIndex < len(path) - 1 { file = strings.ToLower(path[lastIndex + 1:]) }
 
 		// the most important route
 		if path == "/" {
@@ -104,20 +110,27 @@ func main() {
 			return
 		}
 
+		extension := ""
 		// verify if the user can access directly the file, remember, the code is public and it can be acessed in the devtools or in my github
-		if file == "html" {
-			file = "static"
-		} else if r.Header.Get("Referer") == "" {
-			custom403Handler(w, r)
-			return
-        }
+		switch file {
+			case "html":
+				file = "static"
+			case "":
+				file = "static"
+				extension = ".html"
+			default:
+				fmt.Println(file)
+				custom403Handler(w, r)
+				return
+		}
 
 		// other custom routes
 		if path == "/webchat" {
 			send("/wasm/webchat.js", w, r, "js")
 			return
 		}
-		
+
+		url := file + r.URL.Path + extension
 		send(url, w, r, file)
 	})
 
