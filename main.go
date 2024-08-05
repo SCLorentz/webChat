@@ -118,11 +118,13 @@ func main() {
 			case "":
 				file = "static"
 				extension = ".html"
-			default:
-				fmt.Println(file)
-				custom403Handler(w, r)
-				return
 		}
+		
+		if file != "html" && file != "" && r.Header.Get("Referer") == "" {
+			fmt.Println(file)
+			custom403Handler(w, r)
+			return
+        }
 
 		// other custom routes
 		if path == "/webchat" {
