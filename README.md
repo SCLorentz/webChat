@@ -25,5 +25,3 @@ scroll --> animation-timeline
 **V. 4.0.0 --> WASM features in the front-end**
 
 **V. 5.0.0 --> I rewrite the entire back-end from js to go without libraries**
-
-ontem eu fiz duas contribuições, mas não foi muito, pois estava viajando de volta para o brasil, mas mesmo assim o github havia considerado como uma contribuição. Hoje, porém, ele a removeu, motivo: nenhum. Eu gravei um video mostrando isso. PAIA
