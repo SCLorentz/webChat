@@ -6,7 +6,7 @@ This is still been developed, so it has some bugs. I would appreciate if you wan
 
 ## Commands
 
-start the server: `./start.sh`, if this dosen't work, try to use `chmod +x start.sh` and run again.
+start the server: `./start.sh`, if this doesn't work, try to use `chmod +x start.sh` and run again.
 
 transpile *.info.pkl* into json: `pkl eval -f json .info.pkl`
 
