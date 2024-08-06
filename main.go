@@ -47,7 +47,7 @@ func errHandler(w http.ResponseWriter, err int) {
 		return
 	}
 	// Handle unexpected errors here
-	err_msg := "Internal Server Error, this is an err inside the err handler, te original err was: " + fmt.Sprintf("%b", err);
+	err_msg := "Internal Server Error, this is an err inside the err handler, the original err was: " + fmt.Sprintf("%b", err);
 	http.Error(w, err_msg, 500)
 }
 
