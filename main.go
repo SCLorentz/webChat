@@ -13,29 +13,43 @@ import (
 	"os"
 )
 
-var err404 *template.Template
-var err500 *template.Template
-var err403 *template.Template
-
-func init() {
-    err404 = template.Must(template.ParseFiles("templates/err/404.html"));
-	err500 = template.Must(template.ParseFiles("templates/err/500.html"));
-	err403 = template.Must(template.ParseFiles("templates/err/403.html"));
+type ErrorTemplate struct {
+	Template *template.Template
 }
 
-func errorHandler(w http.ResponseWriter, _ *http.Request, err int, template *template.Template) {
-	w.WriteHeader(err)
-	template.Execute(w, nil)
+func genTemplate(err int) *template.Template {
+	return template.Must(template.ParseFiles("templates/err/" + fmt.Sprintf("%d", err) + ".html"))
 }
 
-func send(path string, w http.ResponseWriter, r *http.Request, file_type string) {
+var errorTemplates = map[int]ErrorTemplate {
+	401: {genTemplate(401)},
+	403: {genTemplate(403)},
+	404: {genTemplate(404)},
+	500: {genTemplate(500)},
+	501: {genTemplate(501)},
+}
+
+func errHandler(w http.ResponseWriter, err int) {
+	// retornar a função para poder eviter usar 'errHandler(w, 500)' e no lugar usar 'errHandler(500)', sem a necessidade do 'http.ResponseWriter'
+	//fmt.Println("error file: " + errorTemplates[err].Template.Name())
+	if template, ok := errorTemplates[err]; ok {
+		w.WriteHeader(err)
+		template.Template.Execute(w, nil)
+		return
+	}
+	// Handle unexpected errors here
+	err_msg := "Internal Server Error, this is an err inside the err handler, te original err was: " + fmt.Sprintf("%b", err);
+	http.Error(w, err_msg, 500)
+}
+
+func send(path string, w http.ResponseWriter, _ *http.Request, file_type string) {
 	filename := "./public/" + path
 	_, error := os.Stat(filename)
 	exist := !errors.Is(error, os.ErrNotExist)
 
 	if !exist {
-		errorHandler(w, r, http.StatusNotFound, err404)
-		fmt.Println("error 404: " + filename + " from: " + r.Header.Get("Referer"))
+		errHandler(w, 404)
+		//fmt.Println("error 404: " + filename + " from: " + r.Header.Get("Referer"))
 		return
 	}
 	
@@ -43,7 +57,7 @@ func send(path string, w http.ResponseWriter, r *http.Request, file_type string)
 	file, err := os.Open(filename)
 	if err != nil {
 		fmt.Println("Erro ao abrir o arquivo:", err)
-		errorHandler(w, r, http.StatusInternalServerError, err500)
+		errHandler(w, 500)
 		return
 	}
 	defer file.Close() // Close the file even on errors
@@ -52,7 +66,7 @@ func send(path string, w http.ResponseWriter, r *http.Request, file_type string)
 	info, err := os.Stat(filename)
 	if err != nil {
 		fmt.Println("Erro ao obter informações do arquivo:", err)
-		errorHandler(w, r, http.StatusInternalServerError, err500)
+		errHandler(w, 500)
 		return
 	}
 
@@ -61,7 +75,7 @@ func send(path string, w http.ResponseWriter, r *http.Request, file_type string)
 	count, err := file.Read(data)
 	if err != nil {
 		fmt.Println("Erro ao ler o arquivo:", err)
-		errorHandler(w, r, http.StatusInternalServerError, err500)
+		errHandler(w, 500)
 		return
 	}
 
@@ -112,7 +126,7 @@ func main() {
 		
 		if file != "static" && r.Header.Get("Referer") == "" {
 			fmt.Println(file)
-			errorHandler(w, r, http.StatusForbidden, err403)
+			errHandler(w, 403)
 			return
         }
 
