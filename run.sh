@@ -4,7 +4,7 @@
 echo building wasm...
 echo ""
 cargo install wasm-pack
-wasm-pack build --target web --out-dir ./public/scripts
+wasm-pack build --target web --out-dir ./public/scripts/wasm
 
 echo starting the server...
 echo ""
