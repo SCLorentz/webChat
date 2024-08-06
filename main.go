@@ -11,6 +11,7 @@ import (
 	"strings"
 	"errors"
 	"os"
+	"time"
 	//"regexp"
 )
 
@@ -96,6 +97,8 @@ func send(path string, w http.ResponseWriter, file_type string) {
 			file_type = "application/wasm"
 		case "static":
 			file_type = "text/html"
+		case "scripts":
+			file_type = "application/javascript"
 		default:
 			file_type = "text/" + file_type
 	}
@@ -104,7 +107,30 @@ func send(path string, w http.ResponseWriter, file_type string) {
 	w.Write([]byte(data[:count]))
 }
 
-func main() {
+func terminal() {
+	for {
+		var i string
+
+		fmt.Print("> ")
+		fmt.Scan(&i)
+
+		if i == "ext" {
+			fmt.Println("exiting...")
+			count := 5;
+
+			for i := 0; i < 5; i++ {
+				fmt.Println("closing in " + fmt.Sprintf("%d", count)  + "...")
+				count -= 1
+				// Todo: add a way to cancel the process
+				time.Sleep(1 * time.Second)
+			}
+			fmt.Println("closing...")
+			os.Exit(0)
+		}
+	}
+}
+
+func server() {
     fmt.Println("The server has started successfully in http://localhost:8080")
 	// file handle
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -134,6 +160,7 @@ func main() {
 			"woff2": {Folder: "fonts"},
 			"webmanifest": {Folder: "static"},
 			"html": {Folder: "static"},
+			"js": {Folder: "scripts"},
 			//"": {Folder: "static"},
 		}
 
@@ -174,4 +201,11 @@ func main() {
 	if err := http.ListenAndServe(":8080", nil); err != nil {
         log.Fatal(err)
     }
+}
+
+func main() {
+	go server()
+	go terminal()
+
+	select {}
 }

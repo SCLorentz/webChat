@@ -1,6 +1,6 @@
 ﻿# web chat
 
-Version: 5.3.0_a
+Version: 5.3.1_a
 
 This is still been developed, so it has some bugs. I would appreciate if you want to contribute with the project
 
@@ -15,6 +15,8 @@ transpile *.info.pkl* into json: `pkl eval -f json .info.pkl`
 para transição de paginas --> view Transitions API
 
 scroll --> animation-timeline
+
+## Versions
 
 **V. 1.0.0 --> I rewrite the entire front-end with object orientation**
 
