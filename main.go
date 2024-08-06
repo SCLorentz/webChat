@@ -11,10 +11,15 @@ import (
 	"strings"
 	"errors"
 	"os"
+	//"regexp"
 )
 
 type ErrorTemplate struct {
 	Template *template.Template
+}
+
+type File struct {
+	Folder string
 }
 
 func genTemplate(err int) *template.Template {
@@ -22,11 +27,14 @@ func genTemplate(err int) *template.Template {
 }
 
 var errorTemplates = map[int]ErrorTemplate {
-	401: {genTemplate(401)},
-	403: {genTemplate(403)},
-	404: {genTemplate(404)},
-	500: {genTemplate(500)},
-	501: {genTemplate(501)},
+	// Todo: get the files e generate the templates automatically
+	401: {genTemplate(401)}, // Unauthorized
+	403: {genTemplate(403)}, // Forbidden
+	404: {genTemplate(404)}, // Not Found
+	418: {genTemplate(418)}, // I'm a teapot
+	500: {genTemplate(500)}, // Internal Server Error
+	501: {genTemplate(501)}, // Not Implemented
+	508: {genTemplate(508)}, // Loop Detected
 }
 
 func errHandler(w http.ResponseWriter, err int) {
@@ -43,18 +51,18 @@ func errHandler(w http.ResponseWriter, err int) {
 }
 
 func send(path string, w http.ResponseWriter, file_type string) {
-	filename := "./public/" + path
-	_, error := os.Stat(filename)
+	Folder := "./public/" + path
+	_, error := os.Stat(Folder)
 	exist := !errors.Is(error, os.ErrNotExist)
 
 	if !exist {
 		errHandler(w, 404)
-		//fmt.Println("error 404: " + filename + " from: " + r.Header.Get("Referer"))
+		//fmt.Println("error 404: " + Folder + " from: " + r.Header.Get("Referer"))
 		return
 	}
 	
 	// Open the file and check for errors
-	file, err := os.Open(filename)
+	file, err := os.Open(Folder)
 	if err != nil {
 		fmt.Println("Erro ao abrir o arquivo:", err)
 		errHandler(w, 500)
@@ -63,7 +71,7 @@ func send(path string, w http.ResponseWriter, file_type string) {
 	defer file.Close() // Close the file even on errors
 
 	// Get the file size
-	info, err := os.Stat(filename)
+	info, err := os.Stat(Folder)
 	if err != nil {
 		fmt.Println("Erro ao obter informações do arquivo:", err)
 		errHandler(w, 500)
@@ -114,21 +122,23 @@ func main() {
 			send("index.html", w, "html")
 			return
 		}
-		
-		if path == "/receber" {
-			w.Header().Set("Content-Type", "application/json")
-			w.Write([]byte("{ chats: [name: \"chat1\", id: \"59\", img: \"no_image_available\"] }"))
-			return
+
+		// verify if the user can access directly the file, remember, the code is public and it can be acessed in the devtools or in my github
+		// TODO: create a better way to do this
+		// reimplement the static file load without the file extension
+		redirect := map[string]File {
+			// Todo: get the files e generate the templates automatically
+			"png": {Folder: "img"},
+			"ico": {Folder: "img"},
+			"svg": {Folder: "img/svg"},
+			"woff2": {Folder: "fonts"},
+			"webmanifest": {Folder: "static"},
+			"html": {Folder: "static"},
+			//"": {Folder: "static"},
 		}
 
-		extension := ""
-		// verify if the user can access directly the file, remember, the code is public and it can be acessed in the devtools or in my github
-		switch file {
-			case "html":
-				file = "static"
-			case "":
-				file = "static"
-				extension = ".html"
+		if template, ok := redirect[file]; ok {
+			file = template.Folder
 		}
 		
 		if file != "static" && r.Header.Get("Referer") == "" {
@@ -143,8 +153,22 @@ func main() {
 			return
 		}
 
-		url := file + r.URL.Path + extension
+		url := file + r.URL.Path
 		send(url, w, file)
+	})
+
+	http.HandleFunc("/receber", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte("{ chats: [name: \"chat1\", id: \"59\", img: \"no_image_available\"] }"))
+	})
+
+	http.HandleFunc("/enviar", func(w http.ResponseWriter, r *http.Request) {
+		// TODO: implement this
+		// get the data from the request
+		/*ata := r.FormValue("data")
+		fmt.Println(data)
+		w.Write([]byte("ok"))*/
+		errHandler(w, 501)
 	})
 
 	if err := http.ListenAndServe(":8080", nil); err != nil {
