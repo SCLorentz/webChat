@@ -42,7 +42,7 @@ func errHandler(w http.ResponseWriter, err int) {
 	http.Error(w, err_msg, 500)
 }
 
-func send(path string, w http.ResponseWriter, _ *http.Request, file_type string) {
+func send(path string, w http.ResponseWriter, file_type string) {
 	filename := "./public/" + path
 	_, error := os.Stat(filename)
 	exist := !errors.Is(error, os.ErrNotExist)
@@ -83,15 +83,16 @@ func send(path string, w http.ResponseWriter, _ *http.Request, file_type string)
 	// send the file content
 	switch file_type {
 		case "js":
-			w.Header().Set("Content-Type", "text/javascript")
+			file_type = "text/javascript"
 		case "wasm":
-			w.Header().Set("Content-Type", "application/wasm")
+			file_type = "application/wasm"
 		case "static":
-			w.Header().Set("Content-Type", "text/html")
+			file_type = "text/html"
 		default:
-			w.Header().Set("Content-Type", "text/" + file_type)
+			file_type = "text/" + file_type
 	}
-	
+
+	w.Header().Set("Content-Type", file_type)
 	w.Write([]byte(data[:count]))
 }
 
@@ -110,7 +111,13 @@ func main() {
 
 		// the most important route
 		if path == "/" {
-			send("index.html", w, r, "html")
+			send("index.html", w, "html")
+			return
+		}
+		
+		if path == "/receber" {
+			w.Header().Set("Content-Type", "application/json")
+			w.Write([]byte("{ chats: [name: \"chat1\", id: \"59\", img: \"no_image_available\"] }"))
 			return
 		}
 
@@ -132,12 +139,12 @@ func main() {
 
 		// other custom routes
 		if path == "/webchat" {
-			send("/wasm/webchat.js", w, r, "js")
+			send("/wasm/webchat.js", w, "js")
 			return
 		}
 
 		url := file + r.URL.Path + extension
-		send(url, w, r, file)
+		send(url, w, file)
 	})
 
 	if err := http.ListenAndServe(":8080", nil); err != nil {

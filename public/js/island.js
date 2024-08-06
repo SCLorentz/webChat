@@ -95,7 +95,12 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .catch(error => console.error(error))
         // get last chat opened using the coockie 'lastChat', and set it to be open
-        .finally(() => document.getElementById(localStorage.getItem('lastChat')).style.display = 'grid');
+        .finally(() => {
+            let element = document.getElementById(localStorage.getItem('lastChat'));
+            if (element) { 
+                element.style.display = 'grid'
+            }
+        });
 });
 
 //criar chat
