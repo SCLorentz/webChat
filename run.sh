@@ -6,9 +6,12 @@ echo ""
 cargo install wasm-pack
 wasm-pack build --target web --out-dir ./public/scripts/wasm
 
-echo starting the server...
-echo ""
+# go build
+echo "Building server..."
+go build -o webchat
 
-go run .
+# server startup
+echo "Starting server..."
+./webchat
 
 # adicionar metodo para abrir no browser fora do container
