@@ -48,7 +48,8 @@
 				"terminal.integrated.cursorStyle": "block"
 			}
 		}
-	}
+	},
+	"postCreateCommand": "chmod +x ./set_up.sh && ./set_up.sh"
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
