@@ -12,7 +12,7 @@ go mod tidy
 
 # go build
 echo "Building server..."
-GOOS=linux GOARCH=amd64 go build -o ./webchat ./server.go
+GOOS=linux GOARCH=amd64 go build -o ./webchat ./main.go
 
 # server startup
 echo "Starting server..."

@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func Terminal() {
+func Start() {
 	for {
 		var i string
 
@@ -17,5 +17,7 @@ func Terminal() {
 			// Todo: add a way to cancel the process with a timer of 5 seconds, but make it configurable
 			os.Exit(0)
 		}
+
+		// Todo: add a way to restart only the server function
 	}
 }
