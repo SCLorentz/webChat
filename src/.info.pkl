@@ -1,0 +1,171 @@
+ 
+// futuramente, criar um arquivo yml para configurar o projeto usando as informações abaixo, e usar o dependabot para atualizar automaticamente
+
+// declarations
+typealias Language = "TypeScript" | "JavaScript" | "Rust" | "Shell"
+typealias Framework = "Oak" | "Express" | "Fresh" | "Vue" | "Vercel" | "Angular" | "React" | "none"
+
+typealias EmailAddress = String(matches(Regex(#".+@.+"#)))
+
+class Features {
+  DB: String
+
+  Auth: String
+
+  local Sessions = (str) -> str == "Google" || str == "cookie" || str == "Microsoft"
+  sessions: String(Sessions)
+
+  frontend: Frontend
+}
+
+class Backend {
+  language: Language
+  
+  local Runtime = (str) -> str == "Deno" || str == "Node.js" || str == "Bun"
+  runtime: String(Runtime)
+
+  framework: Framework
+
+  features: Features
+}
+
+class Frontend {
+  language: Language
+
+  wasm: Language
+
+  framework: Framework
+}
+
+//
+
+backend: Backend = new {
+  //
+  language = "TypeScript"
+  runtime = "Deno"
+  framework = "Oak"
+
+  features = new {
+    // database
+    DB = "SQLite"
+    // auth library
+    Auth = "OAuth"
+    // Sessions Authenticator
+    sessions = "Google"
+    // front-end
+    frontend = new {
+      // language
+      language = "JavaScript"
+      // technologies
+      wasm = "Rust"
+      framework = none
+    }
+  }
+}
+
+// affected files by dependabot
+files {
+    "./Cargo.toml"
+    "./README.md"
+}
+
+// information about the project
+version = "5.3.1_a"
+name: String = "Webchat \(version)"
+description = "Opensource Webchat v.\(version) for communication"
+email: EmailAddress = "113468900+SCLorentz@users.noreply.github.com"
+// back-end
+/*backend {
+    // language
+    language = "TypeScript"
+    features {
+        // database
+        DB = "SQLite"
+        Routes = "Oak"
+        // auth
+        Auth = "OAuth"
+        Sessions = "google"
+        // front-end
+        frontend {
+            // language
+            language = "JavaScript"
+            features {
+                // technologies
+                WASM = "Rust"
+                // UI
+                UI = "built-in"
+                framework = false
+                islands_of_interactivity = "in progress..."
+                // PWA resources
+                PWA {
+                    "application"
+                }
+                fonts {
+                    // main font
+                    "Roboto"
+                    // icons
+                    "Material Symbols Outlined"
+                    // emojis
+                    "Emoji"
+                }
+                need_to_be_added {
+                    "criptography"
+                    "login with microsoft"
+                    "login with cookies"
+                    "md compatibility"
+                }
+            }
+        }
+    }
+    // build and run the website
+    build {
+        language = "Shell"
+        features {
+            // wasm build
+            build = "wasm-pack"
+            // execute the server
+            start = "deno task start"
+        }
+    }
+    // containerized development environment
+    devcontainer {
+        ambient = "docker"
+        // image
+        image = "mcr.microsoft.com/devcontainers/base:jammy"
+        features {
+            "ghcr.io/devcontainers-community/features/deno:1"
+		        "ghcr.io/devcontainers/features/rust:1"
+        }
+        // vscode extensions
+        extensions {
+            // see info about the project using git
+            "eamodio.gitlens"
+            // edit markdown files
+            "seepine.md-editor"
+            // theme for icons
+            "PKief.material-icon-theme"
+            // share files with others
+            "MS-vsliveshare.vsliveshare"
+            // highlight colors (useful in css)
+            "naumovs.color-highlight"
+            // html formatter inside js files
+            "Tobermory.es6-string-html"
+            // preview fonts
+            "ctcuff.font-preview"
+            // preview css
+            "kisstkondoros.vscode-gutter-preview"
+            // integrated AI for writing code and comments
+            "supermaven.supermaven"
+            // show unused css classes
+            "rcore.rcore-unused-css-classes"
+        }
+    }
+    // information about the project
+    github {
+        owner = "SCLorentz"
+        // repository
+        repo = "chat"
+        branch = "main"
+        url = "https =//github.com/SCLorentz/chat"
+    }
+}*/

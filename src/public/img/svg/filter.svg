@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+  <defs>
+    <filter id="waterEffect">
+    <!-- 81be8c39-f48a-4208-a8ac-6ad654872c4a -->
+    <feGaussianBlur stdDeviation="2,15" result="81be8c39-f48a-4208-a8ac-6ad654872c4a" in="SourceGraphic"></feGaussianBlur>
+    <!-- 7ec25618-322b-4866-9698-9b6b309e7b55 -->
+    <feDisplacementMap scale="20" xChannelSelector="G" result="7ec25618-322b-4866-9698-9b6b309e7b55" in="81be8c39-f48a-4208-a8ac-6ad654872c4a"></feDisplacementMap>
+    <!-- 5e54c96a-d7e0-40af-a28f-9784e2271ed0 -->
+    <feFlood flood-opacity="0.1" result="5e54c96a-d7e0-40af-a28f-9784e2271ed0"></feFlood>
+    <!-- 0e8ae770-8775-409e-b09e-b7f90a476521 -->
+    <feMerge result="0e8ae770-8775-409e-b09e-b7f90a476521">
+        <feMergeNode in="7ec25618-322b-4866-9698-9b6b309e7b55"></feMergeNode>
+        <feMergeNode in="5e54c96a-d7e0-40af-a28f-9784e2271ed0"></feMergeNode>
+    </feMerge>
+  </defs>
+  <rect width="300" height="300" style="filter:url(#waterEffect);" />
+</svg>

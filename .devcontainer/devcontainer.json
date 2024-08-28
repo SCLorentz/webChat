@@ -3,10 +3,8 @@
 {
 	"name": "Ubuntu",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/base:jammy",
+	"image": "mcr.microsoft.com/devcontainers/rust:latest",
 	"features": {
-		/*"ghcr.io/devcontainers-community/features/deno:1": {},*/
-		"ghcr.io/devcontainers/features/rust:1": {},
 		"ghcr.io/devcontainers/features/go:1": {}
 	},
 
