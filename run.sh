@@ -8,7 +8,7 @@ wasm-pack build --target web --out-dir ./src/public/scripts/frontend
 
 # go build
 echo "Building server..."
-GOOS=linux GOARCH=amd64 go build -o ./src/webchat ./src/main.go
+GOOS=linux GOARCH=amd64 go build -o ./src/webchat ./src/server.go
 
 # server startup
 echo "Starting server..."

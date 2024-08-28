@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 	"webchat/config"
+	"webchat/cmd"
 	//"time"
 	//"regexp"
 )
@@ -60,21 +61,6 @@ func send(path string, w http.ResponseWriter, file_type string) {
 	//fmt.Printf("read %d bytes: %q\n", count, data[:count])
 	w.Header().Set("Content-Type", config.Mime(file_type))
 	w.Write([]byte(data[:count]))
-}
-
-func terminal() {
-	for {
-		var i string
-
-		fmt.Print("> ")
-		fmt.Scan(&i)
-
-		if i == "ext" {
-			fmt.Println("exiting...")
-			// Todo: add a way to cancel the process with a timer of 5 seconds, but make it configurable
-			os.Exit(0)
-		}
-	}
 }
 
 func server() {
@@ -150,7 +136,9 @@ func server() {
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
 	}
-	go terminal()
+
+	// execute the terminal without closing the server
+	go cmd.Terminal()
 }
 
 func main() {
