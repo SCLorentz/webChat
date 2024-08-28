@@ -9,7 +9,7 @@ func Terminal() {
 	for {
 		var i string
 
-		fmt.Print(":> ")
+		fmt.Print("> ")
 		fmt.Scan(&i)
 
 		if i == "ext" {

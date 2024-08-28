@@ -136,13 +136,13 @@ func server() {
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
 	}
-
-	// execute the terminal without closing the server
-	go cmd.Terminal()
 }
 
 func main() {
 	go server()
+	// execute the terminal without closing the server
+	// fix the issue that makes the '>' appears before the server starts
+	go cmd.Terminal()
 
 	select {}
 }
