@@ -1,4 +1,4 @@
-module webchat/server
+module webchat
 
 go 1.22.5
 
