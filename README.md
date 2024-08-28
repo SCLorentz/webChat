@@ -10,6 +10,8 @@ start the server: `./start.sh`, if this doesn't work, try to use `chmod +x start
 
 transpile *.info.pkl* into json: `pkl eval -f json .info.pkl`
 
+`go mod tidy`
+
 ## Algumas ideias para usar na página
 
 para transição de paginas --> view Transitions API

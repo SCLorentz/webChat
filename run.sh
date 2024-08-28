@@ -6,12 +6,16 @@ echo ""
 cargo install wasm-pack
 wasm-pack build --target web --out-dir ./src/public/scripts/frontend
 
+# tidy go, not working, fix this!
+cd ./src/backend
+go mod tidy
+
 # go build
 echo "Building server..."
-GOOS=linux GOARCH=amd64 go build -o ./src/webchat ./src/server.go
+GOOS=linux GOARCH=amd64 go build -o ./webchat ./server.go
 
 # server startup
 echo "Starting server..."
-./src/webchat
+./webchat
 
 # adicionar metodo para abrir no browser fora do container

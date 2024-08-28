@@ -22,7 +22,7 @@ type File struct {
 
 func send(path string, w http.ResponseWriter, file_type string) {
 	// get the file path based on the project path
-	Folder := "./src/public/" + path
+	Folder := "../public/" + path
 	_, error := os.Stat(Folder)
 	exist := !errors.Is(error, os.ErrNotExist)
 
