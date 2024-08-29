@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-window no-window-prefix prefer-const
 //Aqui ficam todas as propriedades interativas da pagina (islands of interactivity)
-import init, { id } from "/frontend/webchat.js";
+import init, { id } from "/frontend/wasm.js";
 
 console.log(document.cookie);
 
@@ -13,20 +13,16 @@ const search = document.getElementById('pesquisar'),
 }*/ //offline
 
 window.addEventListener("keydown", e => {
-    if (!e.ctrlKey) { return }
+    if (!e.ctrlKey) return
     e.preventDefault();
-    // use a array here
-    switch (e.key) {
-        case 's':
-            document.getElementById('settings').click();
-            break
-        case 'g':
-            document.getElementById('add').click();
-            break
-        case 'h': //futuramente transformar em pesquisa por mensagens global, ou seja, proucura em todas as conversas
-            search.click();
-            break
+    //
+    const actions = {
+        "s": () => document.getElementById('settings').click(),
+        "g": () => document.getElementById('add').click(),
+        "h": () => search.click(),
+        "f": () => console.log("hello!")
     }
+    actions[e.key]?.();
 });
 
 Element.prototype.hideOnClick = function () {
@@ -38,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     //PWA
     /*if ('windowControlsOverlay' in navigator) {}
     */
-    console.log(navigator.userAgentData.platform, ":", navigator.userAgentData.brands);
+    //console.log(navigator.userAgentData.platform, ":", navigator.userAgentData.brands);
     //
     document.getElementById('sort').onclick = e => {
         e.stopPropagation();
@@ -95,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             })
         })
-        .catch(error => console.error(error))
+        .catch(err => Error(err))
         // get last chat opened using the coockie 'lastChat', and set it to be open
         .finally(() => {
             if (!document.getElementById(localStorage.getItem('lastChat'))) return

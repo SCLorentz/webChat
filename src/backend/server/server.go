@@ -81,6 +81,11 @@ func Start() {
 			return
 		}
 
+		if path == "/frontend/wasm_bg.wasm" {
+			send("/scripts/frontend/wasm_bg.wasm", w, "application/wasm");
+			return
+		}
+
 		// verify if the user can access directly the file, remember, the code is public and it can be acessed in the devtools or in my github
 		// TODO: create a better way to do this
 		// reimplement the static file load without the file extension

@@ -3,10 +3,10 @@
 import init, { obj } from "/frontend/wasm.js";
 
 const chats = [],
-    alunos = [],
-    user = { nome: "Felipe", sobrenome: "Lorentz", img: null, email: "user.email@domain.org.br"},
-    //user = { nome: userData.given_name, sobrenome: `${userData.family_name} (você)`, img: userData.picture, email: userData.email },
-    popup = document.getElementById('popup');
+      alunos = [],
+      user = { nome: "Felipe", sobrenome: "Lorentz", img: null, email: "user.email@domain.org.br"},
+      //user = { nome: userData.given_name, sobrenome: `${userData.family_name} (você)`, img: userData.picture, email: userData.email },
+      popup = document.getElementById('popup');
 
 let msgContext = null;
 init().then(() => {
@@ -37,14 +37,12 @@ class chat {
         this.name = name;
         this.thumb = thumb;
         this.guests = guests;
-        this.bannedWords = null;
         this.adm = adm;
         this.build();
         this.ChatConfigs();
         this.Thumb();
         this.Msgs();
         this.msgs = [];
-        // obter palavras banidas do grupo e globais
     }
     build() {
         this.chatElement = obj('div', ['chat', 'chatMenu'], document.body, "");
@@ -82,7 +80,7 @@ class chat {
                 ) ? null : this.thumbDiv.offsetWidth / 5 + 'px';
         }
         this.searchInput.addEventListener('keydown', e => {
-            if (e.key != 'Enter') return
+            if (e.key != 8) return // is 'enter' pressed?
             //
             e.preventDefault();
             this.msgs.forEach(msg =>
@@ -468,26 +466,26 @@ class chat {
                 const reader = new FileReader();
                 reader.readAsDataURL(dataFile);
                 reader.onload = e => {
-                    const dt = dataFile.type;
+                    //const dt = dataFile.type;
                     // review, make something similar to what I did in the server.go with the 'redirect'
-                    switch (true) {
-                        case dt.startsWith('image/'):
+                    const file = {
+                        "image/": () => {
                             this.preview = obj('img', [], this.previewSlides, "");
                             this.preview.src = e.target.result;
-                            break
-                        case dt.startsWith('audio/'):
-                            //lidar com uma biblioteca para deno
+                        },
+                        "audio/": () => {
                             this.preview = obj('audio', [], this.previewSlides, "");
                             this.preview.load();
                             this.preview.src = e.target.result;
-                            break
-                        case dt.startsWith('video/'):
-                           //lidar com videos usando a API do youtube
+                        },
+                        "video/": () => {
+                            //lidar com videos usando a API do youtube
                             this.preview = obj('video', [], this.previewSlides, "");
                             this.preview.load();
                             this.preview.src = e.target.result;
-                            break
+                        },
                     }
+                    file[e.key]?.();
                     //
                     this.preview.disp = 'none';
                     this.previewSlides.disp = 'flex';
@@ -622,7 +620,8 @@ class msg {
         if (this.file) {
             this.file.forEach(file => {
                 file.disp = 'flex'
-                if (file.tagName.toLowerCase() != "audio") {
+                // Todo: create your own way to do this
+                /*if (file.tagName.toLowerCase() != "audio") {
                     this.filePlaceHolder.appendChild(file);
                     return
                 }
