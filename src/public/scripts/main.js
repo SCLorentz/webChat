@@ -116,7 +116,36 @@ class chat {
             chatElement.disp = v ? 'none' : 'grid';
         }*/
         this.editGroup();
-        this.GuestList();
+        //
+        this.guestList = obj('div', ['guestList'], this.chatConfig, "");
+        // review
+        this.guestList.innerHTML = '<h3 id="titleGuests">guests</h3>';
+        this.guestListFunction()
+        //guestList add btn
+        this.newGuestMenu = obj('div', ['newGuestMenu'], this.chatConfig, "");
+        this.closeNewGuestMenu = obj('button', ['closeBtn', 'material-symbols-outlined'], this.newGuestMenu, 'close');
+        this.closeNewGuestMenu.onclick = () => this.newGuestMenu.disp = 'none';
+        this.addNewGuestTitle = obj('h2', [], this.newGuestMenu, 'add guests');
+        //add
+        this.guestsToAdd = obj('div', ['guestsToAdd'], this.newGuestMenu, "");
+        alunos.forEach(aluno => {
+            if (this.guests.includes(aluno)) return
+            //
+            const add = obj('button', [], this.guestsToAdd, `${aluno.nome} ${aluno.sobrenome}`), img = obj('img', ['addUserImg'], add, "");
+            img.src = aluno.img;
+            add.onclick = () => {
+                this.guests.push(aluno);
+                add.parentNode.removeChild(add);
+                this.guestListFunction() //corrigir bugs
+                //atualizar para verção posts
+                fetch('/save_data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }).then().catch(error => console.error('Erro ao enviar os dados:', error));
+            }
+        })
     }
     Thumb() {
         const menu = document.getElementById('contatos');
@@ -150,7 +179,7 @@ class chat {
         this.addGuest = obj('button', ['material-symbols-outlined', 'addGuest'], this.guestList, 'person_add');
         this.addGuest.onclick = () => this.newGuestMenu.disp = 'flex';
         this.guests.forEach(guest => {
-            //
+            // there sould be a better way to do this
             const guestInList = obj('button', ['guestInList'], this.guestList, guest.nome + ' ' + guest.sobrenome),
                   guestInfo = obj('div', ['guestInfo'], guestInList, ""),
                   guestInListImg = obj('img', [], guestInList, ""),
@@ -171,7 +200,8 @@ class chat {
                 try {
                     navigator.clipboard.writeText(guest.email);
                 } catch(err) {
-                    console.error('Erro ao copiar texto: ', err);
+                    //
+                    throw Error('Erro ao copiar texto: ', err)
                 }
             }
             guestInListImg.src = guest.img;
@@ -197,36 +227,6 @@ class chat {
                     return
                 }
                 this.adm.push(guest);
-            }
-        })
-    }
-    GuestList() {
-        this.guestList = obj('div', ['guestList'], this.chatConfig, "")
-        this.guestList.innerHTML = '<h3 id="titleGuests">guests</h3>';
-        this.guestListFunction()
-        //guestList add btn
-        this.newGuestMenu = obj('div', ['newGuestMenu'], this.chatConfig, "");
-        this.closeNewGuestMenu = obj('button', ['closeBtn', 'material-symbols-outlined'], this.newGuestMenu, 'close');
-        this.closeNewGuestMenu.onclick = () => this.newGuestMenu.disp = 'none';
-        this.addNewGuestTitle = obj('h2', [], this.newGuestMenu, 'add guests');
-        //add
-        this.guestsToAdd = obj('div', ['guestsToAdd'], this.newGuestMenu, "");
-        alunos.forEach(aluno => {
-            if (this.guests.includes(aluno)) { return }
-            //
-            const add = obj('button', [], this.guestsToAdd, `${aluno.nome} ${aluno.sobrenome}`), img = obj('img', ['addUserImg'], add, "");
-            img.src = aluno.img;
-            add.onclick = () => {
-                this.guests.push(aluno);
-                add.parentNode.removeChild(add);
-                this.guestListFunction() //corrigir bugs
-                //atualizar para verção posts
-                fetch('/enviar', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                }).then().catch(error => console.error('Erro ao enviar os dados:', error));
             }
         })
     }
@@ -341,9 +341,9 @@ class chat {
             alert('texto muito grande, você só tem mais ' + (20 - this.rename.value.length) + ' caracteres até o limite');
         });
         this.rename.addEventListener("keydown", e => {
-            const keyList = [37, 39, 46, 9, 8, 116];
+            const keyList = [37, 39, 46, 9, 8, 116].includes(e.keyCode);
             // review
-            if (this.rename.value.length > 20 && !keyList.includes(e.keyCode) && this.rename.selectionStart == this.rename.selectionEnd) {
+            if (this.rename.value.length > 20 && !keyList && this.rename.selectionStart == this.rename.selectionEnd) {
                 e.preventDefault();
             }
             if (e.keyCode != 13) return // if the pressed key is not enter return
@@ -464,6 +464,7 @@ class chat {
             for (const dataFile of e.dataTransfer.files) {
                 //
                 const reader = new FileReader();
+                //
                 reader.readAsDataURL(dataFile);
                 reader.onload = e => {
                     //const dt = dataFile.type;
@@ -619,19 +620,20 @@ class msg {
             this.file.forEach(file => {
                 file.disp = 'flex'
                 // Todo: create your own way to do this
+                // handle with audio files
                 throw Error("unimplemented!");
             })
         }
-        if (this.filePlaceHolder.childElementCount == 0) this.filePlaceHolder.disp = 'none';
+        this.filePlaceHolder.disp = (this.filePlaceHolder.childElementCount == 0) ? 'none' : '';
         //emails e links
         const emails = this.content.match(/\b[A-Za-z0-9._%+-ãçõ]+@[A-Za-z0-9.-ã]+\.[A-Za-z]{2,}\b/g),
-            links = this.content.match(/https?:\/\/\S+/gi),
-            // Todo: add more MD rules
-            formatRules = [
-                { regex: /(\*)(.*?)(\*)/g, tag: 'strong' },
-                { regex: /(\%)(.*?)(\%)/g, tag: 'i' },
-                { regex: /(\~~)(.*?)(\~~)/g, tag: 'a', style: 'text-decoration: line-through 2px;' }
-            ];
+              links = this.content.match(/https?:\/\/\S+/gi);
+        // Todo: add more MD rules
+        const formatRules = [
+            { regex: /(\*)(.*?)(\*)/g, tag: 'strong' },
+            { regex: /(\%)(.*?)(\%)/g, tag: 'i' },
+            { regex: /(\~~)(.*?)(\~~)/g, tag: 'a', style: 'text-decoration: line-through 2px;' }
+        ];
         // verify if it does have any email or url
         // maybe this could be done in a way similar of the 'https://lunacookies.github.io/lang/1/'
         if (emails) emails.forEach(m => this.content = this.content.replace(m, `<a href="mailto:${m}" title="email" target="_blank">${m}</a>`));
@@ -639,8 +641,8 @@ class msg {
         //text decorations
         for (const rule of formatRules) {
             this.content = this.content.replace(rule.regex, (match, p1, p2, p3) => {
-                let l = p2.startsWith(' ') ? '&nbsp;' : '',
-                    t = p2.endsWith(' ') ? '&nbsp;' : '';
+                const l = p2.startsWith(' ') ? '&nbsp;' : '',
+                      t = p2.endsWith(' ') ? '&nbsp;' : '';
                 p2 = p2.trim().replace(/\s+/g, ' '); // Substitui múltiplos espaços por um único espaço
                 return `<${rule.tag} ${rule.style ? `style='${rule.style}'` : ''}>${l}${p2}${t}</${rule.tag}>`;
             });
@@ -655,57 +657,22 @@ class msg {
     }
     readTextFile() {
         const reader = new FileReader();
+        //
         reader.readAsText(this.file);
         reader.onload = e => {
             const result = e.target.result;
             // this should be reviewed
-            if (this.file.type == 'text/html') {
-                this.htmlFileElement = obj('a', ['htmlFileBtn'], this.filePlaceHolder, this.file.name);
-                this.htmlFileElement.href = URL.createObjectURL(new Blob([result], { type: 'text/html' }));
-                this.htmlFileElement.target = '_blank';
+            const plainText = {
+                "text/html": () => {
+                    this.htmlFileElement = obj('a', ['htmlFileBtn'], this.filePlaceHolder, this.file.name);
+                    this.htmlFileElement.href = URL.createObjectURL(new Blob([result], { type: 'text/html' }));
+                    this.htmlFileElement.target = '_blank';
+                },
+                "text/plain": () => this.filePlaceHolder.innerText = result,
+                // text markdown
+                // json
             }
-            if (this.file.type == 'text/plain') {
-                this.filePlaceHolder.innerText = result;
-            }
+            plainText[this.file.type]?.();
         }
     }
 }
-let ldpalavrões = {
-    'A': new Set(["λ", "Ꜳ", "ɋ", "∀", "Α", "α", "Δ", "∆", "Λ", "λ", "Ἃ", "Ἇ", "ά", "ᾰ", "Ᾰ", "Ά", "₳", "𝔞", "𝕒", "𝖆", "𝚊", "𝒶", "𝓪", "𝓪", "ᗩ", "ᴀ", "ᥲ", "ᵃ", "ɐ", "𝐚", "𝒂", "𝖺", "𝗮", "𝘢", "𝙖", "a̲", "a̳", "a̶", "a̷", "a͎", "a̾", "ⓐ", "🄰", "🅐", "🅰"]),
-    'B': new Set(["฿", "₿", "Β", "β", "ᙠ"]),
-    'C': new Set(["ɔ", "©", "℃", "Ⅽ", "ↅ", "Ↄ", "ⅽ", "⊑", "⊂", "⊏", "⊐", "⊉", "⊆", "⊇", "⊊", "⊋", "∁", "ↄ", "Ↄ", "⊈", "⋤", "⋥", "ς", "₡", "¢", "₠"]),
-    'D': new Set(["Ⅾ", "Đ", "Ð", "đ", "₫"]),
-    'E': new Set(["é", "£", "Ɛ", "∃", "∄", "∈", "∋", "Ě", "Ĕ", "⋻", "⋸", "⋵", "⋲", "⋳", "⋶", "⋹", "⋿", "Ε", "ε", "Ἓ", "Ἕ", "ὲ", "έ", "Έ", "έ", "Σ", "϶", "ϵ", "ξ", "₠", "€"]),
-    'F': new Set(["℉", "₣", "ℱ", "Ꞙ", "ꝼ", "ⅎ", "ꜰ", "ꟻ"]),
-    'G': new Set(["Ĝ", "Ğ", "Ģ", "ℊ", "ǥ", "ģ", "ĝ", "ğ", "₲", "Ḡ", "Ǧ", "ǧ"]),
-    'H': new Set(["Ħ", "ħ", "ɧ", "ɦ", "Η", "ⱨ"]),
-    'I': new Set(["ⅾ", "¡", "Ι", "ι", "ⅰ", "Ⅰ", "∣"]),
-    'J': new Set(["ȷ", "ʝ", "ɉ", "ʲ", "ʆ ", "ʄ"]),
-    'K': new Set(["ĸ", "Κ", "κ", "₭", "Ⲕ"]),
-    'L': new Set(["|", "Ⅼ", "∟"]),
-    'M': new Set(["Ⅿ", "ⅿ", "ɱ", "Σ", "Μ", "ℳ", "₥", "Ṃ", "Ṁ"]),
-    'N': new Set(["Ν", "₦", "η"]),
-    'O': new Set(["ʘ", "◯", "⊘", "⊙", "⊖", "⊜", "⊛", "⊕", "⨀", "⨁", "Ø", "Ο", "ο", "ϴ", "Ὸ", "Ό", "ὁ", "Ὁ", "Φ", "σ", "φ", "ὄ", "Ὄ", "Ὂ", "ὂ"]),
-    'P': new Set(["℗", "₱", "₽", "Ρ", "ρ"]),
-    'Q': new Set(["ℚ", "Ɋ", "ʠ"]),
-    'R': new Set(["Π", "π", "®"]),
-    'S': new Set(["§", "₷", "$"]),
-    'T': new Set(["⊥", "⊤", "⊢", "⊣", "Τ", "τ"]),
-    'U': new Set(["⋃", "⋂", "⊔", "⊍", "⊌", "⊎", "⨃", "⨄", "υ", "Ω", "ύ", "Ὧ", "ᾩ", "ᾭ", "Ὣ", "μ"]),
-    'V': new Set(["ν", "ν", "ѵ", "Ѵ", "∨", "√", "ⱱ", "ṿ"]),
-    'W': new Set(["₩", "ὣ", "ῳ"]),
-    'X': new Set(["Ⅹ", "⨉", "Χ"]),
-    'Y': new Set(["γ", "Ψ", "Ὑ", "Υ"]),
-    'Z': new Set(["Ζ", "₴"]),
-    ' ': new Set(["⠀", "ㅤ", "￿"]),
-    '2': new Set(['ƻ'])
-};
-/*function sinonimos(synonyms) {
-    return synonyms.split('').map(synonym => {
-        let lowerCaseSynonym = synonym.toLowerCase();
-        for (let letter in ldpalavrões) {
-            if (ldpalavrões[letter].has(lowerCaseSynonym)) return letter;
-        }
-        return synonym; // retorna o sinônimo original se não for encontrado
-    }).join('');
-};*/
