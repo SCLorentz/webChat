@@ -75,6 +75,7 @@ class chat {
         this.searchBtn.onclick = () => {
             this.searchInput.style.width = this.thumbDiv.offsetWidth / 6 + 'px';
             this.searchInput.focus();
+            // search animation
             document.onclick = () =>
                 this.searchInput.style.width = (
                     document.activeElement !== this.searchInput && this.searchInput.value == ''
@@ -151,6 +152,7 @@ class chat {
         this.addGuest = obj('button', ['material-symbols-outlined', 'addGuest'], this.guestList, 'person_add');
         this.addGuest.onclick = () => this.newGuestMenu.disp = 'flex';
         this.guests.forEach(guest => {
+            //
             const guestInList = obj('button', ['guestInList'], this.guestList, guest.nome + ' ' + guest.sobrenome),
                   guestInfo = obj('div', ['guestInfo'], guestInList, ""),
                   guestInListImg = obj('img', [], guestInList, ""),
@@ -170,7 +172,7 @@ class chat {
             this.guestEmail.onclick = () => {
                 try {
                     navigator.clipboard.writeText(guest.email);
-                } catch (err) {
+                } catch(err) {
                     console.error('Erro ao copiar texto: ', err);
                 }
             }
@@ -179,8 +181,7 @@ class chat {
             removeGuest.onclick = () => {
                 // confirm the action
                 // review
-                if (user == guest && !confirm('deseja sair do grupo?')) { return }
-                if (user != guest && !confirm('deseja remover ' + guest.nome + ' do grupo?')) { return }
+                if (user == guest && !confirm('deseja sair do grupo?') || user != guest && !confirm('deseja remover ' + guest.nome + ' do grupo?')) return
                 // remove
                 guestInList.parentNode.removeChild(guestInList);
                 this.guests.splice(this.guests.indexOf(guest), 1); //preciso adicionar o usuario removido para "add guests" novamente
@@ -269,20 +270,20 @@ class chat {
         this.picMenuCanvas.width = "400";
         // picMenuCam does exist, don't worry
         this.picMenuCam.addEventListener('click', () => {
-            if (!navigator.mediaDevices && !navigator.mediaDevices.getUserMedia) {
-                console.error("no media device founded!");
-                return
-            }
-            //
+            // veryfy if the user has an identificable camera
+            if (!navigator.mediaDevices && !navigator.mediaDevices.getUserMedia) throw Error("no media device founded!");
+            // record and stream
             navigator.mediaDevices.getUserMedia({ video: true })
             .then(stream => {
                 Array.from(document.getElementsByClassName('picMenuVidCap')).forEach(e => e.disp = "flex");
-                this.capture.srcObject = stream;
                 Array.from(document.getElementsByClassName('picMenuBtn')).forEach(e => e.disp = "none");
-                this.picMenu.style.top = `calc(50% - ${this.picMenu.offsetHeight / 2}px)`;
-                this.picMenu.style.left = `calc(50% - ${this.picMenu.offsetWidth / 2}px)`;
-            })
-            .catch(error => console.error("Erro ao acessar a câmera: ", error));
+                // stream
+                this.capture.srcObject = stream;
+                // align in center
+                this.picMenu.style.top = this.picMenu.style.left = `50%`;
+                this.picMenu.style.transform = 'translate(-50%, -50%)';
+                //
+            }).catch(err => Error("Erro ao acessar a câmera: ", err));
             //
             this.CaptureBtn.addEventListener('click', () => {
                 this.picMenuCanvas.getContext('2d').drawImage(this.capture, 0, 0, 400, 300);
@@ -299,9 +300,7 @@ class chat {
         this.imgInput.addEventListener('change', e => {
             //
             this.picMenu.disp = "none";
-            if (!e.target.files[0].type.startsWith('image/svg+xml')) {
-                throw "não é uma imagem tipo svg!"
-            }
+            if (!e.target.files[0].type.startsWith('image/svg+xml')) throw Error("não é uma imagem tipo svg!")
             //
             const reader = new FileReader();
             reader.readAsDataURL(e.target.files[0]);
@@ -313,7 +312,7 @@ class chat {
         })
         function changeImg(c) {
             c.thumbBtnImg.src = c.img.src = c.thumbPicture.src = c.thumb;
-            fetch('/enviar', {
+            fetch('/save_data', {
                 method: 'POST', // Método da requisição (pode ser GET, POST, PUT, DELETE, etc.)
                 headers: {
                     'Content-Type': 'application/json'
@@ -337,9 +336,10 @@ class chat {
         this.rename.value = this.name;
         this.rename.addEventListener("paste", e => {
             const c = e.clipboardData || window.Clipboard;
-            if (!c.getData("text").length + this.rename.value.length > 20) { return }
+            if (!c.getData("text").length + this.rename.value.length > 20) return
             //
             e.preventDefault();
+            // Todo: colar só o suficiente no input
             alert('texto muito grande, você só tem mais ' + (20 - this.rename.value.length) + ' caracteres até o limite');
         });
         this.rename.addEventListener("keydown", e => {
@@ -348,7 +348,7 @@ class chat {
             if (this.rename.value.length > 20 && !keyList.includes(e.keyCode) && this.rename.selectionStart == this.rename.selectionEnd) {
                 e.preventDefault();
             }
-            if (e.keyCode != 13) { return } // if the pressed key is not enter return
+            if (e.keyCode != 13) return // if the pressed key is not enter return
             //
             e.preventDefault();
             this.renameGroup();
@@ -364,8 +364,9 @@ class chat {
             //
             ["chatElement", "chatConfig", "thumbnail"].forEach(e => this[e].parentNode.removeChild(this[e]))
             chats.splice(this.id - 1, 1);
+            // review: maybe we can create one global function that syncronises with '/save_data'
             //server DB
-            fetch('/enviar', {
+            fetch('/save_data', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -383,13 +384,13 @@ class chat {
     renameGroup() {
         if (this.rename.value != this.name && this.rename.value.replace(/^\W+/, '') == '') {
             this.rename.value = this.name;
-            return
+            throw Error("You can't rename the group to an empty value!");
         }
         //
         this.thumbDiv.childNodes[2].nodeValue = this.thumbnail.firstChild.nodeValue = this.name = this.rename.value;
         this.rename.value = this.rename.value.replace(/^\W+/, '');
         //
-        fetch('/enviar', {
+        fetch('/save_data', {
             method: 'POST', // Método da requisição (pode ser GET, POST, PUT, DELETE, etc.)
             headers: {
                 'Content-Type': 'application/json'
@@ -408,7 +409,7 @@ class chat {
         //mudar a mensagem do pop-up caso haja um erro como "erro ao enviar os dados"
         popup.innerText = "Grupo Renomeado!";
         popup.disp = "flex";
-        popup.style.top = '0%';
+        popup.style.top = '0';
         popup.style.left = `calc(50% - ${popup.offsetWidth / 2}px)`;
         setTimeout(() => {
             popup.style.top = '-20%';
@@ -440,6 +441,7 @@ class chat {
         this.inputAudio = obj('button', ['material-symbols-outlined', 'inputAudio'], this.inputChat, 'mic');
         let transferfiles = [], record = true;
         this.inputAudio.onclick = () => {
+            // review: this makes me uncomfortable
             if (record) {
                 this.inputAudio.classList.add("recordingAudio");
                 this.inputAudio.innerText = "stop_circle";
@@ -462,11 +464,12 @@ class chat {
                 this.previewArrowBackward.addEventListener('click', () => changeSlide(i - 1, this.previewSlides));
             }
             for (const dataFile of e.dataTransfer.files) {
+                //
                 const reader = new FileReader();
                 reader.readAsDataURL(dataFile);
                 reader.onload = e => {
                     const dt = dataFile.type;
-                    //
+                    // review, make something similar to what I did in the server.go with the 'redirect'
                     switch (true) {
                         case dt.startsWith('image/'):
                             this.preview = obj('img', [], this.previewSlides, "");
@@ -495,7 +498,7 @@ class chat {
             }
             let i = 0;
             function changeSlide(index, e) {
-                if (index > e.childNodes.length && index <= 0) { return }
+                if (index > e.childNodes.length && index <= 0) return
                 // pause videos / audios
                 if (e.childNodes[i].nodeName == 'VIDEO' || e.childNodes[i].nodeName == 'AUDIO') e.childNodes[i].pause();
                 //
@@ -504,6 +507,7 @@ class chat {
                 e.childNodes[i].disp = 'block';
             }
         });
+
         let keys = {};
         this.msgBalloon.addEventListener('keydown', e => {
             keys[e.key] = true;
@@ -520,6 +524,7 @@ class chat {
                     //
                     if (transferfiles.length < 0) {
                         this.msgs.push(new msg(this.msgBalloon.value, null, new Date(), user, this));
+                        // review: see what is wrong and throw an err
                         return
                     }
                 }
@@ -536,6 +541,7 @@ class chat {
         });
     }
 }
+// Todo: passar para wasm
 /*talvez criar uma classe para o customContext, algumas propriedades:
 color -> cor de fundo do contextMenu
 value -> lista de elementos e sub elementos:
@@ -579,7 +585,7 @@ class msg {
             e.preventDefault();
             e.stopPropagation();
             // style
-            console.log(msgContext);
+            //console.log(msgContext);
             msgContext.disp = 'flex';
             msgContext.style.left = `calc(${e.screenX}px - ${msgContext.offsetWidth / 2}px)`;
             msgContext.style.top = `calc(${e.clientY}px)`;
@@ -592,6 +598,8 @@ class msg {
         //owner
         this.msgTop = obj('div', ['msgTop'], this.msg, "");
         //improved whith AI:
+        // this realy makes me uncomfortable
+        // review: remove the 'IF's and 'ELSE's
         const LAST_MSG = this.chat.msgs.length > 0 ? this.chat.msgs[this.chat.msgs.length - 1] : null;
         if (LAST_MSG && LAST_MSG.owner == user) {
             this.msg.style.marginTop = "2px";
@@ -609,8 +617,8 @@ class msg {
         }
         //
         this.filePlaceHolder = obj('div', ['filePlaceholder'], this.msg, "");
-        //file --> carregamento de novas mensagens.
-        //O carregamento de arquivos em mensagens antigas deve ser feito dentro da classe msg, pois não há previsualização do envio.
+        // file --> carregamento de novas mensagens.
+        // O carregamento de arquivos em mensagens antigas deve ser feito dentro da classe msg, pois não há previsualização do envio.
         if (this.file) {
             this.file.forEach(file => {
                 file.disp = 'flex'
@@ -698,12 +706,14 @@ class msg {
         //emails e links
         const emails = this.content.match(/\b[A-Za-z0-9._%+-ãçõ]+@[A-Za-z0-9.-ã]+\.[A-Za-z]{2,}\b/g),
             links = this.content.match(/https?:\/\/\S+/gi),
+            // Todo: add more MD rules
             formatRules = [
                 { regex: /(\*)(.*?)(\*)/g, tag: 'strong' },
                 { regex: /(\%)(.*?)(\%)/g, tag: 'i' },
                 { regex: /(\~~)(.*?)(\~~)/g, tag: 'a', style: 'text-decoration: line-through 2px;' }
             ];
         // verify if it does have any email or url
+        // maybe this could be done in a way similar of the 'https://lunacookies.github.io/lang/1/'
         if (emails) emails.forEach(m => this.content = this.content.replace(m, `<a href="mailto:${m}" title="email" target="_blank">${m}</a>`));
         if (links) links.forEach(l => this.content = this.content.replace(l, l.link(l)));
         //text decorations
@@ -715,6 +725,7 @@ class msg {
                 return `<${rule.tag} ${rule.style ? `style='${rule.style}'` : ''}>${l}${p2}${t}</${rule.tag}>`;
             });
         }
+        // this is not mandatory, is just an option
         //bad words
         //let bannedWordsRegex = new RegExp(this.chat.bannedWords.join("|"), "gi");
         //this.content = sinonimos(binaryToText(this.content)).replace(bannedWordsRegex, matchedWord => '*'.repeat(matchedWord.length));
@@ -727,7 +738,7 @@ class msg {
         reader.readAsText(this.file);
         reader.onload = e => {
             const result = e.target.result;
-            //
+            // this should be reviewed
             if (this.file.type === 'text/html') {
                 this.htmlFileElement = obj('a', ['htmlFileBtn'], this.filePlaceHolder, this.file.name);
                 this.htmlFileElement.href = URL.createObjectURL(new Blob([result], { type: 'text/html' }));

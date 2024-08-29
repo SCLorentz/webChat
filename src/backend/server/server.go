@@ -111,12 +111,12 @@ func Start() {
 		send(url, w, file)
 	})
 
-	http.HandleFunc("/receber", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/get_data", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte("{ chats: [name: \"chat1\", id: \"59\", img: \"no_image_available\"] }"))
 	})
 
-	http.HandleFunc("/enviar", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/save_data", func(w http.ResponseWriter, r *http.Request) {
 		// TODO: implement this
 		// get the data from the request
 		/*ata := r.FormValue("data")
