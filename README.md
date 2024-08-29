@@ -20,12 +20,12 @@ scroll ➜ animation-timeline
 
 ## Versions
 
-**V. 1.0.0 ➜ I rewrite the entire front-end with object orientation**
+V. 1.0.0 ➜ I rewrite the entire front-end with object orientation
 
-**V. 2.0.0 ➜ I added the back-end in nodeJS**
+V. 2.0.0 ➜ I added the back-end in nodeJS
 
-**V. 3.0.0 ➜ I change the runtime (Node --> Deno), language (JS --> TS) and framework (Express --> Oak) in the back-end**
+V. 3.0.0 ➜ I change the runtime (Node --> Deno), language (JS --> TS) and framework (Express --> Oak) in the back-end
 
-**V. 4.0.0 ➜ WASM features in the front-end**
+V. 4.0.0 ➜ WASM features in the front-end
 
-**V. 5.0.0 ➜ I rewrite the entire back-end from js to go without libraries**
+V. 5.0.0 ➜ I rewrite the entire back-end from js to go without libraries
