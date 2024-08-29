@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-window no-window-prefix no-unused-vars prefer-const
 //Aqui ficam todas as funções mais complexas da pagina (islands of interactivity)
-import init, { obj } from "/webchat";
+import init, { obj } from "/frontend/wasm.js";
 
 const chats = [],
     alunos = [],
@@ -61,7 +61,8 @@ class chat {
         const backArrow = Array.from(document.getElementsByClassName('arrowBack')), salvos = document.getElementById('salvos');
         backArrow.forEach(e => e.disp = window.innerWidth <= 850 ? 'flex' : '');
         window.addEventListener('resize', () => {
-            if (window.innerWidth >= 850 && salvos.disp == 'none') salvos.disp = "grid";
+            //
+            salvos.disp = (window.innerWidth >= 850 && salvos.disp == 'none') ? "grid" : "";
             backArrow.forEach(e => {
                 e.disp = window.innerWidth <= 850 ? 'flex' : '';
                 e.onclick = () => salvos.disp = "grid";
@@ -80,15 +81,15 @@ class chat {
                 ) ? null : this.thumbDiv.offsetWidth / 5 + 'px';
         }
         this.searchInput.addEventListener('keydown', e => {
-            if (e.key == 'Enter') {
-                e.preventDefault();
-                this.msgs.forEach(msg =>
-                    msg.getMsg.disp = (
-                        [...msg.content].filter((char, index) => char == this.searchInput.value.charAt(index)).length / msg.content.length < 0.7 && this.searchInput.value !== '' && msg.content
-                    ) ? 'none' : 'block'
-                    // verificar se o input !== '' && conteudo da mensagem ~=(70%) input
-                )
-            }
+            if (e.key != 'Enter') return
+            //
+            e.preventDefault();
+            this.msgs.forEach(msg =>
+                msg.getMsg.disp = (
+                    [...msg.content].filter((char, index) => char == this.searchInput.value.charAt(index)).length / msg.content.length < 0.7 && this.searchInput.value !== '' && msg.content
+                ) ? 'none' : 'block'
+                // verificar se o input !== '' && conteudo da mensagem ~=(70%) input
+            )
         })
         // video call
         this.call = obj('button', ['videoCam', 'material-symbols-outlined'], this.thumbDiv, 'videocam');
@@ -106,6 +107,8 @@ class chat {
         this.back.onclick = () => config(false, this);
         this.openConfig.onclick = () => config(true, this);
         function config(v, e) {
+            console.log(e)
+            //
             e.chatConfig.disp = v ? 'grid' : 'none';
             e.chatElement.disp = v ? 'none' : 'grid';
         }
@@ -137,7 +140,7 @@ class chat {
             document.querySelectorAll('.thumbnail').forEach(e => e.style.background = '');
             this.thumbnail.style.background = '#0000002b';
             //
-            if (window.innerWidth <= 850) document.getElementById('salvos').disp = 'none';
+            document.getElementById('salvos').disp = window.innerWidth <= 850 ? 'none' : '';
         }
         menu.scrollTop = menu.scrollHeight;
     }
@@ -175,6 +178,7 @@ class chat {
             //remove guest
             removeGuest.onclick = () => {
                 // confirm the action
+                // review
                 if (user == guest && !confirm('deseja sair do grupo?')) { return }
                 if (user != guest && !confirm('deseja remover ' + guest.nome + ' do grupo?')) { return }
                 // remove
@@ -185,15 +189,15 @@ class chat {
             //
             toAdm.innerText = this.adm.includes(guest) ? 'gpp_bad' : 'shield_person';
             toAdm.onclick = () => {
-                if (this.adm.includes(user)) {
-                    toAdm.innerText = this.adm.includes(guest) ? 'gpp_bad' : 'shield_person';
-                    //
-                    if (this.adm.includes(guest)) {
-                        this.adm.splice(this.adm.indexOf(guest), 1);
-                        return
-                    }
-                    this.adm.push(guest);
+                if (!this.adm.includes(user)) return
+                // the user is an ADM
+                toAdm.innerText = this.adm.includes(guest) ? 'gpp_bad' : 'shield_person';
+                //
+                if (this.adm.includes(guest)) {
+                    this.adm.splice(this.adm.indexOf(guest), 1);
+                    return
                 }
+                this.adm.push(guest);
             }
         })
     }
@@ -296,8 +300,7 @@ class chat {
             //
             this.picMenu.disp = "none";
             if (!e.target.files[0].type.startsWith('image/svg+xml')) {
-                alert('não é uma imagem tipo svg!');
-                return
+                throw "não é uma imagem tipo svg!"
             }
             //
             const reader = new FileReader();
@@ -341,7 +344,7 @@ class chat {
         });
         this.rename.addEventListener("keydown", e => {
             const keyList = [37, 39, 46, 9, 8, 116];
-            //
+            // review
             if (this.rename.value.length > 20 && !keyList.includes(e.keyCode) && this.rename.selectionStart == this.rename.selectionEnd) {
                 e.preventDefault();
             }

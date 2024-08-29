@@ -86,13 +86,14 @@ func Start() {
 		// reimplement the static file load without the file extension
 		redirect := map[string]File{
 			// Todo: get the files e generate the templates automatically
-			"png":         {Folder: "img"},
-			"ico":         {Folder: "img"},
-			"svg":         {Folder: "img/svg"},
-			"woff2":       {Folder: "fonts"},
-			"webmanifest": {Folder: "static"},
-			"html":        {Folder: "static"},
-			"js":          {Folder: "scripts"},
+			"png":         	{Folder: "img"},
+			"ico":         	{Folder: "img"},
+			"svg":         	{Folder: "img/svg"},
+			"woff2":       	{Folder: "fonts"},
+			"webmanifest": 	{Folder: "static"},
+			"html":        	{Folder: "static"},
+			"js":          	{Folder: "scripts"},
+			"wasm": 	   	{Folder: "scripts/frontend"},
 			//"": {Folder: "static"},
 		}
 
@@ -103,12 +104,6 @@ func Start() {
 		if file != "static" && r.Header.Get("Referer") == "" {
 			fmt.Println(file)
 			config.Err(w, 403)
-			return
-		}
-
-		// other custom routes
-		if path == "/webchat" {
-			send("/frontend/webchat.js", w, "js")
 			return
 		}
 

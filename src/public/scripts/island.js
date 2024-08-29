@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-window no-window-prefix prefer-const
 //Aqui ficam todas as propriedades interativas da pagina (islands of interactivity)
-import init, { id } from "/webchat";
+import init, { id } from "/frontend/webchat.js";
 
 console.log(document.cookie);
 
