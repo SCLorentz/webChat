@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 	"webchat/config"
+	//"encoding/json"
 )
 
 type File struct {
@@ -61,7 +62,6 @@ func send(path string, w http.ResponseWriter, file_type string) {
 }
 
 func Start() {
-	fmt.Println("The server has started successfully in http://localhost:8080")
 	// file handle
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		// Extraindo o caminho do arquivo da URL
@@ -125,6 +125,17 @@ func Start() {
 		config.Err(w, 501)
 	})
 
+	/*// Open our jsonFile
+	jsonFile, err := os.Open("./server/server.json")
+	// if we os.Open returns an error then handle it
+	if err != nil {
+	fmt.Println(err)
+	}
+	fmt.Println("Successfully Opened users.json")
+	// defer the closing of our jsonFile so that we can parse it later on
+	defer jsonFile.Close()*/
+
+	fmt.Println("The server has started successfully in http://localhost:8080")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
 	}
