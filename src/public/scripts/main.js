@@ -509,23 +509,21 @@ class chat {
         let keys = {};
         this.msgBalloon.addEventListener('keydown', e => {
             keys[e.key] = true;
-            if (keys['Enter'] && !keys['Shift']) {
-                e.preventDefault();
-                if (this.msgBalloon.value.replace(/^\s+/, "").replace(/[\u200E\s⠀ㅤ]/g, "") != '' || transferfiles.length != 0) {
-                    //
-                    // fix the issue before adding this back:
-                    //this.preview.parentNode.removeChild(this.preview);
-                    this.inputChat.style.height = '';
-                    this.previewSlides.disp = '';
-                    this.msgs.push(new msg(this.msgBalloon.value, transferfiles, new Date(), user, this));
-                    transferfiles = [];
-                    //
-                    if (transferfiles.length < 0) {
-                        this.msgs.push(new msg(this.msgBalloon.value, null, new Date(), user, this));
-                        // review: see what is wrong and throw an err
-                        return
-                    }
-                }
+            if (!keys['Enter'] && keys['Shift']) return
+            //
+            e.preventDefault();
+            if (this.msgBalloon.value.replace(/^\s+/, "").replace(/[\u200E\s⠀ㅤ]/g, "") == '' || transferfiles.length == 0) return
+            // fix the issue before adding this back:
+            //this.preview.parentNode.removeChild(this.preview);
+            this.inputChat.style.height = '';
+            this.previewSlides.disp = '';
+            this.msgs.push(new msg(this.msgBalloon.value, transferfiles, new Date(), user, this));
+            transferfiles = [];
+            //
+            if (transferfiles.length < 0) {
+                this.msgs.push(new msg(this.msgBalloon.value, null, new Date(), user, this));
+                // review: see what is wrong and throw an err
+                return
             }
         });
         this.msgBalloon.addEventListener('keyup', e => keys[e.key] = false);
@@ -621,84 +619,7 @@ class msg {
             this.file.forEach(file => {
                 file.disp = 'flex'
                 // Todo: create your own way to do this
-                /*if (file.tagName.toLowerCase() != "audio") {
-                    this.filePlaceHolder.appendChild(file);
-                    return
-                }
-                //
-                const playtime = obj('span', ['playTime'], this.filePlaceHolder, "")
-                const wavesurfer = WaveSurfer.create({
-                    height: 45,
-                    width: 240,
-                    container: this.filePlaceHolder,
-                    waveColor: 'white',
-                    progressColor: '#9d9e9d',
-                    cursorWidth: 2,
-                    url: file.src,
-                    minPxPerSec: 1,
-                    //codigo disponivel em https://wavesurfer.xyz, modificado por AI, formatado e otimizado por mim:
-                    renderFunction: (channels, ctx) => {
-                        const { width, height } = ctx.canvas,
-                            scale = channels[0].length / width,
-                            step = 10,
-                            // Encontrar o valor máximo absoluto nos samples do áudio
-                            maxAmplitude = Math.max(...channels[0].map(value => Math.abs(value))),
-                            // Ajustar a escala dinamicamente
-                            dynamicScale = height / (2 * maxAmplitude);
-                        ctx.translate(0, height / 2);
-                        ctx.strokeStyle = ctx.fillStyle;
-                        ctx.beginPath();
-                        for (let i = 0; i < width; i += step * 2) {
-                            const index = Math.floor(i * scale),
-                                value = Math.abs(channels[0][index]),
-                                // Aplicar o fator de escala dinâmica
-                                scaleValue = value * dynamicScale;
-                            let x = i,
-                                y = scaleValue;
-                            ctx.moveTo(x, 0);
-                            ctx.lineTo(x, y);
-                            ctx.arc(x + step / 2, y, step / 2, Math.PI, 0, true);
-                            ctx.lineTo(x + step, 0);
-                            x = x + step;
-                            y = -y;
-                            ctx.moveTo(x, 0);
-                            ctx.lineTo(x, y);
-                            ctx.arc(x + step / 2, y, step / 2, Math.PI, 0, false);
-                            ctx.lineTo(x + step, 0);
-                        }
-                        ctx.stroke();
-                        ctx.closePath();
-                    },
-                })
-                wavesurfer.on('ready', () => {
-                    const dur = wavesurfer.getDuration(),
-                        minutes = Math.floor(dur / 60),
-                        seconds = Math.floor(dur % 60);
-                    minutes = (minutes < 10 ? "0" : "") + minutes;
-                    seconds = (seconds < 10 ? "0" : "") + seconds;
-                    playtime.innerText = minutes + ":" + seconds;
-                })
-                wavesurfer.on('timeupdate', () => {
-                    const currentTime = wavesurfer.getDuration() - wavesurfer.getCurrentTime(),
-                        minutes = Math.floor(currentTime / 60),
-                        seconds = Math.floor(currentTime % 60);
-                    minutes = (minutes < 10 ? "0" : "") + minutes;
-                    seconds = (seconds < 10 ? "0" : "") + seconds;
-                    playtime.innerText = minutes + ":" + seconds;
-                })
-                wavesurfer.on('interaction', () => wavesurfer.play())
-                wavesurfer.on('finish', () => {
-                    wavesurfer.setTime(0);
-                    play.innerText = "play_arrow";
-                })
-                const play = obj('button', ['material-symbols-outlined', 'playPause'], this.filePlaceHolder, 'play_arrow');
-                play.addEventListener('click', () => {
-                    wavesurfer.playPause();
-                    play.innerText = wavesurfer.isPlaying() ? "pause" : "play_arrow";
-                })
-                /*file.addEventListener('click',()=>{
-                    abrir arquivo em grande escala
-                })*/
+                throw Error("unimplemented!");
             })
         }
         if (this.filePlaceHolder.childElementCount == 0) this.filePlaceHolder.disp = 'none';
@@ -738,12 +659,12 @@ class msg {
         reader.onload = e => {
             const result = e.target.result;
             // this should be reviewed
-            if (this.file.type === 'text/html') {
+            if (this.file.type == 'text/html') {
                 this.htmlFileElement = obj('a', ['htmlFileBtn'], this.filePlaceHolder, this.file.name);
                 this.htmlFileElement.href = URL.createObjectURL(new Blob([result], { type: 'text/html' }));
                 this.htmlFileElement.target = '_blank';
             }
-            if (this.file.type === 'text/plain') {
+            if (this.file.type == 'text/plain') {
                 this.filePlaceHolder.innerText = result;
             }
         }
