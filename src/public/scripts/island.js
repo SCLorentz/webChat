@@ -15,7 +15,7 @@ const search = document.getElementById('pesquisar'),
 window.addEventListener("keydown", e => {
     if (!e.ctrlKey) { return }
     e.preventDefault();
-    //
+    // use a array here
     switch (e.key) {
         case 's':
             document.getElementById('settings').click();
@@ -30,6 +30,7 @@ window.addEventListener("keydown", e => {
 });
 
 Element.prototype.hideOnClick = function () {
+    // verify if the element isn't himself
     document.onclick = () => this.style.display = "none";
 };
 
@@ -59,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
     configBtn.addEventListener('mouseleave', rotate('0deg'));
     // open settings menu
     configBtn.addEventListener('click', () => {
-        if (creator.style.display == "grid") { return }
+        if (creator.style.display == "grid") return
         //
         settings.style.display = 'flex';
         requestAnimationFrame(() => settings.style.top = '0%');
@@ -70,20 +71,21 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => settings.style.display = 'none', 1000);
     });
     search.addEventListener('click', e => {
-        if (creator.style.display == "grid") { return }
+        if (creator.style.display == "grid") return
         //
         e.stopPropagation();
-        let b = search.lastElementChild;
+        const b = search.lastElementChild;
         //
         b.style.display = "block";
         b.focus();
         b.hideOnClick();
     })
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // create a dark and light theme
         document.getElementById('osTheme').style.background = "black";
     }
     //receber
-    fetch('/receber')
+    fetch('/get_data')
         .then(response => response.json()) // Converte a resposta em formato JSON
         .then(data => {
             //console.log(data)
@@ -96,10 +98,9 @@ document.addEventListener("DOMContentLoaded", () => {
         .catch(error => console.error(error))
         // get last chat opened using the coockie 'lastChat', and set it to be open
         .finally(() => {
-            let element = document.getElementById(localStorage.getItem('lastChat'));
-            if (element) { 
-                element.style.display = 'grid'
-            }
+            if (!document.getElementById(localStorage.getItem('lastChat'))) return
+            //
+            element.style.display = 'grid'
         });
 });
 
@@ -109,42 +110,43 @@ document.getElementById('add').onclick = () => {
     creator.style.display = "grid";
     //
     nameInput.addEventListener("keydown", e => {
-        if (nameInput.value.length > 20 && e.key !== "Backspace" && e.key !== 13 && e.key !== 37 && e.key !== 39 && e.key !== 9 && e.key !== 116 && nameInput.selectionStart == nameInput.selectionEnd) {
-            e.preventDefault();
-        }
+        const keyList = [13, 37, 39, 9, 116, 8];
+        //
+        if (nameInput.value.length > 20 && !keyList.includes(e.key) && nameInput.selectionStart == nameInput.selectionEnd) return
+        e.preventDefault();
     });
     nameInput.addEventListener("paste", e => {
         const clipboardData = e.clipboardData || window.Clipboard;
-        if (clipboardData.getData("text").length + nameInput.value.length < 17) { return }
+        if (clipboardData.getData("text").length + nameInput.value.length >= 17) throw Error("you can't paste more then the allowed size!")
         //
         e.preventDefault();
-        alert('texto muito grande, você só tem mais ' + (17 - nameInput.value.length) + ' caracteres até o limite');
+        //alert('texto muito grande, você só tem mais ' + (17 - nameInput.value.length) + ' caracteres até o limite');
     });
     nameInput.addEventListener('drop', e => e.preventDefault());
 };
 document.getElementById('create').onclick = () => {
     const name = nameInput.value.replace(/^\W+/, '');
-    if (name.value != '' && name.length < 20) {
-        fetch('/enviar', {
-            method: 'POST', // Método da requisição (pode ser GET, POST, PUT, DELETE, etc.)
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                type: "CREATE",
-                target: "chats",
-                name: name,
-                date: new Date()
-            })
+    if (name.value == '' && name.length >= 20) return
+    //
+    fetch('/save_data', {
+        method: 'POST', // Método da requisição (pode ser GET, POST, PUT, DELETE, etc.)
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            type: "CREATE",
+            target: "chats",
+            name: name,
+            date: new Date()
         })
-            .then(response => response.json())
-            .then(responseData => {
-                console.log(responseData);
-            })
-            .catch(error => console.error(error))
-            .finally(() => {
-                chats.push(new chat(id(), name, '/img/groupImg.svg', [user, alunos[1]], [user], true)); //obter ip gerado pelo DB
-                nameInput.value = '';
-            });
-    }
+    })
+    .then(response => response.json())
+    .then(responseData => {
+        console.log(responseData);
+    })
+    .catch(err => console.error(err))
+    .finally(() => {
+        chats.push(new chat(id(), name, '/img/groupImg.svg', [user, alunos[1]], [user], true)); //obter ip gerado pelo DB
+        nameInput.value = '';
+    });
 }
