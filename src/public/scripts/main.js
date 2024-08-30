@@ -507,27 +507,28 @@ class chat {
             }
         });
 
-        let keys = {};
         this.msgBalloon.addEventListener('keydown', e => {
-            keys[e.key] = true;
-            if (!keys['Enter'] && keys['Shift']) return
-            //
-            e.preventDefault();
-            if (this.msgBalloon.value.replace(/^\s+/, "").replace(/[\u200E\s⠀ㅤ]/g, "") == '' || transferfiles.length == 0) return
-            // fix the issue before adding this back:
-            //this.preview.parentNode.removeChild(this.preview);
-            this.inputChat.style.height = '';
-            this.previewSlides.disp = '';
-            this.msgs.push(new msg(this.msgBalloon.value, transferfiles, new Date(), user, this));
-            transferfiles = [];
-            //
-            if (transferfiles.length < 0) {
-                this.msgs.push(new msg(this.msgBalloon.value, null, new Date(), user, this));
-                // review: see what is wrong and throw an err
-                return
+            // review: revert this nesting
+            console.log(e.shiftKey, e.key)
+            if (e.key == 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                //
+                if (this.msgBalloon.value.replace(/^\s+/, "").replace(/[\u200E\s⠀ㅤ]/g, "") != '' || transferfiles.length != 0) {
+                    // fix the issue before adding this back:
+                    //this.preview.parentNode.removeChild(this.preview);
+                    this.inputChat.style.height = '';
+                    this.previewSlides.disp = '';
+                    this.msgs.push(new msg(this.msgBalloon.value, transferfiles, new Date(), user, this));
+                    transferfiles = [];
+                    //
+                    if (transferfiles.length < 0) {
+                        this.msgs.push(new msg(this.msgBalloon.value, null, new Date(), user, this));
+                        // review: see what is wrong and throw an err
+                        return
+                    }
+                }
             }
         });
-        this.msgBalloon.addEventListener('keyup', e => keys[e.key] = false);
         this.msgBalloon.addEventListener('paste', e => {
             /*e.clipboardData.items.forEach(e => {
                 if (e.type.indexOf('image/') !== -1) {

@@ -142,7 +142,8 @@ document.getElementById('create').onclick = () => {
     })
     .catch(err => console.error(err))
     .finally(() => {
-        chats.push(new chat(id(), name, '/img/groupImg.svg', [user, alunos[1]], [user], true)); //obter ip gerado pelo DB
+        // review: fix the path
+        chats.push(new chat(id(), name, '/groupImg.svg', [user, alunos[1]], [user], true)); //obter ip gerado pelo DB
         nameInput.value = '';
     });
 }
