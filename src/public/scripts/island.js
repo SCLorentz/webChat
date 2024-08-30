@@ -123,7 +123,8 @@ document.getElementById('add').onclick = () => {
 };
 document.getElementById('create').onclick = () => {
     const name = nameInput.value.replace(/^\W+/, '');
-    if (name.value == '' && name.length >= 20) return
+    //
+    if (name == '' || name.length >= 20) throw Error("you can't create a group with an empty name!");
     //
     fetch('/save_data', {
         method: 'POST', // Método da requisição (pode ser GET, POST, PUT, DELETE, etc.)

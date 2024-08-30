@@ -467,10 +467,12 @@ class chat {
                 //
                 reader.readAsDataURL(dataFile);
                 reader.onload = e => {
-                    //const dt = dataFile.type;
-                    // review, make something similar to what I did in the server.go with the 'redirect'
+                    //
+                    const dt = dataFile.type;
+                    //
                     const file = {
                         "image/": () => {
+                            console.log("ok")
                             this.preview = obj('img', [], this.previewSlides, "");
                             this.preview.src = e.target.result;
                         },
@@ -486,7 +488,9 @@ class chat {
                             this.preview.src = e.target.result;
                         },
                     }
-                    file[e.key]?.();
+                    // review: fix this
+                    console.log(dt.replace(/\/\w*/, '/'))
+                    file[dt.replace(/\/\w*/, '/')]?.();
                     //
                     this.preview.disp = 'none';
                     this.previewSlides.disp = 'flex';
@@ -509,7 +513,6 @@ class chat {
 
         this.msgBalloon.addEventListener('keydown', e => {
             // review: revert this nesting
-            console.log(e.shiftKey, e.key)
             if (e.key == 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 //
