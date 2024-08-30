@@ -479,6 +479,8 @@ class chat {
                             this.preview = obj('audio', [], this.previewSlides, "");
                             this.preview.load();
                             this.preview.src = e.target.result;
+                            //
+                            throw Error("unimplemented!");
                         },
                         "video/": () => {
                             //lidar com videos usando a API do youtube
@@ -510,23 +512,17 @@ class chat {
 
         this.msgBalloon.addEventListener('keydown', e => {
             // review: revert this nesting
-            if (e.key == 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                //
-                if (this.msgBalloon.value.replace(/^\s+/, "").replace(/[\u200E\s⠀ㅤ]/g, "") != '' || transferfiles.length != 0) {
-                    // fix the issue before adding this back:
-                    //this.preview.parentNode.removeChild(this.preview);
-                    this.inputChat.style.height = '';
-                    this.previewSlides.disp = '';
-                    this.msgs.push(new msg(this.msgBalloon.value, transferfiles, new Date(), user, this));
-                    transferfiles = [];
-                    //
-                    if (transferfiles.length < 0) {
-                        this.msgs.push(new msg(this.msgBalloon.value, null, new Date(), user, this));
-                        // review: see what is wrong and throw an err
-                        return
-                    }
-                }
+            if (e.key != 'Enter' || e.shiftKey) {
+                return
+            }
+            e.preventDefault();
+            //
+            if (this.msgBalloon.value.replace(/^\s+/, "").replace(/[\u200E\s⠀ㅤ]/g, "") != '' || transferfiles.length != 0) {
+                // fix the issue before adding this back:
+                //this.preview.parentNode.removeChild(this.preview);
+                this.inputChat.style.height = '';
+                this.previewSlides.disp = '';
+                this.msgs.push(new msg(this.msgBalloon.value, transferfiles, new Date(), user, this));
             }
         });
         this.msgBalloon.addEventListener('paste', e => {
@@ -539,19 +535,6 @@ class chat {
         });
     }
 }
-// Todo: passar para wasm
-/*talvez criar uma classe para o customContext, algumas propriedades:
-color -> cor de fundo do contextMenu
-value -> lista de elementos e sub elementos:
-    value:{
-        "op1":op1(),
-        "op2":{
-            "val1":func1(),
-            "val2":func2(),
-            "val3":func3()
-        }
-    }
-*/
 
 export { chats, alunos, user, chat }
 
@@ -567,7 +550,9 @@ class msg {
         //scroll
         this.chat.msgArea.scrollTop = this.chat.msgArea.scrollHeight;
     }
+    //
     get getMsg() { return this.msg }
+    //
     Msgs() {
         //Adicionar opção de editar
         this.chat.msgBalloon.value = '';
@@ -587,47 +572,44 @@ class msg {
             msgContext.disp = 'flex';
             msgContext.style.left = `calc(${e.screenX}px - ${msgContext.offsetWidth / 2}px)`;
             msgContext.style.top = `calc(${e.clientY}px)`;
-            //
-            document.addEventListener('contextmenu', e => {
-                if (e.target.classList != 'msgContext') msgContext.disp = '';
-            })
-            document.addEventListener('click', () => msgContext.disp = '');
         })
+        //
+        document.addEventListener('contextmenu', e => msgContext.disp = (e.target.classList != 'msgContext') ? '' : 'none');
+        //
+        msgContext.addEventListener('contextmenu', e => {
+            e.preventDefault()
+            e.stopPropagation()
+        });
         //owner
         this.msgTop = obj('div', ['msgTop'], this.msg, "");
-        //improved whith AI:
-        // this realy makes me uncomfortable
-        // review: remove the 'IF's and 'ELSE's
+        // talves um metodo similar ao Some() e None() do rust poderia funcionar
         const LAST_MSG = this.chat.msgs.length > 0 ? this.chat.msgs[this.chat.msgs.length - 1] : null;
+        // review
         if (LAST_MSG && LAST_MSG.owner == user) {
-            this.msg.style.marginTop = "2px";
+            LAST_MSG.msg.style.borderBottomRightRadius = "0.3rem";
             this.msg.classList.add('msgList');
         } else {
             this.msgTop.style.marginBottom = "5px";
-            this.msgOwnerPic = obj('img', ['msgOwnerPic'/*, 'lazyload'*/], this.msgTop, "");
+            this.msgOwnerPic = obj('img', ['msgOwnerPic'], this.msgTop, "");
             this.msgOwner = obj('p', ['msgOwner'], this.msgTop, `${this.owner.nome} ${this.owner.sobrenome}`);
             this.msgOwnerPic.src = this.owner.img;
         }
-        if (LAST_MSG && LAST_MSG.time != this.time || this.chat.msgs.length == 0) {
-            this.msgDate = obj('p', ['msgDate'], this.msgTop, this.time, "");
-        } else {
-            this.msg.classList.remove('msgList');
-        }
+        //
+        this.msgDate = (LAST_MSG && LAST_MSG.time != this.time || this.chat.msgs.length == 0) ? obj('p', ['msgDate'], this.msgTop, this.time, "") : null;
         //
         this.filePlaceHolder = obj('div', ['filePlaceholder'], this.msg, "");
         // file --> carregamento de novas mensagens.
         // O carregamento de arquivos em mensagens antigas deve ser feito dentro da classe msg, pois não há previsualização do envio.
+        // Todo: create a better way to do this
         if (this.file) {
             this.file.forEach(file => {
                 file.disp = 'flex'
-                //
-                if (file.tagName.toLowerCase() != "audio") {
-                    this.filePlaceHolder.appendChild(file);
-                    return
-                }
                 // Todo: create your own way to handle audio files
-                // handle with audio files
-                throw Error("unimplemented!");
+                if (file.tagName.toLowerCase() == "audio") {
+                    throw Error("unimplemented!");
+                }
+                this.filePlaceHolder.appendChild(file);
+                return
             })
         }
         this.filePlaceHolder.disp = (this.filePlaceHolder.childElementCount == 0) ? 'none' : '';
@@ -636,8 +618,8 @@ class msg {
               links = this.content.match(/https?:\/\/\S+/gi);
         // Todo: add more MD rules
         const formatRules = [
-            { regex: /(\*)(.*?)(\*)/g, tag: 'strong' },
-            { regex: /(\%)(.*?)(\%)/g, tag: 'i' },
+            { regex: /(\*\*)(.*?)(\*\*)/g, tag: 'strong' },
+            { regex: /(\*)(.*?)(\*)/g, tag: 'i' },
             { regex: /(\~~)(.*?)(\~~)/g, tag: 'a', style: 'text-decoration: line-through 2px;' }
         ];
         // verify if it does have any email or url

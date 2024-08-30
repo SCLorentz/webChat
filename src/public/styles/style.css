@@ -727,6 +727,9 @@ input:-internal-autofill-selected {
     border-image: linear-gradient(to left, var(--theme-6), #0000ff00);
     border-image-slice: 1;
     caret-color: #ad622c;
+    /**/
+    display: flex;
+    flex-direction: column;
 }
 
 .msgBalloon::-webkit-scrollbar {
@@ -791,9 +794,8 @@ input:-internal-autofill-selected {
 }
 
 .msgList {
-    display: flex;
-    flex-direction: row-reverse;
-    justify-content: space-between;
+    margin-top: 2px !important;
+    border-top-right-radius: 0.3rem;
 }
 
 .sended {
