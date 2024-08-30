@@ -472,7 +472,6 @@ class chat {
                     //
                     const file = {
                         "image/": () => {
-                            console.log("ok")
                             this.preview = obj('img', [], this.previewSlides, "");
                             this.preview.src = e.target.result;
                         },
@@ -488,8 +487,6 @@ class chat {
                             this.preview.src = e.target.result;
                         },
                     }
-                    // review: fix this
-                    console.log(dt.replace(/\/\w*/, '/'))
                     file[dt.replace(/\/\w*/, '/')]?.();
                     //
                     this.preview.disp = 'none';
@@ -623,7 +620,12 @@ class msg {
         if (this.file) {
             this.file.forEach(file => {
                 file.disp = 'flex'
-                // Todo: create your own way to do this
+                //
+                if (file.tagName.toLowerCase() != "audio") {
+                    this.filePlaceHolder.appendChild(file);
+                    return
+                }
+                // Todo: create your own way to handle audio files
                 // handle with audio files
                 throw Error("unimplemented!");
             })
