@@ -16,9 +16,10 @@ import (
 
 type File struct {
 	Folder string
+	Mime string
 }
 
-func send(path string, w http.ResponseWriter, file_type string) {
+func send(path string, w http.ResponseWriter, mime string) {
 	// get the file path based on the project path
 	Folder := "../public/" + path
 	_, error := os.Stat(Folder)
@@ -57,7 +58,7 @@ func send(path string, w http.ResponseWriter, file_type string) {
 	}
 
 	//fmt.Printf("read %d bytes: %q\n", count, data[:count])
-	w.Header().Set("Content-Type", config.Mime(file_type))
+	w.Header().Set("Content-Type", mime)
 	w.Write([]byte(data[:count]))
 }
 
@@ -71,6 +72,8 @@ func Start() {
 		// transformar em algo mais parecido com o meus codigos em rust com o equivalente de Some() e None()
 		lastIndex := strings.LastIndexByte(path, '.')
 		file := ""
+		mime := "text/html"
+		//
 		if lastIndex > 0 && lastIndex < len(path)-1 {
 			file = strings.ToLower(path[lastIndex+1:])
 		}
@@ -91,19 +94,21 @@ func Start() {
 		// reimplement the static file load without the file extension
 		redirect := map[string]File{
 			// Todo: get the files e generate the templates automatically
-			"png":         	{Folder: "img"},
-			"ico":         	{Folder: "img"},
-			"svg":         	{Folder: "img/svg"},
-			"woff2":       	{Folder: "fonts"},
-			"webmanifest": 	{Folder: "static"},
-			"html":        	{Folder: "static"},
-			"js":          	{Folder: "scripts"},
-			"wasm": 	   	{Folder: "scripts/frontend"},
+			"png":         	{ Folder: "img", Mime: "image/png" },
+			"ico":         	{ Folder: "img", Mime: "image/x-icon" },
+			"svg":         	{ Folder: "img/svg", Mime: "image/svg+xml" },
+			"woff2":       	{ Folder: "fonts", Mime: "application/font-woff" },
+			"webmanifest": 	{ Folder: "static", Mime: "application/manifest+json" },
+			"html":        	{ Folder: "static", Mime: "text/html"},
+			"js":          	{ Folder: "scripts", Mime: "application/javascript" },
+			"wasm": 	   	{ Folder: "scripts/frontend", Mime: "application/wasm" },
+			"css":         	{ Folder: "styles", Mime: "text/css" },
 			//"": {Folder: "static"},
 		}
 
 		if template, ok := redirect[file]; ok {
 			file = template.Folder
+			mime = template.Mime
 		}
 
 		if file != "static" && r.Header.Get("Referer") == "" {
@@ -113,7 +118,7 @@ func Start() {
 		}
 
 		url := file + r.URL.Path
-		send(url, w, file)
+		send(url, w, mime)
 	})
 
 	http.HandleFunc("/get_data", func(w http.ResponseWriter, r *http.Request) {

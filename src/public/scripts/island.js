@@ -108,8 +108,9 @@ document.getElementById('add').onclick = () => {
     nameInput.addEventListener("keydown", e => {
         const keyList = [13, 37, 39, 9, 116, 8];
         //
-        if (nameInput.value.length > 20 && !keyList.includes(e.key) && nameInput.selectionStart == nameInput.selectionEnd) return
-        e.preventDefault();
+        if (nameInput.value.length > 20 && !keyList.includes(e.key) && nameInput.selectionStart == nameInput.selectionEnd) {
+            e.preventDefault();
+        }
     });
     nameInput.addEventListener("paste", e => {
         const clipboardData = e.clipboardData || window.Clipboard;
