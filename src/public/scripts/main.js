@@ -1,10 +1,11 @@
 // deno-lint-ignore-file no-window no-window-prefix no-unused-vars prefer-const
 //Aqui ficam todas as funções mais complexas da pagina (islands of interactivity)
+import { saveData } from "./island.js";
 import init, { obj } from "/frontend/wasm.js";
 
 const chats = [],
       alunos = [],
-      user = { nome: "Felipe", sobrenome: "Lorentz", img: null, email: "user.email@domain.org.br"},
+      user = { nome: "Felipe", sobrenome: "Lorentz", img: "/no-photo-avaliable.svg", email: "user.email@domain.org.br"},
       //user = { nome: userData.given_name, sobrenome: `${userData.family_name} (você)`, img: userData.picture, email: userData.email },
       popup = document.getElementById('popup');
 
@@ -14,7 +15,7 @@ init().then(() => {
 })
 
 Object.defineProperty(Element.prototype, 'disp', {
-    set: function (s) {
+    set: function(s) {
         this.style.display = s;
     }
 });
@@ -39,8 +40,6 @@ class chat {
         this.guests = guests;
         this.adm = adm;
         this.build();
-        this.ChatConfigs();
-        this.Thumb();
         this.Msgs();
         this.msgs = [];
     }
@@ -74,13 +73,12 @@ class chat {
             this.searchInput.style.width = this.thumbDiv.offsetWidth / 6 + 'px';
             this.searchInput.focus();
             // search animation
-            document.onclick = () =>
-                this.searchInput.style.width = (
-                    document.activeElement !== this.searchInput && this.searchInput.value == ''
-                ) ? null : this.thumbDiv.offsetWidth / 5 + 'px';
+            document.onclick = () => this.searchInput.style.width = (
+                document.activeElement !== this.searchInput && this.searchInput.value == ''
+            ) ? null : this.thumbDiv.offsetWidth / 5 + 'px';
         }
         this.searchInput.addEventListener('keydown', e => {
-            if (e.key != 8) return // is 'enter' pressed?
+            if (e.key != 8) return
             //
             e.preventDefault();
             this.msgs.forEach(msg =>
@@ -97,57 +95,7 @@ class chat {
         }
         this.imageOpened = obj('div', ['imageOpened'], this.chatElement, "");
         obj('button', ['material-symbols-outlined'], this.imageOpened, 'close').style.height = 'fit-content';
-    }
-    ChatConfigs() {
-        this.openConfig = obj('button', ['groupInfo', 'material-symbols-outlined'], this.thumbDiv, "more_vert");
-        this.chatConfig = obj('div', ['chatConfigs', 'chatMenu'], document.body, "");
         //
-        this.back = obj('button', ['material-symbols-outlined', 'back'], this.chatConfig, 'arrow_back_ios')
-        this.back.onclick = () => config(false, this);
-        this.openConfig.onclick = () => config(true, this);
-        function config(v, e) {
-            console.log(e)
-            //
-            e.chatConfig.disp = v ? 'grid' : 'none';
-            e.chatElement.disp = v ? 'none' : 'grid';
-        }
-        /*const c = (v,  { chatConfig, chatElement } = this) => {
-            chatConfig.disp = v ? 'grid' : 'none';
-            chatElement.disp = v ? 'none' : 'grid';
-        }*/
-        this.editGroup();
-        //
-        this.guestList = obj('div', ['guestList'], this.chatConfig, "");
-        // review
-        this.guestList.innerHTML = '<h3 id="titleGuests">guests</h3>';
-        this.guestListFunction()
-        //guestList add btn
-        this.newGuestMenu = obj('div', ['newGuestMenu'], this.chatConfig, "");
-        this.closeNewGuestMenu = obj('button', ['closeBtn', 'material-symbols-outlined'], this.newGuestMenu, 'close');
-        this.closeNewGuestMenu.onclick = () => this.newGuestMenu.disp = 'none';
-        this.addNewGuestTitle = obj('h2', [], this.newGuestMenu, 'add guests');
-        //add
-        this.guestsToAdd = obj('div', ['guestsToAdd'], this.newGuestMenu, "");
-        alunos.forEach(aluno => {
-            if (this.guests.includes(aluno)) return
-            //
-            const add = obj('button', [], this.guestsToAdd, `${aluno.nome} ${aluno.sobrenome}`), img = obj('img', ['addUserImg'], add, "");
-            img.src = aluno.img;
-            add.onclick = () => {
-                this.guests.push(aluno);
-                add.parentNode.removeChild(add);
-                this.guestListFunction() //corrigir bugs
-                //atualizar para verção posts
-                fetch('/save_data', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                }).then().catch(error => console.error('Erro ao enviar os dados:', error));
-            }
-        })
-    }
-    Thumb() {
         const menu = document.getElementById('contatos');
         this.thumbnail = obj('button', ['thumbnail'], menu, "");
         //
@@ -171,64 +119,102 @@ class chat {
             document.getElementById('salvos').disp = window.innerWidth <= 850 ? 'none' : '';
         }
         menu.scrollTop = menu.scrollHeight;
-    }
-    guestListFunction() {
-        document.querySelectorAll('.guestInList, .addGuest').forEach(e => {
-            if (e.parentNode == this.guestList) e.parentNode.removeChild(e)
-        })
-        this.addGuest = obj('button', ['material-symbols-outlined', 'addGuest'], this.guestList, 'person_add');
-        this.addGuest.onclick = () => this.newGuestMenu.disp = 'flex';
-        this.guests.forEach(guest => {
-            // there sould be a better way to do this
-            const guestInList = obj('button', ['guestInList'], this.guestList, guest.nome + ' ' + guest.sobrenome),
-                  guestInfo = obj('div', ['guestInfo'], guestInList, ""),
-                  guestInListImg = obj('img', [], guestInList, ""),
-                  removeGuest = obj('p', ['removeGuest', 'material-symbols-outlined'], guestInfo, "person_remove"),
-                  toAdm = obj('p', ['tornarAdm', 'material-symbols-outlined'], guestInfo, "");
+        //
+        // config
+        //
+        this.openConfig = obj('button', ['groupInfo', 'material-symbols-outlined'], this.thumbDiv, "more_vert");
+        this.chatConfig = obj('div', ['chatConfigs', 'chatMenu'], document.body, "");
+        //
+        this.back = obj('button', ['material-symbols-outlined', 'back'], this.chatConfig, 'arrow_back_ios')
+        this.back.onclick = () => config(false, this);
+        this.openConfig.onclick = () => config(true, this);
+        function config(v, e) {
+            e.chatConfig.disp = v ? 'grid' : 'none';
+            e.chatElement.disp = v ? 'none' : 'grid';
+        }
+        /*const c = (v,  { chatConfig, chatElement } = this) => {
+            chatConfig.disp = v ? 'grid' : 'none';
+            chatElement.disp = v ? 'none' : 'grid';
+        }*/
+        this.editGroup();
+        //
+        this.guestList = obj('div', ['guestList'], this.chatConfig, "");
+        // review
+        this.guestList.innerHTML = '<h3 id="titleGuests">guests</h3>';
+        this.guestListFunction()
+        //guestList add btn
+        this.newGuestMenu = obj('div', ['newGuestMenu'], this.chatConfig, "");
+        this.closeNewGuestMenu = obj('button', ['closeBtn', 'material-symbols-outlined'], this.newGuestMenu, 'close');
+        this.closeNewGuestMenu.onclick = () => this.newGuestMenu.disp = 'none';
+        this.addNewGuestTitle = obj('h2', [], this.newGuestMenu, 'add guests');
+        //add
+        this.guestsToAdd = obj('div', ['guestsToAdd'], this.newGuestMenu, "");
+        alunos.forEach(guest => {
+            if (this.guests.includes(guest)) return
             //
-            guestInList.addEventListener('contextmenu', e => {
-                e.preventDefault();
-                guestInfo.disp = 'flex';
-                guestInList.addEventListener('mouseleave', () => guestInfo.disp = '');
-            });
-            obj('img', [], obj('div', [], guestInfo, `${guest.nome} ${guest.sobrenome}`), "").src = guest.img;
-            //email
-            this.guestEmail = obj('span', ['email'], guestInfo, guest.email);
-            this.guestEmail.title = 'copy';
-            // copy the email
-            this.guestEmail.onclick = () => {
-                try {
-                    navigator.clipboard.writeText(guest.email);
-                } catch(err) {
-                    //
-                    throw Error('Erro ao copiar texto: ', err)
-                }
-            }
-            guestInListImg.src = guest.img;
-            //remove guest
-            removeGuest.onclick = () => {
-                // confirm the action
-                // review
-                if (user == guest && !confirm('deseja sair do grupo?') || user != guest && !confirm('deseja remover ' + guest.nome + ' do grupo?')) return
-                // remove
-                guestInList.parentNode.removeChild(guestInList);
-                this.guests.splice(this.guests.indexOf(guest), 1); //preciso adicionar o usuario removido para "add guests" novamente
-                if (this.adm.indexOf(guest) != -1) this.adm.splice(this.adm.indexOf(guest), 1);
-            }
-            //
-            toAdm.innerText = this.adm.includes(guest) ? 'gpp_bad' : 'shield_person';
-            toAdm.onclick = () => {
-                if (!this.adm.includes(user)) return
-                // the user is an ADM
-                toAdm.innerText = this.adm.includes(guest) ? 'gpp_bad' : 'shield_person';
+            const add = obj('button', [], this.guestsToAdd, `${guest.nome} ${guest.sobrenome}`), img = obj('img', ['addUserImg'], add, "");
+            img.src = guest.img;
+            add.onclick = () => {
+                this.guests.push(guest);
+                add.parentNode.removeChild(add);
+                // handle guests
+                document.querySelectorAll('.guestInList, .addGuest').forEach(e => e.parentNode == this.guestList && e.parentNode.removeChild(e))
+                this.addGuest = obj('button', ['material-symbols-outlined', 'addGuest'], this.guestList, 'person_add');
+                this.addGuest.onclick = () => this.newGuestMenu.disp = 'flex';
                 //
-                if (this.adm.includes(guest)) {
-                    this.adm.splice(this.adm.indexOf(guest), 1);
-                    return
-                }
-                this.adm.push(guest);
+                this.guests.forEach(guest => this.addGuest(guest));
+                //atualizar para verção posts
+                // o que isso deveria fazer?
+                fetch('/save_data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }).then().catch(error => console.error('Erro ao enviar os dados:', error));
             }
         })
+    }
+    addGuest(guest) {
+        // there sould be a better way to do this
+        const guestInList = obj('button', ['guestInList'], this.guestList, guest.nome + ' ' + guest.sobrenome),
+            guestInfo = obj('div', ['guestInfo'], guestInList, ""),
+            guestInListImg = obj('img', [], guestInList, ""),
+            removeGuest = obj('p', ['removeGuest', 'material-symbols-outlined'], guestInfo, "person_remove"),
+            toAdm = obj('p', ['tornarAdm', 'material-symbols-outlined'], guestInfo, "");
+        //
+        guestInList.addEventListener('contextmenu', e => {
+            e.preventDefault();
+            guestInfo.disp = 'flex';
+            guestInList.addEventListener('mouseleave', () => guestInfo.disp = '');
+        });
+        obj('img', [], obj('div', [], guestInfo, `${guest.nome} ${guest.sobrenome}`), "").src = guest.img;
+        //email
+        this.guestEmail = obj('span', ['email'], guestInfo, guest.email);
+        this.guestEmail.title = 'copy';
+        // copy the email
+        this.guestEmail.onclick = () => navigator.clipboard.writeText(guest.email) || console.error('Erro ao copiar texto');
+        //
+        guestInListImg.src = guest.img;
+        //remove guest
+        removeGuest.onclick = () => confirm(user == guest ? 'deseja sair do grupo?' : `deseja remover ${guest.nome} do grupo?`) && removeGuestFn(guest);
+        //
+        toAdm.innerText = this.adm.includes(guest) ? 'gpp_bad' : 'shield_person';
+        toAdm.onclick = () => {
+            if (!this.adm.includes(user)) return
+            // the user is an ADM
+            toAdm.innerText = this.adm.includes(guest) ? 'gpp_bad' : 'shield_person';
+            //
+            if (this.adm.includes(guest)) {
+                this.adm.splice(this.adm.indexOf(guest), 1);
+                return
+            }
+            this.adm.push(guest);
+        }
+    }
+    removeGuestFn(guest) {
+        guestInList.parentNode.removeChild(guestInList);
+        this.guests.splice(this.guests.indexOf(guest), 1); //preciso adicionar o usuario removido para "add guests" novamente
+        if (this.adm.indexOf(guest) != -1) this.adm.splice(this.adm.indexOf(guest), 1);
     }
     editGroup() {
         //edit group img
@@ -251,7 +237,7 @@ class chat {
         this.buttons.forEach(btn => this[btn.name] = obj('button', ['picMenuBtn', 'material-symbols-outlined'], this.picMenu, btn.ico));
         document.addEventListener('click', e => {
             e.stopPropagation();
-            if (!this.picMenu.contains(e.target) && e.target !== this.picMenu && e.target !== this.img) this.picMenu.disp = '';
+            this.picMenu.disp = (!this.picMenu.contains(e.target) && e.target !== this.picMenu && e.target !== this.img) ? '': 'none';
         })
         this.img.addEventListener('click', () => {
             this.picMenu.disp = "flex";
@@ -302,30 +288,8 @@ class chat {
             //
             const reader = new FileReader();
             reader.readAsDataURL(e.target.files[0]);
-            reader.onload = () => {
-                this.thumb = reader.result;
-                //transformar em uma div para incorporar o svg diretamente na pagina, copiar conteudo do arquivo e colar dentro da div
-                changeImg(this);
-            }
+            reader.onload = () =>  this.changeImg();
         })
-        function changeImg(c) {
-            c.thumbBtnImg.src = c.img.src = c.thumbPicture.src = c.thumb;
-            fetch('/save_data', {
-                method: 'POST', // Método da requisição (pode ser GET, POST, PUT, DELETE, etc.)
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    type: "EDIT",
-                    target: "chats",
-                    column: "img",
-                    value: c.thumb,
-                    id: c.id.replace(/^chat:\s*/, "")
-                })
-            }).then(response => response.json())
-                .then(responseData => console.log(responseData))
-                .catch(error => console.error(error))
-        }
         //Criar editor svg com animações pre-definidas e por script
         //rename group
         this.rename = obj('input', ['renameGroup'], this.chatConfig, 'rename');
@@ -357,27 +321,30 @@ class chat {
         //del group
         this.delete = obj('button', ['deleteGroup', 'material-symbols-outlined'], this.chatConfig, 'delete');
         this.delete.title = 'burn everything';
-        this.delete.onclick = () => {
-            if (!confirm("deseja apagar este grupo?")) { return }
-            //
-            ["chatElement", "chatConfig", "thumbnail"].forEach(e => this[e].parentNode.removeChild(this[e]))
-            chats.splice(this.id - 1, 1);
-            // review: maybe we can create one global function that syncronises with '/save_data'
-            //server DB
-            fetch('/save_data', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    type: "DELETE",
-                    target: "chats",
-                    id: this.id.replace(/^chat:\s*/, "")
-                })
-            }).then(response => response.json())
-                .then(responseData => console.log(responseData))
-                .catch(error => console.error(error))
-        }
+        // maybe create a custom function with a custom popup for 'confirm'...
+        this.delete.onclick = () => confirm("deseja apagar este grupo?") && this.deleteGroup();
+    }
+    changeImg() {
+        this.thumb = reader.result;
+        //
+        this.thumbBtnImg.src = this.img.src = this.thumbPicture.src = this.thumb;
+        saveData(JSON.stringify({
+            type: "EDIT",
+            target: "chats",
+            column: "img",
+            value: c.thumb,
+            id: this.id.replace(/^chat:\s*/, "")
+        }))
+    }
+    deleteGroup() {
+        ["chatElement", "chatConfig", "thumbnail"].forEach(e => this[e].parentNode.removeChild(this[e]))
+        chats.splice(this.id - 1, 1);
+        //server DB
+        saveData(JSON.stringify({
+            type: "DELETE",
+            target: "chats",
+            id: this.id.replace(/^chat:\s*/, "")
+        }))
     }
     renameGroup() {
         if (this.rename.value != this.name && this.rename.value.replace(/^\W+/, '') == '') {
@@ -388,21 +355,13 @@ class chat {
         this.thumbDiv.childNodes[2].nodeValue = this.thumbnail.firstChild.nodeValue = this.name = this.rename.value;
         this.rename.value = this.rename.value.replace(/^\W+/, '');
         //
-        fetch('/save_data', {
-            method: 'POST', // Método da requisição (pode ser GET, POST, PUT, DELETE, etc.)
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                type: "EDIT",
-                target: "chats",
-                column: "name",
-                value: this.rename.value,
-                id: this.id.replace(/^chat:\s*/, "")
-            })
-        }).then(response => response.json())
-            .then(responseData => console.log(responseData))
-            .catch(error => console.error(error))
+        saveData(JSON.stringify({
+            type: "EDIT",
+            target: "chats",
+            column: "name",
+            value: this.rename.value,
+            id: this.id.replace(/^chat:\s*/, "")
+        }))
         //corrigir bugs de renomeio muito rapido (0.3sec), aplicar delay para mostrar o pop-up
         //mudar a mensagem do pop-up caso haja um erro como "erro ao enviar os dados"
         popup.innerText = "Grupo Renomeado!";

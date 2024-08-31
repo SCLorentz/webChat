@@ -126,26 +126,28 @@ document.getElementById('create').onclick = () => {
     //
     if (name == '' || name.length >= 20) throw Error("you can't create a group with an empty name!");
     //
+    saveData(JSON.stringify({
+        type: "CREATE",
+        target: "chats",
+        name: name,
+        date: new Date()
+    }), () => {
+        chats.push(new chat(id(), name, '/groupImg.svg', [user, alunos[1]], [user], true)); //obter ip gerado pelo DB
+        nameInput.value = '';
+    })
+}
+
+function saveData(data, then) {
     fetch('/save_data', {
         method: 'POST', // Método da requisição (pode ser GET, POST, PUT, DELETE, etc.)
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-            type: "CREATE",
-            target: "chats",
-            name: name,
-            date: new Date()
-        })
-    })
-    .then(response => response.json())
-    .then(responseData => {
-        console.log(responseData);
-    })
-    .catch(err => console.error(err))
-    .finally(() => {
-        // review: fix the path
-        chats.push(new chat(id(), name, '/groupImg.svg', [user, alunos[1]], [user], true)); //obter ip gerado pelo DB
-        nameInput.value = '';
-    });
+        body: data
+    }).then(response => response.json())
+      .then(responseData => console.log(responseData))
+      .catch(err => console.error(err))
+      .finally(then);
 }
+
+export { saveData }
