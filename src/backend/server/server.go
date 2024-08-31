@@ -89,6 +89,11 @@ func Start() {
 			return
 		}
 
+		if path == "/get_data" {
+			send("static/awesome.json", w, "application/json")
+			return
+		}
+
 		// verify if the user can access directly the file, remember, the code is public and it can be acessed in the devtools or in my github
 		// TODO: create a better way to do this
 		// reimplement the static file load without the file extension
@@ -111,7 +116,7 @@ func Start() {
 			mime = template.Mime
 		}
 
-		if file != "static" && r.Header.Get("Referer") == "" {
+		if file != "static" && file != "json" && r.Header.Get("Referer") == "" {
 			fmt.Println(file)
 			config.Err(w, 403)
 			return
@@ -121,10 +126,9 @@ func Start() {
 		send(url, w, mime)
 	})
 
-	http.HandleFunc("/get_data", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte("{ chats: [name: \"chat1\", id: \"59\", img: \"no_image_available\"] }"))
-	})
+	/*http.HandleFunc("/get_data", func(w http.ResponseWriter, r *http.Request) {
+		send("static/awesome.json", w, "application/json")
+	})*/
 
 	http.HandleFunc("/save_data", func(w http.ResponseWriter, r *http.Request) {
 		// TODO: implement this

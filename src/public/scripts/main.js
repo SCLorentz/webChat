@@ -17,6 +17,22 @@ Object.defineProperty(Element.prototype, 'disp', {
     }
 });
 
+// get users from the database
+/*
+const users = await fetch('/get_data')
+    .then(response => response.json())
+    .then(data => data.users);
+for (const user of users) {
+    const usr = {
+        nome: user.name,
+        sobrenome: user.surname,
+        img: user.picture,
+        email: user.email,
+        id: user.id,
+    };
+    alunos.push(aluno);
+}
+*/
 for (let i = 0; i < 8; i++) {
     const aluno = {
         nome: 'nome' + i,
@@ -78,11 +94,11 @@ class chat {
             if (e.key != 8) return
             //
             e.preventDefault();
-            this.msgs.forEach(msg =>
+            // verificar se o input !== '' && conteudo da mensagem ~=(70%) input
+            this.msgs.forEach(msg => 
                 msg.getMsg.disp = (
                     [...msg.content].filter((char, index) => char == this.searchInput.value.charAt(index)).length / msg.content.length < 0.7 && this.searchInput.value !== '' && msg.content
                 ) ? 'none' : 'block'
-                // verificar se o input !== '' && conteudo da mensagem ~=(70%) input
             )
         })
         // video call
@@ -575,14 +591,12 @@ class msg {
         if (emails) emails.forEach(m => this.content = this.content.replace(m, `<a href="mailto:${m}" title="email" target="_blank">${m}</a>`));
         if (links) links.forEach(l => this.content = this.content.replace(l, l.link(l)));
         //text decorations
-        for (const rule of formatRules) {
-            this.content = this.content.replace(rule.regex, (match, p1, p2, p3) => {
-                const l = p2.startsWith(' ') ? '&nbsp;' : '',
-                    t = p2.endsWith(' ') ? '&nbsp;' : '';
-                p2 = p2.trim().replace(/\s+/g, ' '); // Substitui múltiplos espaços por um único espaço
-                return `<${rule.tag} ${rule.style ? `style='${rule.style}'` : ''}>${l}${p2}${t}</${rule.tag}>`;
-            });
-        }
+        for (const rule of formatRules) this.content = this.content.replace(rule.regex, (match, p1, p2, p3) => {
+            const l = p2.startsWith(' ') ? '&nbsp;' : '', t = p2.endsWith(' ') ? '&nbsp;' : '';
+            //
+            p2 = p2.trim().replace(/\s+/g, ' '); // Substitui múltiplos espaços por um único espaço
+            return `<${rule.tag} ${rule.style ? `style='${rule.style}'` : ''}>${l}${p2}${t}</${rule.tag}>`;
+        });
         //  this is not mandatory, is just an option
         //  bad words
         //  let bannedWordsRegex = new RegExp(this.chat.bannedWords.join("|"), "gi");

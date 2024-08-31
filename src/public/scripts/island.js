@@ -30,6 +30,20 @@ Element.prototype.hideOnClick = function () {
     document.onclick = () => this.style.display = "none";
 };
 
+// a better way to do this would be using QUERYs, example '/get_data?kind=chats'
+// then the server would return just the data requested and not the whole json
+
+async function getData(kind) {
+    return fetch('/get_data')
+    .then(response => response.json()) // Converte a resposta em formato JSON
+    .then(data => init().then(() => {
+        return data[kind]
+    }))
+    .catch(err => Error(err))
+}
+
+getData("chats").then(data => console.log(data))
+
 export default Object.defineProperty(Element.prototype, 'paste', {
     // for some reason there is a new bug with the paste event now, fix it later
     set: function(e, max) {
@@ -121,11 +135,7 @@ document.getElementById('add').onclick = () => {
     creator.style.display = "grid";
     //
     nameInput.addEventListener("keydown", e => {
-        const keyList = [13, 37, 39, 9, 116, 8];
-        //
-        if (nameInput.value.length > 20 && !keyList.includes(e.key) && nameInput.selectionStart == nameInput.selectionEnd) {
-            e.preventDefault();
-        }
+        if (nameInput.value.length > 20 && ![13, 37, 39, 9, 116, 8].includes(e.key) && nameInput.selectionStart == nameInput.selectionEnd) e.preventDefault();
     });
     nameInput.addEventListener("paste", paste => nameInput.paste(paste, 20));
     nameInput.addEventListener('drop', e => e.preventDefault());
