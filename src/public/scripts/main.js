@@ -302,13 +302,27 @@ class chat {
         this.rename.type = "text";
         this.rename.spellcheck = false;
         this.rename.value = this.name;
+        // gemini helped me to solve the problem of pasting more then the allowed size
         this.rename.addEventListener("paste", e => {
-            const c = e.clipboardData || window.Clipboard;
-            if (!c.getData("text").length + this.rename.value.length > 20) return
+            const c = e.clipboardData || window.Clipboard,
+                len = this.rename.value.length,
+                maxLen = 21,
+                pasteLen = c.getData("text").length,
+                cursorPos = this.rename.selectionStart;
+
+            // Calcula quantos caracteres podem ser colados
+            const charsToPaste = Math.min(maxLen - len, pasteLen);
+
+            if (!pasteLen + this.rename.value.length > 20) return;
+            if (charsToPaste <= 0) throw Error("you can't paste more then the allowed size!");
             //
             e.preventDefault();
-            // Todo: colar só o suficiente no input
-            alert('texto muito grande, você só tem mais ' + (20 - this.rename.value.length) + ' caracteres até o limite');
+            // Obtém a parte do texto antes e depois do cursor
+            const beforeText = this.rename.value.substring(0, cursorPos),
+                afterText = this.rename.value.substring(cursorPos);
+
+            // Concatena as partes, inserindo o texto colado no meio
+            this.rename.value = beforeText + c.getData("text").slice(0, charsToPaste) + afterText;
         });
         this.rename.addEventListener("keydown", e => {
             const keyList = [37, 39, 46, 9, 8, 116].includes(e.keyCode);

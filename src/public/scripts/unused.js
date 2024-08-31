@@ -37,15 +37,3 @@ function sinonimos(synonyms) {
         return synonym; // retorna o sinônimo original se não for encontrado
     }).join('');
 };
-
-// what I want by default:
-new FileReader()                    // create a new FileReader
-.readAsDataURL(dataFile)            // read the file as a data url
-.then(e => this.generatePreview(e)) // generate the preview
-.catch(err => Error(err))           // handle errors
-
-// what js does:
-const reader = new FileReader();    // create a new FileReader
-reader.readAsDataURL(dataFile);     // read the file as a data url
-reader.onload = e => this.generatePreview(e);    // generate the preview
-reader.onerror = err => Error(err); // handle errors
