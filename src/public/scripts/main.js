@@ -19,18 +19,15 @@ Object.defineProperty(Element.prototype, 'disp', {
 
 // get users from the database
 /*
-const users = await fetch('/get_data')
+const users = await fetch('/get_data?kind=users')
     .then(response => response.json())
-    .then(data => data.users);
-for (const user of users) {
-    const usr = {
-        nome: user.name,
-        sobrenome: user.surname,
-        img: user.picture,
-        email: user.email,
-        id: user.id,
-    };
-    alunos.push(aluno);
+    .then(data => createUsr(data));
+
+function createUsr(users) {
+    // this is not efficient, just convert the json into an object
+    for (const user of users) {
+        new Person(JSON.parse(user))
+    }
 }
 */
 for (let i = 0; i < 8; i++) {
@@ -44,12 +41,29 @@ for (let i = 0; i < 8; i++) {
     alunos.push(aluno);
 }
 
-// refazer usando rust e wasm
-class chat {
-    constructor(id, name, thumb, guests, adm) {
+/*class Person {
+    constructor(id, name, image) {
+        if (typeof name != "string") throw Error("unexpected type!");
+
         this.id = id;
         this.name = name;
-        this.thumb = thumb;
+        this.image = image;
+    }
+    get usrThumbElement() {
+        // create and return html element
+    }
+}*/
+
+// refazer usando rust e wasm
+class chat {
+    constructor(id, name, img, guests, adm) {
+        // type handler
+        const types = [typeof name == "string", typeof guests == "object", typeof adm == "object"]
+        if (types.every(valor => !valor)) throw Error("unexpected type!");
+        //
+        this.id = id;
+        this.name = name;
+        this.img = img;
         this.guests = guests; // merge guests and adm in one object
         this.adm = adm;
         this.build();
@@ -60,13 +74,13 @@ class chat {
         this.chatElement = obj('div', ['chat', 'chatMenu'], document.body, "");
         this.chatElement.id = this.id;
         //this.chatElement.addEventListener('contextmenu', e => e.preventDefault());
-        this.thumbDiv = obj('div', ['thumbDiv'], this.chatElement, "");
-        obj('button', ['arrowBack', 'material-symbols-outlined'], this.thumbDiv, "arrow_back_ios", ""); //mobile
-        // thumbPicture
-        this.thumbPicture = obj('img', ['chatImg'], this.thumbDiv, "chat image");
-        this.thumbPicture.src = this.thumb;
-        this.thumbDiv.innerHTML += this.name;
-        this.thumbPicture = this.thumbDiv.children[1];
+        this.imgDiv = obj('div', ['imgDiv'], this.chatElement, "");
+        obj('button', ['arrowBack', 'material-symbols-outlined'], this.imgDiv, "arrow_back_ios", ""); //mobile
+        // imgPicture
+        this.imgPicture = obj('img', ['chatImg'], this.imgDiv, "chat image");
+        this.imgPicture.src = this.img;
+        this.imgDiv.innerHTML += this.name;
+        this.imgPicture = this.imgDiv.children[1];
         //
         const backArrow = Array.from(document.getElementsByClassName('arrowBack')), salvos = document.getElementById('salvos');
         backArrow.forEach(e => e.disp = window.innerWidth <= 850 ? 'flex' : '');
@@ -79,16 +93,16 @@ class chat {
             })
         })
         // pesquisar
-        this.searchBtn = obj('button', ['searchOnGroupBtn', 'material-symbols-outlined'], this.thumbDiv, 'search');
+        this.searchBtn = obj('button', ['searchOnGroupBtn', 'material-symbols-outlined'], this.imgDiv, 'search');
         this.searchInput = obj('input', ['searchOnGroupInput'], this.searchBtn, 'pesquisar...');
         // search action
         this.searchBtn.onclick = () => {
-            this.searchInput.style.width = this.thumbDiv.offsetWidth / 6 + 'px';
+            this.searchInput.style.width = this.imgDiv.offsetWidth / 6 + 'px';
             this.searchInput.focus();
             // search animation
             document.onclick = () => this.searchInput.style.width = (
                 document.activeElement !== this.searchInput && this.searchInput.value == ''
-            ) ? null : this.thumbDiv.offsetWidth / 5 + 'px';
+            ) ? null : this.imgDiv.offsetWidth / 5 + 'px';
         }
         this.searchInput.addEventListener('keydown', e => {
             if (e.key != 8) return
@@ -102,7 +116,7 @@ class chat {
             )
         })
         // video call
-        this.call = obj('button', ['videoCam', 'material-symbols-outlined'], this.thumbDiv, 'videocam');
+        this.call = obj('button', ['videoCam', 'material-symbols-outlined'], this.imgDiv, 'videocam');
         this.call.onclick = () => {
             window.open('/call')
         }
@@ -110,13 +124,13 @@ class chat {
         obj('button', ['material-symbols-outlined'], this.imageOpened, 'close').style.height = 'fit-content';
         //
         const menu = document.getElementById('contatos');
-        this.thumbnail = obj('button', ['thumbnail'], menu, "");
+        this.imgnail = obj('button', ['imgnail'], menu, "");
         //
-        this.thumbBtnImg = obj('img', ['chatImg'], this.thumbnail, this.name)
-        this.thumbBtnImg.src = this.thumb;
-        obj('span',[],this.thumbnail, this.name, "");
+        this.imgBtnImg = obj('img', ['chatImg'], this.imgnail, this.name)
+        this.imgBtnImg.src = this.img;
+        obj('span',[],this.imgnail, this.name, "");
         //
-        this.thumbnail.onclick = () => {
+        this.imgnail.onclick = () => {
             // close prev. chats
             document.querySelectorAll('.chat, .chatConfigs, .picMenu, .newGuestMenu').forEach(e => e.disp = 'none');
             // open the chat
@@ -125,9 +139,9 @@ class chat {
             localStorage.setItem('lastChat', this.id);
             //
             document.title = `Chat | ${this.name}`;
-            // thumbnail, set colors
-            document.querySelectorAll('.thumbnail').forEach(e => e.style.background = '');
-            this.thumbnail.style.background = '#0000002b';
+            // imgnail, set colors
+            document.querySelectorAll('.imgnail').forEach(e => e.style.background = '');
+            this.imgnail.style.background = '#0000002b';
             //
             document.getElementById('salvos').disp = window.innerWidth <= 850 ? 'none' : '';
         }
@@ -135,7 +149,7 @@ class chat {
         //
         // config
         //
-        this.openConfig = obj('button', ['groupInfo', 'material-symbols-outlined'], this.thumbDiv, "more_vert");
+        this.openConfig = obj('button', ['groupInfo', 'material-symbols-outlined'], this.imgDiv, "more_vert");
         this.chatConfig = obj('div', ['chatConfigs', 'chatMenu'], document.body, "");
         //
         this.back = obj('button', ['material-symbols-outlined', 'back'], this.chatConfig, 'arrow_back_ios')
@@ -237,7 +251,7 @@ class chat {
     editGroup() {
         // edit group img
         this.img = obj('img', ['groupImg', 'chatImg'], this.chatConfig, "");
-        this.img.src = this.thumb;
+        this.img.src = this.img;
         //
         this.imgInput = obj("input", [], this.chatConfig, "");
         this.imgInput.type = 'file';
@@ -293,7 +307,7 @@ class chat {
                 this.capture.disp = "none";
                 this.CaptureBtn.innerText = "replay";
                 //
-                this.thumb = this.picMenuCanvas.toDataURL('image/png');
+                this.img = this.picMenuCanvas.toDataURL('image/png');
                 changeImg(this)
             })
         });
@@ -335,17 +349,17 @@ class chat {
         this.delete.onclick = () => confirm("deseja apagar este grupo?") && this.deleteGroup();
     }
     changeImg() {
-        this.thumbBtnImg.src = this.img.src = this.thumbPicture.src = this.thumb = reader.result;
+        this.imgBtnImg.src = this.img.src = this.imgPicture.src = this.img = reader.result;
         saveData(JSON.stringify({
             type: "EDIT",
             target: "chats",
             column: "img",
-            value: c.thumb,
+            value: c.img,
             id: this.id.replace(/^chat:\s*/, "")
         }))
     }
     deleteGroup() {
-        ["chatElement", "chatConfig", "thumbnail"].forEach(e => this[e].parentNode.removeChild(this[e]))
+        ["chatElement", "chatConfig", "imgnail"].forEach(e => this[e].parentNode.removeChild(this[e]))
         chats.splice(this.id - 1, 1);
         // server DB
         saveData(JSON.stringify({
@@ -358,7 +372,7 @@ class chat {
         this.rename.value = (this.rename.value.replace(/^\W+/, '') == '') ? this.name : this.rename.value;
         //throw Error("You can't rename the group to an empty value!");
         //
-        this.thumbDiv.childNodes[2].nodeValue = this.thumbnail.firstChild.nodeValue = this.name = this.rename.value;
+        this.imgDiv.childNodes[2].nodeValue = this.imgnail.firstChild.nodeValue = this.name = this.rename.value;
         this.rename.value = this.rename.value.replace(/^\W+/, '');
         //
         saveData(JSON.stringify({

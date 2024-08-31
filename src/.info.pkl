@@ -70,7 +70,7 @@ files {
 }
 
 // information about the project
-version = "5.5.2_a"
+version = "5.6.0_b"
 name: String = "Webchat \(version)"
 description = "Opensource Webchat v.\(version) for communication"
 email: EmailAddress = "113468900+SCLorentz@users.noreply.github.com"

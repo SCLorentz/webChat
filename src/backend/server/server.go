@@ -7,10 +7,14 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	//
 	"net/http"
 	"os"
+	"io"
 	"strings"
+	// my packages
 	"webchat/config"
+	"compress/gzip"
 	//"webchat/database"
 	//"encoding/json"
 )
@@ -18,6 +22,36 @@ import (
 type File struct {
 	Folder string
 	Mime string
+}
+
+func sendGzip(w http.ResponseWriter, r *http.Request, mime string, path string) {
+	// Verifica se o cliente aceita compressão Gzip
+	if !isGzipAccepted(r) {
+		//http.Error(w, "Not Acceptable", http.StatusNotAcceptable) // err 406
+		send(path, w, mime)
+		return
+	}
+
+	// Cria um escritor gzip
+	w.Header().Set("Content-Encoding", "gzip")
+	w.Header().Set("Content-Type", mime)
+	gz := gzip.NewWriter(w)
+	defer gz.Close()
+
+	// Abre o arquivo HTML
+	file, err := os.Open(path)
+	if err != nil {
+		http.Error(w, "Erro ao abrir o arquivo", http.StatusInternalServerError)
+		return
+	}
+	defer file.Close()
+
+	// Copia o conteúdo do arquivo para o escritor Gzip
+	_, err = io.Copy(gz, file)
+	if err != nil {
+		http.Error(w, "Erro ao copiar o conteúdo", http.StatusInternalServerError)
+		return
+	}
 }
 
 func send(path string, w http.ResponseWriter, mime string) {
@@ -127,6 +161,10 @@ func Start() {
 		send("static/awesome.json", w, "application/json")
 	})
 
+	http.HandleFunc("/gzip", func(w http.ResponseWriter, r *http.Request) {
+		sendGzip(w, r, "text/html", "../public/index.html")
+	})
+
 	http.HandleFunc("/save_data", func(w http.ResponseWriter, r *http.Request) {
 		// TODO: implement this
 		// get the data from the request
@@ -150,4 +188,9 @@ func Start() {
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func isGzipAccepted(r *http.Request) bool {
+	encodings := r.Header.Get("Accept-Encoding")
+	return encodings != "" && strings.Contains(encodings, "gzip")
 }
