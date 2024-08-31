@@ -30,6 +30,30 @@ Element.prototype.hideOnClick = function () {
     document.onclick = () => this.style.display = "none";
 };
 
+export default Object.defineProperty(Element.prototype, 'paste', {
+    // for some reason there is a new bug with the paste event now, fix it later
+    set: function(e, max) {
+        const c = e.clipboardData || window.Clipboard,
+            len = this.length,
+            pasteLen = c.getData("text").length,
+            cursorPos = this.selectionStart;
+
+        // Calcula quantos caracteres podem ser colados
+        const charsToPaste = Math.min((max + 1) - len, pasteLen);
+
+        if (!pasteLen + this.value.length > max) return;
+        if (charsToPaste <= 0) throw Error("you can't paste more then the allowed size!");
+        //
+        e.preventDefault();
+        // Obtém a parte do texto antes e depois do cursor
+        const beforeText = this.value.substring(0, cursorPos),
+            afterText = this.value.substring(cursorPos);
+
+        // Concatena as partes, inserindo o texto colado no meio
+        this.value = beforeText + c.getData("text").slice(0, charsToPaste) + afterText;
+    }
+});
+
 document.addEventListener("DOMContentLoaded", () => {
     //PWA
     /*if ('windowControlsOverlay' in navigator) {}
@@ -45,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     //
     const configBtn = document.getElementById('settings'),
-          settings = document.getElementById("settingsMenu");
+        settings = document.getElementById("settingsMenu");
     //
     function rotate(deg) {
         return function () { //o return em uma função me deu uma ideia para o server.ts
@@ -83,21 +107,12 @@ document.addEventListener("DOMContentLoaded", () => {
     //receber
     fetch('/get_data')
         .then(response => response.json()) // Converte a resposta em formato JSON
-        .then(data => {
-            //console.log(data)
-            init().then(() => {
-                for (const c of data.chats) {
-                    chats.push(new chat(c[1], c[0], c[2], [user, alunos[1]], [user], true))
-                }
-            })
-        })
+        .then(data => init().then(() => {
+            for (const c of data.chats) chats.push(new chat(c[1], c[0], c[2], [user, alunos[1]], [user], true))
+        }))
         .catch(err => Error(err))
         // get last chat opened using the coockie 'lastChat', and set it to be open
-        .finally(() => {
-            if (!document.getElementById(localStorage.getItem('lastChat'))) return
-            //
-            element.style.display = 'grid'
-        });
+        .finally(() => element.style.display = document.getElementById(localStorage.getItem('lastChat')) ? 'grid' : '');
 });
 
 //criar chat
@@ -112,13 +127,7 @@ document.getElementById('add').onclick = () => {
             e.preventDefault();
         }
     });
-    nameInput.addEventListener("paste", e => {
-        const clipboardData = e.clipboardData || window.Clipboard;
-        if (clipboardData.getData("text").length + nameInput.value.length >= 17) throw Error("you can't paste more then the allowed size!")
-        //
-        e.preventDefault();
-        //alert('texto muito grande, você só tem mais ' + (17 - nameInput.value.length) + ' caracteres até o limite');
-    });
+    nameInput.addEventListener("paste", paste => nameInput.paste(paste, 20));
     nameInput.addEventListener('drop', e => e.preventDefault());
 };
 document.getElementById('create').onclick = () => {
