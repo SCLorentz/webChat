@@ -6,7 +6,7 @@ console.log(document.cookie);
 
 import { chat, chats, user, alunos } from '/main.js';
 const search = document.getElementById('pesquisar'),
-      creator = document.getElementById('newChatMenu');
+    creator = document.getElementById('newChatMenu');
 
 /*if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('offline.js');
@@ -153,10 +153,11 @@ function saveData(data, then) {
             'Content-Type': 'application/json'
         },
         body: data
-    }).then(response => response.json())
-      .then(responseData => console.log(responseData))
-      .catch(err => console.error(err))
-      .finally(then);
+    })
+    .then(response => response.json())
+    .then(responseData => console.log(responseData))
+    .catch(err => Error(err))
+    .finally(then);
 }
 
 // change this to read all types of files
@@ -174,4 +175,28 @@ const readDataFile = inputFile => {
     });
 };
 
-export { saveData, readDataFile }
+// adicionar mais usos para o popup
+const callPopup = msg => {
+    const popup = document.getElementById('popup');
+    //
+    return new Promise((resolve, reject) => {
+        popup.innerText = msg;
+        popup.disp = "flex";
+        popup.style.top = '0';
+        popup.style.left = `calc(50% - ${popup.offsetWidth / 2}px)`;
+        //
+        setTimeout(() => transition(resolve, reject), 3000);
+    })
+    function transition(resolve, reject) {
+        try {
+            popup.style.top = '-20%';
+            popup.addEventListener('transitionend', () => popup.disp = "")
+            resolve();
+        } catch (err) {
+            popup.disp = "none";
+            reject(err);
+        }
+    }
+}
+
+export { saveData, readDataFile, callPopup }

@@ -1,18 +1,15 @@
 // deno-lint-ignore-file no-window no-window-prefix no-unused-vars prefer-const
 //Aqui ficam todas as funções mais complexas da pagina (islands of interactivity)
-import { saveData, readDataFile } from "./island.js";
+import { saveData, readDataFile, callPopup } from "./island.js";
 import init, { obj } from "/frontend/wasm.js";
 
 const chats = [],
-      alunos = [],
-      user = { nome: "Felipe", sobrenome: "Lorentz", img: "/no-photo-avaliable.svg", email: "user.email@domain.org.br"},
-      //user = { nome: userData.given_name, sobrenome: `${userData.family_name} (você)`, img: userData.picture, email: userData.email },
-      popup = document.getElementById('popup');
+    alunos = [],
+    user = { nome: "Felipe", sobrenome: "Lorentz", img: "/no-photo-avaliable.svg", email: "user.email@domain.org.br"}
+    //user = { nome: userData.given_name, sobrenome: `${userData.family_name} (você)`, img: userData.picture, email: userData.email },
 
 let msgContext = null;
-init().then(() => {
-    msgContext = obj('div', ['msgContext'], document.body, "context");
-})
+init().then(() => msgContext = obj('div', ['msgContext'], document.body, "context"));
 
 Object.defineProperty(Element.prototype, 'disp', {
     set: function(s) {
@@ -37,7 +34,7 @@ class chat {
         this.id = id;
         this.name = name;
         this.thumb = thumb;
-        this.guests = guests;
+        this.guests = guests; // merge guests and adm in one object
         this.adm = adm;
         this.build();
         this.Msgs();
@@ -122,7 +119,6 @@ class chat {
         //
         // config
         //
-        //
         this.openConfig = obj('button', ['groupInfo', 'material-symbols-outlined'], this.thumbDiv, "more_vert");
         this.chatConfig = obj('div', ['chatConfigs', 'chatMenu'], document.body, "");
         //
@@ -167,7 +163,7 @@ class chat {
                 //
                 console("guests - calling addGuest")
                 this.guests.forEach(guest => this.addGuest(guest));
-                //atualizar para verção posts
+                // atualizar para verção posts
                 // o que isso deveria fazer?
                 fetch('/save_data', {
                     method: 'POST',
@@ -193,14 +189,14 @@ class chat {
             guestInList.addEventListener('mouseleave', () => guestInfo.disp = '');
         });
         obj('img', [], obj('div', [], guestInfo, `${guest.nome} ${guest.sobrenome}`), "").src = guest.img;
-        //email
+        // email
         this.guestEmail = obj('span', ['email'], guestInfo, guest.email);
         this.guestEmail.title = 'copy';
         // copy the email
         this.guestEmail.onclick = () => navigator.clipboard.writeText(guest.email) || console.error('Erro ao copiar texto');
         //
         guestInListImg.src = guest.img;
-        //remove guest
+        // remove guest
         removeGuest.onclick = () => confirm(user == guest ? 'deseja sair do grupo?' : `deseja remover ${guest.nome} do grupo?`) && removeGuestFn(guest);
         //
         toAdm.innerText = this.adm.includes(guest) ? 'gpp_bad' : 'shield_person';
@@ -223,7 +219,7 @@ class chat {
         if (this.adm.indexOf(guest) != -1) this.adm.splice(this.adm.indexOf(guest), 1);
     }
     editGroup() {
-        //edit group img
+        // edit group img
         this.img = obj('img', ['groupImg', 'chatImg'], this.chatConfig, "");
         this.img.src = this.thumb;
         //
@@ -231,7 +227,7 @@ class chat {
         this.imgInput.type = 'file';
         this.imgInput.accept = "image/svg+xml";
         this.imgInput.disp = 'none';
-        //this.picMenuOff.element.addEventListener('click',()=> this.picMenuOff.element.disp = "none");
+        // this.picMenuOff.element.addEventListener('click',()=> this.picMenuOff.element.disp = "none");
         this.picMenu = obj('div', ['picMenu'], this.chatConfig, "");
         this.buttons = [
             { name: 'picMenuUpload', ico: 'upload' },
@@ -249,9 +245,9 @@ class chat {
             this.picMenu.disp = "flex";
             this.picMenu.style.top = `calc(50% - ${this.picMenu.offsetHeight / 2}px)`;
             this.picMenu.style.left = `calc(50% - ${this.picMenu.offsetWidth / 2}px)`;
-            //comando para fechar o menu
+            // comando para fechar o menu
         });
-        //foto
+        // foto
         this.capture = obj('video', ['picMenuVidCap'], this.picMenu, "");
         this.capture.autoplay = true;
         this.CaptureBtn = obj('button', ['vidCapBtn', 'picMenuVidCap', 'material-symbols-outlined'], this.picMenu, "add_a_photo");
@@ -285,7 +281,7 @@ class chat {
                 changeImg(this)
             })
         });
-        //Dos arquivos
+        // Dos arquivos
         this.picMenuUpload.onclick = () => this.imgInput.click();
         this.imgInput.addEventListener('change', e => {
             //
@@ -296,8 +292,8 @@ class chat {
             reader.readAsDataURL(e.target.files[0]);
             reader.onload = () =>  this.changeImg();
         })
-        //Criar editor svg com animações pre-definidas e por script
-        //rename group
+        // Criar editor svg com animações pre-definidas e por script
+        // rename group
         this.rename = obj('input', ['renameGroup'], this.chatConfig, 'rename');
         this.rename.type = "text";
         this.rename.spellcheck = false;
@@ -313,19 +309,17 @@ class chat {
             e.preventDefault();
             this.renameGroup();
         });
-        this.rename.onblur = () => this.renameGroup();
+        this.rename.onblur = () => this.rename != this.name ? this.renameGroup() : null;
         this.rename.addEventListener('drop', e => e.preventDefault());
         this.desc = obj('input', ['groupDesc'], this.chatConfig, 'description');
-        //del group
+        // delete group
         this.delete = obj('button', ['deleteGroup', 'material-symbols-outlined'], this.chatConfig, 'delete');
         this.delete.title = 'burn everything';
         // maybe create a custom function with a custom popup for 'confirm'...
         this.delete.onclick = () => confirm("deseja apagar este grupo?") && this.deleteGroup();
     }
     changeImg() {
-        this.thumb = reader.result;
-        //
-        this.thumbBtnImg.src = this.img.src = this.thumbPicture.src = this.thumb;
+        this.thumbBtnImg.src = this.img.src = this.thumbPicture.src = this.thumb = reader.result;
         saveData(JSON.stringify({
             type: "EDIT",
             target: "chats",
@@ -337,7 +331,7 @@ class chat {
     deleteGroup() {
         ["chatElement", "chatConfig", "thumbnail"].forEach(e => this[e].parentNode.removeChild(this[e]))
         chats.splice(this.id - 1, 1);
-        //server DB
+        // server DB
         saveData(JSON.stringify({
             type: "DELETE",
             target: "chats",
@@ -358,41 +352,36 @@ class chat {
             value: this.rename.value,
             id: this.id.replace(/^chat:\s*/, "")
         }))
-        //corrigir bugs de renomeio muito rapido (0.3sec), aplicar delay para mostrar o pop-up
-        //mudar a mensagem do pop-up caso haja um erro como "erro ao enviar os dados"
-        // criar uma função para mostrar o popup
-        popup.innerText = "Grupo Renomeado!";
-        popup.disp = "flex";
-        popup.style.top = '0';
-        popup.style.left = `calc(50% - ${popup.offsetWidth / 2}px)`;
-        setTimeout(() => {
-            popup.style.top = '-20%';
-            popup.addEventListener('transitionend', () => popup.disp = "")
-        }, 3000)
+        // corrigir bugs de renomeio muito rapido (0.3sec), aplicar delay para mostrar o pop-up
+        // mudar a mensagem do pop-up caso haja um erro como "erro ao enviar os dados"
+        // função de popup
+        callPopup("Grupo Renomeado!")                           // mostrar o popup
+        .then(() => console.log(`${this.id} foi renomeado!`))   // mostrar uma mensagem no console depois do popup ser fechado
+        .catch(err => Error(err))                               // mostrar uma mensagem de erro no console caso ocorra algum erro
     }
     Msgs() {
         //console.log("msgs - ok")
         this.msgArea = obj('div', ['msgArea'], this.chatElement, "");
-        //scroll to the bottom
+        // scroll to the bottom
         this.toBottom = obj('button', ['toBottom', 'material-symbols-outlined'], this.msgArea, 'arrow_downward');
         this.msgArea.onscroll = () => this.toBottom.disp = (this.msgArea.scrollTop < this.msgArea.scrollHeight - 800) ? "block" : "none";
         this.toBottom.onclick = () => this.msgArea.scrollTop = this.msgArea.scrollHeight;
-        //file preview
+        // file preview
         this.inputChat = obj('div', ['inputChat'], this.chatElement, "");
         this.previewSlides = obj('div', ['previewSlides'], this.inputChat, "");
         this.previewArrowBackward = obj('button', ['material-symbols-outlined', 'previewArrow'], this.inputChat, 'arrow_back_ios_new');
         this.previewArrowFoward = obj('button', ['material-symbols-outlined', 'previewArrow'], this.inputChat, 'arrow_forward_ios');
         this.previewArrowFoward.style.left = '95%';
-        //msgBallon
-        //adicionar corretor automatico e sujestão de palavras
-        //Ao começar a digitar, primeira letra em maiusculo (exeto quando o shift está ativado)
-        //adicionar menu de emojis e codigos de emojis (#-EMOJI-#) 
+        // msgBallon
+        // adicionar corretor automatico e sujestão de palavras
+        // Ao começar a digitar, primeira letra em maiusculo (exeto quando o shift está ativado)
+        // adicionar menu de emojis e codigos de emojis (#-EMOJI-#) 
         this.msgBalloon = obj('textarea', ['msgBalloon'], this.inputChat, "");
         this.msgBalloon.placeholder = 'vontade de falar...';
         this.attach = obj('button', ['attach', 'material-symbols-outlined'], this.inputChat, "attach_file");
-        //audio recorder
-        //gravação de audio
-        //recursos de legendas para quem não puder ouvir o audio
+        // audio recorder
+        // gravação de audio
+        // recursos de legendas para quem não puder ouvir o audio
         this.inputAudio = obj('button', ['material-symbols-outlined', 'inputAudio'], this.inputChat, 'mic');
         this.transferfiles = [];
         let record = true;
@@ -488,7 +477,7 @@ class chat {
         throw Error("unimplemented!");
     }
     handleVideo(e) {
-        //lidar com videos usando a API do youtube
+        // lidar com videos usando a API do youtube
         this.preview = obj('video', [], this.previewSlides, "");
         this.preview.load();
         this.preview.src = e.target.result;
@@ -506,23 +495,23 @@ class msg {
         this.chat = chat;
         this.msgsLength = this.chat.msgs.length;
         this.Msgs();
-        //scroll
+        // scroll
         this.chat.msgArea.scrollTop = this.chat.msgArea.scrollHeight;
     }
     //
     get getMsg() { return this.msg }
     //
     Msgs() {
-        //Adicionar opção de editar
+        // Adicionar opção de editar
         this.chat.msgBalloon.value = '';
         this.msg = obj('div', ['msg', 'sended'], this.chat.msgArea, "");
         this.msg.translate = 'yes';
-        //criar propriedade de arrasto, pressionando ctrl e selecionando uma mensagem lhe pemitindo a arrastar
-        //A propriedade permitirá ao usuario responder mensagens arrastando-as para o input de mensagem ou encaminha-las
-        //Ao soltar a mensagem sendo arrastada, ela voltará para seu local original de forma polida
-        //Transformar em svg para mais interatividade, podendo copiar o svg para a area de transferencia
-        //adicionar opção para adms poderem apagar as mensagens
-        //adicionar opção de copiar o texto da mensagem
+        //  criar propriedade de arrasto, pressionando ctrl e selecionando uma mensagem lhe pemitindo a arrastar
+        //  A propriedade permitirá ao usuario responder mensagens arrastando-as para o input de mensagem ou encaminha-las
+        //  Ao soltar a mensagem sendo arrastada, ela voltará para seu local original de forma polida
+        //  Transformar em svg para mais interatividade, podendo copiar o svg para a area de transferencia
+        //  adicionar opção para adms poderem apagar as mensagens
+        //  adicionar opção de copiar o texto da mensagem
         this.msg.addEventListener('contextmenu', e => {
             e.preventDefault();
             e.stopPropagation();
@@ -539,7 +528,7 @@ class msg {
             e.preventDefault()
             e.stopPropagation()
         });
-        //owner
+        // owner
         this.msgTop = obj('div', ['msgTop'], this.msg, "");
         // talves um metodo similar ao Some() e None() do rust poderia funcionar
         const LAST_MSG = this.chat.msgs.length > 0 ? this.chat.msgs[this.chat.msgs.length - 1] : null;
@@ -594,11 +583,11 @@ class msg {
                 return `<${rule.tag} ${rule.style ? `style='${rule.style}'` : ''}>${l}${p2}${t}</${rule.tag}>`;
             });
         }
-        // this is not mandatory, is just an option
-        //bad words
-        //let bannedWordsRegex = new RegExp(this.chat.bannedWords.join("|"), "gi");
-        //this.content = sinonimos(binaryToText(this.content)).replace(bannedWordsRegex, matchedWord => '*'.repeat(matchedWord.length));
-        //Text Content
+        //  this is not mandatory, is just an option
+        //  bad words
+        //  let bannedWordsRegex = new RegExp(this.chat.bannedWords.join("|"), "gi");
+        //  this.content = sinonimos(binaryToText(this.content)).replace(bannedWordsRegex, matchedWord => '*'.repeat(matchedWord.length));
+        //  Text Content
         this.msgTextContent = obj('span', ['msgTextContent'], this.msg, "");
         this.msgTextContent.innerHTML = this.content;
     }
