@@ -55,8 +55,7 @@ export default Object.defineProperty(Element.prototype, 'paste', {
         // Calcula quantos caracteres podem ser colados
         const charsToPaste = Math.min((max + 1) - len, pasteLen);
 
-        if (!pasteLen + this.value.length > max) return;
-        if (charsToPaste <= 0) throw Error("you can't paste more then the allowed size!");
+        if (charsToPaste <= 0 || !pasteLen + this.value.length > max) throw Error("you can't paste more then the allowed size!");
         //
         e.preventDefault();
         // Obtém a parte do texto antes e depois do cursor
@@ -83,12 +82,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     //
     const configBtn = document.getElementById('settings'),
-        settings = document.getElementById("settingsMenu");
+        settings = document.getElementById("settingsMenu"),
     //
-    function rotate(deg) {
-        return function () { //o return em uma função me deu uma ideia para o server.ts
-            configBtn.style.transform = `rotate(${deg})`;
-        }
+    rotate = deg => {
+        return () => configBtn.style.transform = `rotate(${deg})`;
     }
     configBtn.addEventListener('mouseover', rotate('10deg'));
     configBtn.addEventListener('mouseleave', rotate('0deg'));
@@ -116,17 +113,19 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
         // create a dark and light theme
-        document.getElementById('osTheme').style.background = "black";
+        document.getElementById('osTheme').style.background = "black"; // remove this in the future, adding in the css
+        document.body.classList.add('dark');
+        // window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? document.body.classList.add('dark') : document.body.classList.remove('dark');
     }
     //receber
-    fetch('/get_data')
+    /*fetch('/get_data')
         .then(response => response.json()) // Converte a resposta em formato JSON
         .then(data => init().then(() => {
             for (const c of data.chats) chats.push(new chat(c[1], c[0], c[2], [user, alunos[1]], [user], true))
         }))
         .catch(err => Error(err))
         // get last chat opened using the coockie 'lastChat', and set it to be open
-        .finally(() => element.style.display = document.getElementById(localStorage.getItem('lastChat')) ? 'grid' : '');
+        .finally(() => element.style.display = document.getElementById(localStorage.getItem('lastChat')) ? 'grid' : '');*/
 });
 
 //criar chat
@@ -150,24 +149,33 @@ document.getElementById('create').onclick = () => {
         target: "chats",
         name: name,
         date: new Date()
-    }), () => {
-        chats.push(new chat(id(), name, '/groupImg.svg', [user, alunos[1]], [user], true)); //obter ip gerado pelo DB
+    }))
+    .then(response => {
+        console.log(response)
+        chats.push(new chat(id(), name, '/groupImg.svg', [user, alunos[1]], [user], true)); //obter id gerado pelo DB
+    })
+    .catch(err => { throw Error(err) })
+    // this is temporary, is just beeing used while the server doesn't have a response method, creating a group anyway
+    // review: maybe we can allow the user to create a chat without waiting for the server to respond and then, after the server responds, save it in the database
+    // allowing the user to create chats without a internet connection
+    .finally(() => {
+        creator.style.display = 'none';
         nameInput.value = '';
+        chats.push(new chat(id(), name, '/groupImg.svg', [user, alunos[1]], [user], true));
     })
 }
 
-function saveData(data, then) {
-    fetch('/save_data', {
-        method: 'POST', // Método da requisição (pode ser GET, POST, PUT, DELETE, etc.)
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: data
+const saveData = data => {
+    return new Promise((resolve, reject) => {
+        fetch('/save_data', {
+            method: 'POST', // Método da requisição (pode ser GET, POST, PUT, DELETE, etc.)
+            headers: { 'Content-Type': 'application/json' },
+            body: data
+        })
+        .then(response => response.json())
+        .then(responseData => resolve(responseData))
+        .catch(err => reject(err))
     })
-    .then(response => response.json())
-    .then(responseData => console.log(responseData))
-    .catch(err => Error(err))
-    .finally(then);
 }
 
 // change this to read all types of files
