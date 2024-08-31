@@ -122,6 +122,7 @@ class chat {
         //
         // config
         //
+        //
         this.openConfig = obj('button', ['groupInfo', 'material-symbols-outlined'], this.thumbDiv, "more_vert");
         this.chatConfig = obj('div', ['chatConfigs', 'chatMenu'], document.body, "");
         //
@@ -141,7 +142,6 @@ class chat {
         this.guestList = obj('div', ['guestList'], this.chatConfig, "");
         // review
         this.guestList.innerHTML = '<h3 id="titleGuests">guests</h3>';
-        this.guestListFunction()
         //guestList add btn
         this.newGuestMenu = obj('div', ['newGuestMenu'], this.chatConfig, "");
         this.closeNewGuestMenu = obj('button', ['closeBtn', 'material-symbols-outlined'], this.newGuestMenu, 'close');
@@ -149,8 +149,11 @@ class chat {
         this.addNewGuestTitle = obj('h2', [], this.newGuestMenu, 'add guests');
         //add
         this.guestsToAdd = obj('div', ['guestsToAdd'], this.newGuestMenu, "");
+        //
+        console.log("guestListFunction - beggining")
         alunos.forEach(guest => {
             if (this.guests.includes(guest)) return
+            console.log("guestListFunction - includes verification")
             //
             const add = obj('button', [], this.guestsToAdd, `${guest.nome} ${guest.sobrenome}`), img = obj('img', ['addUserImg'], add, "");
             img.src = guest.img;
@@ -162,6 +165,7 @@ class chat {
                 this.addGuest = obj('button', ['material-symbols-outlined', 'addGuest'], this.guestList, 'person_add');
                 this.addGuest.onclick = () => this.newGuestMenu.disp = 'flex';
                 //
+                console("guests - calling addGuest")
                 this.guests.forEach(guest => this.addGuest(guest));
                 //atualizar para verção posts
                 // o que isso deveria fazer?
@@ -175,6 +179,7 @@ class chat {
         })
     }
     addGuest(guest) {
+        console.log("addGuest - beggining")
         // there sould be a better way to do this
         const guestInList = obj('button', ['guestInList'], this.guestList, guest.nome + ' ' + guest.sobrenome),
             guestInfo = obj('div', ['guestInfo'], guestInList, ""),
@@ -210,6 +215,7 @@ class chat {
             }
             this.adm.push(guest);
         }
+        console.log("addGuest - end")
     }
     removeGuestFn(guest) {
         guestInList.parentNode.removeChild(guestInList);
@@ -307,10 +313,8 @@ class chat {
         this.rename.addEventListener("keydown", e => {
             const keyList = [37, 39, 46, 9, 8, 116].includes(e.keyCode);
             // review
-            if (this.rename.value.length > 20 && !keyList && this.rename.selectionStart == this.rename.selectionEnd) {
-                e.preventDefault();
-            }
-            if (e.keyCode != 13) return // if the pressed key is not enter return
+            if (this.rename.value.length > 20 && !keyList && this.rename.selectionStart == this.rename.selectionEnd) e.preventDefault();
+            if (e.keyCode != 13) return
             //
             e.preventDefault();
             this.renameGroup();
@@ -347,10 +351,8 @@ class chat {
         }))
     }
     renameGroup() {
-        if (this.rename.value != this.name && this.rename.value.replace(/^\W+/, '') == '') {
-            this.rename.value = this.name;
-            throw Error("You can't rename the group to an empty value!");
-        }
+        this.rename.value = (this.rename.value.replace(/^\W+/, '') == '') ? this.name : this.rename.value;
+        //throw Error("You can't rename the group to an empty value!");
         //
         this.thumbDiv.childNodes[2].nodeValue = this.thumbnail.firstChild.nodeValue = this.name = this.rename.value;
         this.rename.value = this.rename.value.replace(/^\W+/, '');
@@ -364,6 +366,7 @@ class chat {
         }))
         //corrigir bugs de renomeio muito rapido (0.3sec), aplicar delay para mostrar o pop-up
         //mudar a mensagem do pop-up caso haja um erro como "erro ao enviar os dados"
+        // criar uma função para mostrar o popup
         popup.innerText = "Grupo Renomeado!";
         popup.disp = "flex";
         popup.style.top = '0';
@@ -374,6 +377,7 @@ class chat {
         }, 3000)
     }
     Msgs() {
+        //console.log("msgs - ok")
         this.msgArea = obj('div', ['msgArea'], this.chatElement, "");
         //scroll to the bottom
         this.toBottom = obj('button', ['toBottom', 'material-symbols-outlined'], this.msgArea, 'arrow_downward');
@@ -415,6 +419,7 @@ class chat {
         }
         this.msgBalloon.addEventListener('drop', e => { //drop não funciona em this.msgArea, pesquisar o motivo e corrigir
             e.preventDefault();
+            //
             if (e.dataTransfer.files.length > 1) {
                 this.previewArrowFoward.disp = this.previewArrowBackward.disp = 'inline';
                 this.previewArrowFoward.addEventListener('click', () => changeSlide(i + 1, this.previewSlides));
@@ -427,9 +432,8 @@ class chat {
                 reader.readAsDataURL(dataFile);
                 reader.onload = e => {
                     //
-                    const dt = dataFile.type;
-                    //
-                    const file = {
+                    const dt = dataFile.type,
+                    file = {
                         "image/": () => {
                             this.preview = obj('img', [], this.previewSlides, "");
                             this.preview.src = e.target.result;
@@ -527,7 +531,7 @@ class msg {
             e.preventDefault();
             e.stopPropagation();
             // style
-            //console.log(msgContext);
+            ////console.log(msgContext);
             msgContext.disp = 'flex';
             msgContext.style.left = `calc(${e.screenX}px - ${msgContext.offsetWidth / 2}px)`;
             msgContext.style.top = `calc(${e.clientY}px)`;
