@@ -15,6 +15,8 @@ rm /tmp/pkl.vsix
 echo "Done!"
 
 echo "configuring some stuff..."
+# install sqlite3
+#npm install sqlite3
 # set this repo as safe
 git config --global --add safe.directory /workspaces/chrome-dino-game
 # set the run.sh as a safe file

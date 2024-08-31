@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 	"webchat/config"
+	"webchat/database"
 	//"encoding/json"
 )
 
@@ -63,6 +64,7 @@ func send(path string, w http.ResponseWriter, mime string) {
 }
 
 func Start() {
+	//database.DB();
 	// file handle
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		// Extraindo o caminho do arquivo da URL
@@ -86,11 +88,6 @@ func Start() {
 
 		if path == "/frontend/wasm_bg.wasm" {
 			send("/scripts/frontend/wasm_bg.wasm", w, "application/wasm");
-			return
-		}
-
-		if path == "/get_data" {
-			send("static/awesome.json", w, "application/json")
 			return
 		}
 
@@ -126,9 +123,9 @@ func Start() {
 		send(url, w, mime)
 	})
 
-	/*http.HandleFunc("/get_data", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/get_data", func(w http.ResponseWriter, r *http.Request) {
 		send("static/awesome.json", w, "application/json")
-	})*/
+	})
 
 	http.HandleFunc("/save_data", func(w http.ResponseWriter, r *http.Request) {
 		// TODO: implement this
