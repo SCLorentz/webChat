@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-window no-window-prefix no-unused-vars prefer-const
 //Aqui ficam todas as funções mais complexas da pagina (islands of interactivity)
-import { saveData } from "./island.js";
+import { saveData, readDataFile } from "./island.js";
 import init, { obj } from "/frontend/wasm.js";
 
 const chats = [],
@@ -400,7 +400,8 @@ class chat {
         //gravação de audio
         //recursos de legendas para quem não puder ouvir o audio
         this.inputAudio = obj('button', ['material-symbols-outlined', 'inputAudio'], this.inputChat, 'mic');
-        let transferfiles = [], record = true;
+        this.transferfiles = [];
+        let record = true;
         this.inputAudio.onclick = () => {
             // review: this makes me uncomfortable
             if (record) {
@@ -425,42 +426,11 @@ class chat {
                 this.previewArrowFoward.addEventListener('click', () => changeSlide(i + 1, this.previewSlides));
                 this.previewArrowBackward.addEventListener('click', () => changeSlide(i - 1, this.previewSlides));
             }
-            for (const dataFile of e.dataTransfer.files) {
-                //
-                const reader = new FileReader();
-                //
-                reader.readAsDataURL(dataFile);
-                reader.onload = e => {
-                    //
-                    const dt = dataFile.type,
-                    file = {
-                        "image/": () => {
-                            this.preview = obj('img', [], this.previewSlides, "");
-                            this.preview.src = e.target.result;
-                        },
-                        "audio/": () => {
-                            this.preview = obj('audio', [], this.previewSlides, "");
-                            this.preview.load();
-                            this.preview.src = e.target.result;
-                            //
-                            throw Error("unimplemented!");
-                        },
-                        "video/": () => {
-                            //lidar com videos usando a API do youtube
-                            this.preview = obj('video', [], this.previewSlides, "");
-                            this.preview.load();
-                            this.preview.src = e.target.result;
-                        },
-                    }
-                    file[dt.replace(/\/\w*/, '/')]?.();
-                    //
-                    this.preview.disp = 'none';
-                    this.previewSlides.disp = 'flex';
-                    this.previewSlides.childNodes[0].disp = 'block';
-                    this.preview.controls = true;
-                    transferfiles.push(this.preview)
-                }
-            }
+            // input previews
+            for (const dataFile of e.dataTransfer.files) readDataFile(dataFile) // read the file as a data url
+            .then(result => this.generatePreview(result,  dataFile.type.replace(/\/\w*/, '/'))) // if the reading is successful, generate the preview
+            .catch(err => Error(err));  // if there is an error, handle it
+            // review
             let i = 0;
             function changeSlide(index, e) {
                 if (index > e.childNodes.length && index <= 0) return
@@ -475,27 +445,59 @@ class chat {
 
         this.msgBalloon.addEventListener('keydown', e => {
             // review: revert this nesting
-            if (e.key != 'Enter' || e.shiftKey) {
-                return
-            }
+            if (e.key != 'Enter' || e.shiftKey) return
             e.preventDefault();
             //
-            if (this.msgBalloon.value.replace(/^\s+/, "").replace(/[\u200E\s⠀ㅤ]/g, "") != '' || transferfiles.length != 0) {
+            if (this.msgBalloon.value.replace(/^\s+/, "").replace(/[\u200E\s⠀ㅤ]/g, "") != '' || this.transferfiles.length != 0) {
                 // fix the issue before adding this back:
                 //this.preview.parentNode.removeChild(this.preview);
                 this.inputChat.style.height = '';
                 this.previewSlides.disp = '';
-                this.msgs.push(new msg(this.msgBalloon.value, transferfiles, new Date(), user, this));
+                this.msgs.push(new msg(this.msgBalloon.value, this.transferfiles, new Date(), user, this));
             }
         });
-        this.msgBalloon.addEventListener('paste', e => {
-            /*e.clipboardData.items.forEach(e => {
-                if (e.type.indexOf('image/') !== -1) {
-                    this.msgs.push(new msg(this.msgBalloon.value, e.getAsFile(), new Date(), user, this));
-                }
-            })*/
+        /*this.msgBalloon.addEventListener('paste', e => {
+            e.clipboardData.items.forEach(e => {
+                if (e.type.indexOf('image/') == -1) return
+                this.msgs.push(new msg(this.msgBalloon.value, e.getAsFile(), new Date(), user, this));
+            })
             //corrigir bugs e atualizar codigo para disponibilizar o preview
-        });
+        });*/
+    }
+    // talvez criar uma função genérica para isso ou quem sabe uma classe para lidar com os previews
+    generatePreview(e, dt) {
+        const file = {
+            "image/": () => this.handleImage(e),
+            "audio/": () => this.handleAudio(e),
+            "video/": () => this.handleVideo(e),
+        }
+        file[dt]?.();
+        //
+        this.preview.disp = 'none';
+        this.previewSlides.disp = 'flex';
+        this.previewSlides.childNodes[0].disp = 'block';
+        this.preview.controls = true;
+        //
+        this.transferfiles.push(this.preview);
+    }
+    // Handlers
+    // passar esses metodos para uma função pode ser util caso o metodo fique muito grande
+    handleImage(e) {
+        this.preview = obj('img', [], this.previewSlides, "");
+        this.preview.src = e;
+    }
+    handleAudio(e) {
+        this.preview = obj('audio', [], this.previewSlides, "");
+        this.preview.load();
+        this.preview.src = e.target.result;
+        //
+        throw Error("unimplemented!");
+    }
+    handleVideo(e) {
+        //lidar com videos usando a API do youtube
+        this.preview = obj('video', [], this.previewSlides, "");
+        this.preview.load();
+        this.preview.src = e.target.result;
     }
 }
 
@@ -578,7 +580,7 @@ class msg {
         this.filePlaceHolder.disp = (this.filePlaceHolder.childElementCount == 0) ? 'none' : '';
         //emails e links
         const emails = this.content.match(/\b[A-Za-z0-9._%+-ãçõ]+@[A-Za-z0-9.-ã]+\.[A-Za-z]{2,}\b/g),
-              links = this.content.match(/https?:\/\/\S+/gi);
+            links = this.content.match(/https?:\/\/\S+/gi);
         // Todo: add more MD rules
         const formatRules = [
             { regex: /(\*\*)(.*?)(\*\*)/g, tag: 'strong' },
@@ -593,7 +595,7 @@ class msg {
         for (const rule of formatRules) {
             this.content = this.content.replace(rule.regex, (match, p1, p2, p3) => {
                 const l = p2.startsWith(' ') ? '&nbsp;' : '',
-                      t = p2.endsWith(' ') ? '&nbsp;' : '';
+                    t = p2.endsWith(' ') ? '&nbsp;' : '';
                 p2 = p2.trim().replace(/\s+/g, ' '); // Substitui múltiplos espaços por um único espaço
                 return `<${rule.tag} ${rule.style ? `style='${rule.style}'` : ''}>${l}${p2}${t}</${rule.tag}>`;
             });
@@ -610,20 +612,22 @@ class msg {
         const reader = new FileReader();
         //
         reader.readAsText(this.file);
-        reader.onload = e => {
-            const result = e.target.result;
-            // this should be reviewed
-            const plainText = {
-                "text/html": () => {
-                    this.htmlFileElement = obj('a', ['htmlFileBtn'], this.filePlaceHolder, this.file.name);
-                    this.htmlFileElement.href = URL.createObjectURL(new Blob([result], { type: 'text/html' }));
-                    this.htmlFileElement.target = '_blank';
-                },
-                "text/plain": () => this.filePlaceHolder.innerText = result,
-                // text markdown
-                // json
-            }
-            plainText[this.file.type]?.();
+        reader.onload = e => this.handleTextFile(e);
+    }
+    handleTextFile(e) {
+        const result = e.target.result;
+        // this should be reviewed
+        const plainText = {
+            "text/html": () => this.handleHTML(result),
+            "text/plain": () => this.filePlaceHolder.innerText = result,
+            // text markdown
+            // json
         }
+        plainText[this.file.type]?.();
+    }
+    handleHTML(result) {
+        this.htmlFileElement = obj('a', ['htmlFileBtn'], this.filePlaceHolder, this.file.name);
+        this.htmlFileElement.href = URL.createObjectURL(new Blob([result], { type: 'text/html' }));
+        this.htmlFileElement.target = '_blank';
     }
 }

@@ -150,4 +150,19 @@ function saveData(data, then) {
       .finally(then);
 }
 
-export { saveData }
+// change this to read all types of files
+const readDataFile = inputFile => {
+    const tmp = new FileReader();
+    //
+    return new Promise((resolve, reject) => {
+        tmp.onerror = () => {
+            tmp.abort();
+            reject(new DOMException("Problem parsing input file."));
+        };
+    
+        tmp.onload = () => resolve(tmp.result);
+        tmp.readAsDataURL(inputFile);
+    });
+};
+
+export { saveData, readDataFile }

@@ -1,7 +1,7 @@
 [package]
 name = "webchat"
 description = "WASM code in my web chat (I don't have a name for it yet)"
-version = "5.5.0"
+version = "5.5.1"
 edition = "2021"
 authors = ["S.C. Lorentz <113468900+SCLorentz@users.noreply.github.com>"]
 
