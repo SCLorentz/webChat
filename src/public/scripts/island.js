@@ -12,16 +12,17 @@ const search = document.getElementById('pesquisar'),
     navigator.serviceWorker.register('offline.js');
 }*/ //offline
 
+const actions = {
+    "s": () => document.getElementById('settings').click(),
+    "g": () => document.getElementById('add').click(), 
+    //"h": () => search.click(),    // pesquisa local no grupo
+    "p": () => search.click(),      // pesquisa global
+}
+
 window.addEventListener("keydown", e => {
     if (!e.ctrlKey) return
     e.preventDefault();
     //
-    const actions = {
-        "s": () => document.getElementById('settings').click(),
-        "g": () => document.getElementById('add').click(), 
-        //"h": () => search.click(),    // pesquisa local no grupo
-        "p": () => search.click(),      // pesquisa global
-    }
     actions[e.key]?.();
 });
 
@@ -30,16 +31,11 @@ Element.prototype.hideOnClick = function () {
     document.onclick = () => this.style.display = "none";
 };
 
-// a better way to do this would be using QUERYs, example '/get_data?kind=chats'
-// then the server would return just the data requested and not the whole json
-
 async function getData(kind) {
     return fetch(`/get_data?kind=${kind}`)
-    .then(response => response.json()) // Converte a resposta em formato JSON
-    .then(data => {
-        return data
-    })
-    .catch(err => Error(err))
+    .then(response => response.json())
+    .then(data => { return data })
+    .catch(err => { throw Error(err) })
 }
 
 getData("chats").then(data => console.log(data))

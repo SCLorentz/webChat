@@ -22,15 +22,15 @@ features = [
 [dependencies.uuid]
 version = "1.10.0"
 features = [
-    "v4",                # Lets you generate random UUIDs
-    "fast-rng",          # Use a faster (but still sufficiently random) RNG
-    "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
+    "v4",                             # Lets you generate random UUIDs
+    "fast-rng",                       # Use a faster (but still sufficiently random) RNG
+    "macro-diagnostics",              # Enable better diagnostics for compile-time UUIDs
 ]
 
 [lib]
 crate-type = ["cdylib"]
-name = "wasm"           # The name of the target.
-path = "src/backend/lib.rs"     # The source file of the target
+name = "wasm"                         # The name of the target
+path = "src/backend/wasm/lib.rs"      # The source file of the target
 
 [profile.dev]
 opt-level = "z"
