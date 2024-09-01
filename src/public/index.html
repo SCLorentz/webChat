@@ -17,15 +17,38 @@
     <link rel="stylesheet" href="/style.css" media="all">
 </head>
 <body translate="no">
+    <!--New Group Menu-->
+    <dialog id="creatorMenu" popover>
+        <h2 class="newGroupCreatorTitle">New Chat</h2>
+        <button class="material-symbols-outlined" id="closeCreatorMenu" tabindex="0" onclick="this.parentNode.hideModal()">close</button>
+        <div id="menuInputs">
+            <div>
+                <input type="text" id="nameInput" placeholder="Escolha um Nome">
+                <input type="text" id="descriptionInput" placeholder="description">
+            </div>
+            <button tabindex="0" onclick="this.lastElementChild.click()">
+                <img src="/groupImg.svg">
+                <input type="file" style="display: none">
+            </button>
+        </div>
+        <button class="material-symbols-outlined" id="create">
+            <span>create</span>
+            group_add
+        </button>
+        <div id="selecUsers">
+            <h3 style="margin-top: 0;">invite some users</h3>
+            <!--users here-->
+        </div>
+    </dialog>
+    <!---->
     <div id="titlebar"></div>
     <!--<img src="/logo.svg" id="logo" alt="logo">-->
     <!--nav-->
     <nav id="salvos">
         <nav id="menu">
-            <!--<input id='pesquisar' placeholder="global" tabindex="0" type="text"></input>-->
             <button class="material-symbols-outlined" tabindex="0" id="pesquisar">
                 search
-                <input placeholder="pesquisar no chat" tabindex="0" type="text" id="searchbar"></input>
+                <input placeholder="pesquisar" tabindex="0" type="text" id="searchbar"></input>
             </button>
             <button tabindex="0" class="material-symbols-outlined" id="sort">
                 sort
@@ -52,42 +75,20 @@
                     </p>
                 </nav>
             </button>
-            <div id="homeSettings">
-                <button class="material-symbols-outlined" tabindex="0" id='settings'>settings</button>
-                <button class="material-symbols-outlined" tabindex="0" id="home"
-                    href="#User Name" style="text-decoration: none;">extension</button>
-                <button class="material-symbols-outlined" id="add" popovertarget="newChatMenu">add</button>
+            <div id="actions">
+                <button class="material-symbols-outlined" tabindex="0" id="settings">settings</button>
+                <button class="material-symbols-outlined" tabindex="0" id="extensions">extension</button>
+                <button class="material-symbols-outlined" tabindex="0" id="add" popovertarget="creatorMenu">add</button>
             </div>
         </nav>
         <div id="contatos">
             <a class="material-symbols-outlined" id="favorites" href="/favorites">star</a>
         </div>
     </nav>
-    <!--New Group Menu-->
-    <dialog id="newChatMenu" popover>
-        <h2 class='newGroupCreatorTitle'>Novo Grupo</h2>
-        <button class="material-symbols-outlined" id="exitCreateGroupMenu" tabindex="0" onclick="this.parentNode.style.display = 'none'">close</button>
-        <div id="menuInputs">
-            <div style='display: flex;flex-direction: column;width: 100%;justify-content: center;'>
-                <input type="text" id="nameInput" placeholder="Escolha um Nome">
-                <input type="text" placeholder="description" id="descriptionInput">
-            </div>
-            <button tabindex="0" onclick="this.lastElementChild.click()">
-                <img src="/groupImg.svg">
-                <input type="file" style='display: none;'>
-            </button>
-        </div>
-        <button class='material-symbols-outlined' id="create">
-            <span>create</span>
-            group_add
-        </button>
-        <div id="selecUsers">
-            <h3 style="margin-top: 0;">users</h3>
-        </div>
-    </dialog>
+    <div id="noChatVisible">nothing here...</div><!--maybe we can place an ascii animation here-->
     <!--settings-->
-    <div id='settingsMenu'>
-        <button id='closeSettings' class="material-symbols-outlined" tabindex="0">close</button>
+    <div id="settingsMenu">
+        <button id="closeSettings" class="material-symbols-outlined" tabindex="0">close</button>
         <a href="/help" id="help" class="material-symbols-outlined" title="help">help</a>
         <div id="themeSelector">
             <h2 style="width: -webkit-fill-available;margin: 0;">My Themes</h2>
@@ -105,16 +106,10 @@
                 - Compartilhar
                 - Ver na pagina (ver detalhadamente)
                 -->
-                <!--Os temas personalizados podem mudar cores e desings basicos sem alterar muito o layout-->
             </button>
         </div>
-        <!--implementar em outros recursos html-->
-        <button popovertarget="heheBoy" class="material-symbols-outlined" tabindex="0">close</button>
-        <div popover id="heheBoy" style="width: 50%;height: 50%;"></div>
     </div>
     <div id="popup"></div>
-    <!---->
-    <userData/>
     <!--scripts-->
     <script src="/main.js" type="module"></script>
     <script src="/island.js" type="module"></script>

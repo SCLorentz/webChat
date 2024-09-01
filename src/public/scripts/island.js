@@ -214,4 +214,17 @@ const callPopup = msg => {
     }
 }
 
+/*function applyCSS(css) {
+    const styles = css.split("\n");
+    console.log(styles);
+}
+
+applyCSS(`
+    {
+        color: var(--text-dark);
+        position: fixed;
+        z-index: 99;
+    }
+`);*/
+
 export { saveData, readDataFile, callPopup }
