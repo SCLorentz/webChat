@@ -1,5 +1,5 @@
 {
-    "names": [
+    "suggestions": [
         "hyperchat",
         "lovely people conversation",
         "dinossaur titan",
@@ -22,7 +22,7 @@
         "never gonna say goodbye",
         "never gonna tell a lie and hurt you",
         "I don't want to miss a thing",
-        "Harry Potter",
+        "Harry Potter Fanclub",
         "idk what I'm doing",
         "gopher",
         "crab",
@@ -40,13 +40,34 @@
         "barbie dream of a little teapot",
         "barbie dream house",
         "I'm your father",
-        "42",
-        "52",
-        "59"
+        "error 508",
+        "the dark side of the force",
+        "the lovers and romantics",
+        "meia-noite-me",
+        "mafia",
+        "chat mafioso",
+        "hellfire club",
+        "halfblod chat"
     ],
-    "customProperties": {
+    "customNameProperties": {
         "42": {
-            "description": "the answer to the ultimate question of life, the universe, and everything"
+            "description": {
+                "message": "the answer to the ultimate question of life, the universe, and everything.",
+                "optional": false
+            }
+        },
+        "are they spying us?": {
+            "description": {
+                "message": "No, we are not!",
+                "optional": true
+            }
+        },
+        "highlander": {
+            "hideDeleteButton": true,
+            "description": {
+                "message": "The importal chat",
+                "optional": true
+            }
         }
     }
 }
