@@ -39,7 +39,7 @@ func sendGzip(w http.ResponseWriter, r *http.Request, mime string, path string) 
 	defer gz.Close()
 
 	// Abre o arquivo HTML
-	file, err := os.Open(path)
+	file, err := os.Open("../public/" + path)
 	if err != nil {
 		http.Error(w, "Erro ao abrir o arquivo", http.StatusInternalServerError)
 		return
@@ -154,15 +154,11 @@ func Start() {
 		}
 
 		url := file + r.URL.Path
-		send(url, w, mime)
+		sendGzip(w, r, mime, url)
 	})
 
 	http.HandleFunc("/get_data", func(w http.ResponseWriter, r *http.Request) {
 		send("static/awesome.json", w, "application/json")
-	})
-
-	http.HandleFunc("/gzip", func(w http.ResponseWriter, r *http.Request) {
-		sendGzip(w, r, "text/html", "../public/index.html")
 	})
 
 	http.HandleFunc("/save_data", func(w http.ResponseWriter, r *http.Request) {

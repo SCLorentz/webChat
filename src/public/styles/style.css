@@ -303,7 +303,7 @@ button {
     grid-area: 1 / 2 / 3 / 3;
 }
 
-.thumbDiv {
+/*.thumbDiv {
     user-select: none;
     display: flex;
     align-items: center;
@@ -322,7 +322,7 @@ button {
         box-shadow: inset 4px 4px 15px #0000006b;
         margin: 0 5px 0 0;
     }
-}
+}*/
 
 #salvos {
     grid-area: 1 / 1 / 3 / 2;
@@ -406,13 +406,14 @@ button {
     position: absolute;
     flex-direction: column;
     align-items: flex-start;
-    background: #101716;
+    background: #101716c4;
     z-index: 2;
     padding: 8px 5px;
     border-radius: 0 1rem 1rem 1rem;
     border: 0.5px solid #212f2d;
     color-scheme: only light;
     display: none;
+    backdrop-filter: blur(3px);
 
     p {
         margin: 3px 0;
@@ -535,7 +536,7 @@ button {
     font-family: 'Roboto';
 }
 
-.thumbnail {
+/*.thumbnail {
     width: -webkit-fill-available;
     background: transparent;
     box-shadow: 4px 4px 90px #0000003b inset, 20px 0px 1px #0000009e;
@@ -561,14 +562,14 @@ button {
         overflow: hidden;
         text-overflow: ellipsis;
     }
-}
+}*/
 
-.thumbnail:hover,
+/*.thumbnail:hover,
 .thumbnail:focus-visible {
     background: #00000013;
     outline: none;
     translate: -3px;
-}
+}*/
 
 #newChatMenu {
     background: #79411961;
@@ -580,17 +581,14 @@ button {
     height: 80%;
     color: white;
     padding: 50px 15px 15px 15px;
-    z-index: 2;
-    top: 50%;
-    translate: 0 -50%;
     user-select: none;
     box-shadow: 4px 4px 60px black;
-    display: none;
     grid-template-columns: 1.2fr 0.8fr;
     grid-template-rows: repeat(2, 1fr);
     grid-column-gap: 0px;
     grid-row-gap: 0px;
     max-width: 800px;
+    display: grid;
 }
 
 /*@container (min-width: 700px) {
@@ -693,12 +691,14 @@ input:-internal-autofill-selected {
     outline: none;
     display: flex;
     align-items: center;
+    padding-left: 10px;
+    flex-direction: row-reverse;
 
     span {
         font-family: 'Roboto';
-        border-right: 2px solid;
+        border-left: 1px solid;
         font-size: 15px;
-        margin: 0 8px 0 0;
+        margin: 0 0 0 8px;
         padding: 4px;
     }
 }
@@ -876,9 +876,9 @@ input:-internal-autofill-selected {
     grid-area: 2 / 1 / 3 / 2;
     overflow: auto;
     scroll-behavior: smooth;
-    border-left: 2px solid;
+    /*border-left: 2px solid;
     border-image: linear-gradient(to bottom, #0000ff00, #934d1c, #0000ff00);
-    border-image-slice: 1;
+    border-image-slice: 1;*/
     background: linear-gradient(to top, #00000073, #0000ff00);
 }
 
@@ -1197,13 +1197,51 @@ input:-internal-autofill-selected {
     display: none
 }
 
+/*
+//////////////////////////////// After Gzip //////////////////////////////////
+*/
 .chatImg {
     border-radius: 50%;
     object-fit: cover;
     -webkit-user-drag: none;
     user-select: none;
     background: #0f1a19;
+    height: -webkit-fill-available;
+    border: 0.1px solid #1e3634;
+    box-shadow: 4px 4px 60px -20px;
+    margin: 5px;
 }
+
+/*for some reason, 'thumbDiv' becomes 'imgDiv' in the css, because of gzip*/
+.imgDiv {
+    display: flex;
+    backdrop-filter: blur(10px);
+    border-bottom: 0.1px solid #ffffff0f;
+    color: white;
+    align-items: center;
+}
+
+/*for some reason, 'thumbnail' becomes 'imgnail' in the css, because of gzip*/
+button.imgnail {
+    width: -webkit-fill-available;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    background: #00000038;
+    font-size: medium;
+    transition: all 1s ease;
+}
+
+.imgnail:hover,
+.imgnail:focus-visible {
+    background: #00000013;
+    outline: none;
+    translate: -3px;
+}
+
+/*
+///////////////////////////////////////////////////////////////////////////
+*/
 
 .filePlaceholder {
     display: flex;

@@ -18,9 +18,9 @@ window.addEventListener("keydown", e => {
     //
     const actions = {
         "s": () => document.getElementById('settings').click(),
-        "g": () => document.getElementById('add').click(),
-        "h": () => search.click(),
-        "f": () => console.log("hello!")
+        "g": () => document.getElementById('add').click(), 
+        //"h": () => search.click(),    // pesquisa local no grupo
+        "p": () => search.click(),      // pesquisa global
     }
     actions[e.key]?.();
 });
@@ -34,11 +34,11 @@ Element.prototype.hideOnClick = function () {
 // then the server would return just the data requested and not the whole json
 
 async function getData(kind) {
-    return fetch('/get_data')
+    return fetch(`/get_data?kind=${kind}`)
     .then(response => response.json()) // Converte a resposta em formato JSON
-    .then(data => init().then(() => {
-        return data[kind]
-    }))
+    .then(data => {
+        return data
+    })
     .catch(err => Error(err))
 }
 
@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
     configBtn.addEventListener('mouseleave', rotate('0deg'));
     // open settings menu
     configBtn.addEventListener('click', () => {
-        if (creator.style.display == "grid") return
+        if (creator.style.display == "grid") return // fix this, since the creator works differnt now
         //
         settings.style.display = 'flex';
         requestAnimationFrame(() => settings.style.top = '0%');
@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => settings.style.display = 'none', 1000);
     });
     search.addEventListener('click', e => {
-        if (creator.style.display == "grid") return
+        if (creator.style.display == "grid") return // fix this, since the creator works differnt now
         //
         e.stopPropagation();
         const b = search.lastElementChild;
@@ -130,15 +130,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 //criar chat
 const nameInput = document.getElementById('nameInput');
-document.getElementById('add').onclick = () => {
-    creator.style.display = "grid";
-    //
-    nameInput.addEventListener("keydown", e => {
-        if (nameInput.value.length > 20 && ![13, 37, 39, 9, 116, 8].includes(e.key) && nameInput.selectionStart == nameInput.selectionEnd) e.preventDefault();
-    });
-    nameInput.addEventListener("paste", paste => nameInput.paste(paste, 20));
-    nameInput.addEventListener('drop', e => e.preventDefault());
-};
+nameInput.addEventListener("keydown", e => {
+    if (nameInput.value.length > 20 && ![13, 37, 39, 9, 116, 8].includes(e.key) && nameInput.selectionStart == nameInput.selectionEnd) e.preventDefault();
+});
+nameInput.addEventListener("paste", paste => nameInput.paste(paste, 20));
+nameInput.addEventListener('drop', e => e.preventDefault());
+//
 document.getElementById('create').onclick = () => {
     const name = nameInput.value.replace(/^\W+/, '');
     //
@@ -159,10 +156,10 @@ document.getElementById('create').onclick = () => {
     // review: maybe we can allow the user to create a chat without waiting for the server to respond and then, after the server responds, save it in the database
     // allowing the user to create chats without a internet connection
     .finally(() => {
-        creator.style.display = 'none';
+        //creator.style.display = 'none'; // hide the creator, but don't change the display
         nameInput.value = '';
         chats.push(new chat(id(), name, '/groupImg.svg', [user, alunos[1]], [user], true));
-    })
+    }) 
 }
 
 const saveData = data => {
