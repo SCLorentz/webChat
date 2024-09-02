@@ -35,7 +35,11 @@ var errTemplates = map[int]*template.Template {
 }
 
 // exported function:
-func Err(w http.ResponseWriter, err int) {
+func Err(w http.ResponseWriter, err int, message error) {
+	// Todo: enviar a mensagem para o usuário
+	if message != nil {
+		fmt.Println(message.Error())
+	}
 	// retornar a função para poder eviter usar 'errHandler(w, 500)' e no lugar usar 'errHandler(500)', sem a necessidade do 'http.ResponseWriter'
 	if template, ok := errTemplates[err]; ok {
 		w.WriteHeader(err)

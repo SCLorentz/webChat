@@ -7,15 +7,17 @@ import (
 	"errors"
 	"fmt"
 	"log"
+
 	//
+	//"encoding/json"
+	"io"
 	"net/http"
 	"os"
-	"io"
 	"strings"
-	//"encoding/json"
+
 	// my packages
-	"webchat/config"
 	"compress/gzip"
+	"webchat/config"
 	//"webchat/database"
 	//"encoding/json"
 )
@@ -55,45 +57,59 @@ func sendGzip(w http.ResponseWriter, r *http.Request, mime string, path string) 
 	}
 }
 
-func readFile(path string) ([]byte, error) {
+func readFile(path string) ([]byte, int, error) {
 	_, error := os.Stat(path)
 	exist := !errors.Is(error, os.ErrNotExist)
 
 	if !exist {
-		return []byte{}, errors.New("file not found")
+		return []byte{}, 404, errors.New("file not found")
 	}
 
 	// Open the file and check for errors
 	file, err := os.Open(path)
 	if err != nil {
-		return []byte{}, errors.New("error opening file")
+		return []byte{}, 500, errors.New("error opening file")
 	}
 	defer file.Close() // Close the file even on errors
 
 	// Get the file size
 	info, err := os.Stat(path)
 	if err != nil {
-		return []byte{}, errors.New("error getting file info")
+		return []byte{}, 500, errors.New("error getting file info")
 	}
 
 	// Read the file content
 	data := make([]byte, info.Size())
 	count, err := file.Read(data)
 	if err != nil {
-		return []byte{}, errors.New("error reading file")
+		return []byte{}, 500, errors.New("error reading file")
 	}
 
-	return data[:count], nil
+	return data[:count], 200, nil
 }
 
 func send(path string, w http.ResponseWriter, mime string) {
 	// get the file path based on the project path
-	data, _ := readFile("../public/" + path);
+	data, status, err := readFile("../public/" + path);
+	if status != 200 {
+		config.Err(w, status, err)
+		return
+	}
 
 	//fmt.Printf("read %d bytes: %q\n", count, data[:count])
 	w.Header().Set("Content-Type", mime)
 	w.Write([]byte(data))
 }
+
+/*func readJsonFile(path string) ([]byte, error) {
+	data, _ := readFile(path);
+	//
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		fmt.Printf("could not marshal json: %s\n", err)
+		return
+	}
+}*/
 
 func Start() {
 	//database.DB();
@@ -147,7 +163,7 @@ func Start() {
 
 		if file != "static" && file != "json" && r.Header.Get("Referer") == "" {
 			fmt.Println(file)
-			config.Err(w, 403)
+			config.Err(w, 403, errors.New("not allowed"))
 			return
 		}
 
@@ -165,7 +181,7 @@ func Start() {
 		/*ata := r.FormValue("data")
 		fmt.Println(data)
 		w.Write([]byte("ok"))*/
-		config.Err(w, 501)
+		config.Err(w, 501, errors.New("not implemented"))
 	})
 
 	/*// Open our jsonFile
