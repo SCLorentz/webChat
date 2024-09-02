@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"errors"
+	"os"
 )
 
 var mime = map[string]string {
@@ -49,4 +51,35 @@ func Err(w http.ResponseWriter, err int, message error) {
 	// Handle unexpected errors here
 	err_msg := "Internal Server Error, this is an err inside the err handler, the original err was: " + fmt.Sprintf("%b", err)
 	http.Error(w, err_msg, 500)
+}
+
+func ReadFile(path string) ([]byte, int, error) {
+	_, error := os.Stat(path)
+	exist := !errors.Is(error, os.ErrNotExist)
+
+	if !exist {
+		return []byte{}, 404, errors.New("file not found")
+	}
+
+	// Open the file and check for errors
+	file, err := os.Open(path)
+	if err != nil {
+		return []byte{}, 500, errors.New("error opening file")
+	}
+	defer file.Close() // Close the file even on errors
+
+	// Get the file size
+	info, err := os.Stat(path)
+	if err != nil {
+		return []byte{}, 500, errors.New("error getting file info")
+	}
+
+	// Read the file content
+	data := make([]byte, info.Size())
+	count, err := file.Read(data)
+	if err != nil {
+		return []byte{}, 500, errors.New("error reading file")
+	}
+
+	return data[:count], 200, nil
 }

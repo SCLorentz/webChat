@@ -7,19 +7,16 @@ import (
 	"errors"
 	"fmt"
 	"log"
-
 	//
 	//"encoding/json"
 	"io"
 	"net/http"
 	"os"
 	"strings"
-
 	// my packages
 	"compress/gzip"
 	"webchat/config"
 	//"webchat/database"
-	//"encoding/json"
 )
 
 type File struct {
@@ -57,40 +54,9 @@ func sendGzip(w http.ResponseWriter, r *http.Request, mime string, path string) 
 	}
 }
 
-func readFile(path string) ([]byte, int, error) {
-	_, error := os.Stat(path)
-	exist := !errors.Is(error, os.ErrNotExist)
-
-	if !exist {
-		return []byte{}, 404, errors.New("file not found")
-	}
-
-	// Open the file and check for errors
-	file, err := os.Open(path)
-	if err != nil {
-		return []byte{}, 500, errors.New("error opening file")
-	}
-	defer file.Close() // Close the file even on errors
-
-	// Get the file size
-	info, err := os.Stat(path)
-	if err != nil {
-		return []byte{}, 500, errors.New("error getting file info")
-	}
-
-	// Read the file content
-	data := make([]byte, info.Size())
-	count, err := file.Read(data)
-	if err != nil {
-		return []byte{}, 500, errors.New("error reading file")
-	}
-
-	return data[:count], 200, nil
-}
-
 func send(path string, w http.ResponseWriter, mime string) {
 	// get the file path based on the project path
-	data, status, err := readFile("../public/" + path);
+	data, status, err := config.ReadFile("../public/" + path);
 	if status != 200 {
 		config.Err(w, status, err)
 		return
@@ -173,6 +139,7 @@ func Start() {
 
 	http.HandleFunc("/get_data", func(w http.ResponseWriter, r *http.Request) {
 		send("static/awesome.json", w, "application/json")
+		// Todo: create a query handler
 	})
 
 	http.HandleFunc("/save_data", func(w http.ResponseWriter, r *http.Request) {
