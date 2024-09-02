@@ -12,6 +12,7 @@ import (
 	"os"
 	"io"
 	"strings"
+	//"encoding/json"
 	// my packages
 	"webchat/config"
 	"compress/gzip"
@@ -54,47 +55,44 @@ func sendGzip(w http.ResponseWriter, r *http.Request, mime string, path string) 
 	}
 }
 
-func send(path string, w http.ResponseWriter, mime string) {
-	// get the file path based on the project path
-	Folder := "../public/" + path
-	_, error := os.Stat(Folder)
+func readFile(path string) ([]byte, error) {
+	_, error := os.Stat(path)
 	exist := !errors.Is(error, os.ErrNotExist)
 
 	if !exist {
-		config.Err(w, 404)
-		//fmt.Println("error 404: " + Folder + " from: " + r.Header.Get("Referer"))
-		return
+		return []byte{}, errors.New("file not found")
 	}
 
 	// Open the file and check for errors
-	file, err := os.Open(Folder)
+	file, err := os.Open(path)
 	if err != nil {
-		fmt.Println("Erro ao abrir o arquivo:", err)
-		config.Err(w, 500)
-		return
+		return []byte{}, errors.New("error opening file")
 	}
 	defer file.Close() // Close the file even on errors
 
 	// Get the file size
-	info, err := os.Stat(Folder)
+	info, err := os.Stat(path)
 	if err != nil {
-		fmt.Println("Erro ao obter informações do arquivo:", err)
-		config.Err(w, 500)
-		return
+		return []byte{}, errors.New("error getting file info")
 	}
 
 	// Read the file content
 	data := make([]byte, info.Size())
 	count, err := file.Read(data)
 	if err != nil {
-		fmt.Println("Erro ao ler o arquivo:", err)
-		config.Err(w, 500)
-		return
+		return []byte{}, errors.New("error reading file")
 	}
+
+	return data[:count], nil
+}
+
+func send(path string, w http.ResponseWriter, mime string) {
+	// get the file path based on the project path
+	data, _ := readFile("../public/" + path);
 
 	//fmt.Printf("read %d bytes: %q\n", count, data[:count])
 	w.Header().Set("Content-Type", mime)
-	w.Write([]byte(data[:count]))
+	w.Write([]byte(data))
 }
 
 func Start() {
