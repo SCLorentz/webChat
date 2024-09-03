@@ -56,6 +56,7 @@ func sendGzip(w http.ResponseWriter, r *http.Request, mime string, path string) 
 		return return_err
 	}
 	defer file.Close()
+	//file, _, _ := config.ReadFile(File);
 
 	// Copia o conteúdo do arquivo para o escritor Gzip
 	_, err = io.Copy(gz, file)
@@ -70,29 +71,44 @@ func sendGzip(w http.ResponseWriter, r *http.Request, mime string, path string) 
 
 func send(path string, w http.ResponseWriter, mime string) {
 	// get the file path based on the project path
-	data, status, err := config.ReadFile("../public/" + path);
+	file, status, err := config.ReadFile("../public/" + path);
 	if status != 200 {
 		config.Err(w, status, err)
 		return
 	}
 
+	// Get the file size
+	info, err := os.Stat(path)
+	if err != nil {
+		return
+	}
+
+	// Read the file content
+	data := make([]byte, info.Size())
+	count, err := file.Read(data)
+	if err != nil {
+		return
+	}
+
 	//fmt.Printf("read %d bytes: %q\n", count, data[:count])
 	w.Header().Set("Content-Type", mime)
-	w.Write([]byte(data))
+	w.Write([]byte(data[:count]))
 }
 
 /*func readJsonFile(path string) ([]byte, error) {
-	data, _ := readFile(path);
+	data, _, _ := config.ReadFile(path);
 	//
 	jsonData, err := json.Marshal(data)
 	if err != nil {
 		fmt.Printf("could not marshal json: %s\n", err)
-		return
+		return nil, err
 	}
+	return jsonData, nil
 }*/
 
 func Start() {
 	//database.DB();
+	//fmt.Println(readJsonFile("../public/static/awesome.json"))
 	// file handle
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		// Extraindo o caminho do arquivo da URL
