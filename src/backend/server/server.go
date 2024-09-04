@@ -25,7 +25,7 @@ type File struct {
 }
 
 func sendGzip(w http.ResponseWriter, r *http.Request, mime string, path string) error {
-	File := "../public/" + path
+	File := "../frontend/" + path
 	// Verifica se o cliente aceita compressão Gzip
 	if !isGzipAccepted(r) {
 		//http.Error(w, "Not Acceptable", http.StatusNotAcceptable) // err 406
