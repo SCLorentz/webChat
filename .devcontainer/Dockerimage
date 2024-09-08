@@ -1,4 +1,0 @@
-FROM jlesage/baseimage-gui:ubuntu-22.04-v4 # use other image
-
-# copy the start script
-COPY startapp.sh /startapp.sh
