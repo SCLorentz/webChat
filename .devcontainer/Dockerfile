@@ -24,6 +24,6 @@ RUN sh -c 'cat /prompt >> ~/.bashrc'
 #RUN sh -c 'git config pull.rebase false'
 
 # final configuration
-ENV FLASK_APP=airzagcida
+ENV FLASK_APP=webchat
 EXPOSE 8000
 CMD flask run --host 0.0.0.0 --port 8000
