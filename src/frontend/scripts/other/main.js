@@ -65,7 +65,8 @@ class chat {
         this.name = name;
         this.img = img;
         this.guests = guests; // merge guests and adm in one object
-        this.adm = adm;
+        // review: remember to change this  where the class is used
+        this.adm = new Map(adm.map(user => [user.nome, user.id]));
         this.build();
         this.Msgs();
         this.msgs = [];
@@ -105,10 +106,11 @@ class chat {
             ) ? null : this.imgDiv.offsetWidth / 5 + 'px';
         }
         this.searchInput.addEventListener('keydown', e => {
-            if (e.key != 8) return
+            if (e.key != 8) return // if backspace is pressed then:
             //
             e.preventDefault();
             // verificar se o input !== '' && conteudo da mensagem ~=(70%) input
+            // I can turn msg into a map and use the filter method to check if the input is in the msg
             this.msgs.forEach(msg => 
                 msg.getMsg.disp = (
                     [...msg.content].filter((char, index) => char == this.searchInput.value.charAt(index)).length / msg.content.length < 0.7 && this.searchInput.value !== '' && msg.content
@@ -231,7 +233,9 @@ class chat {
         //
         toAdm.innerText = this.adm.includes(guest) ? 'gpp_bad' : 'shield_person';
         toAdm.onclick = () => {
-            if (!this.adm.includes(user)) return
+            //if (!this.adm.includes(user)) return --> change to map verification instead of array
+            if (!this.adm.has(guest)) return
+
             // the user is an ADM
             toAdm.innerText = this.adm.includes(guest) ? 'gpp_bad' : 'shield_person';
             //
