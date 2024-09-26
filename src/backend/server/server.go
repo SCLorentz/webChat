@@ -17,6 +17,7 @@ import (
 	"compress/gzip"
 	"webchat/config"
 	//"webchat/database"
+	"path/filepath"
 )
 
 type File struct {
@@ -160,6 +161,23 @@ func Start() {
 		if file != "static" && file != "json" && r.Header.Get("Referer") == "" {
 			fmt.Println(file)
 			config.Err(w, 403, errors.New("not allowed"))
+			return
+		}
+
+		// Adicione uma nova rota para o aplicativo React
+		if path == "/" || strings.HasPrefix(path, "/react-app") {
+			http.ServeFile(w, r, filepath.Join("src", "public", "index.html"))
+			return
+		}
+
+		// Adicione uma nova rota para o WASM
+		if strings.HasPrefix(path, "/wasm/") {
+			send(strings.TrimPrefix(path, "/"), w, "application/wasm")
+			return
+		}
+
+		if strings.HasPrefix(path, "/scripts/frontend/") {
+			http.ServeFile(w, r, filepath.Join("src", "public", path))
 			return
 		}
 

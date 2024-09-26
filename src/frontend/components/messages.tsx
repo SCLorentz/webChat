@@ -2,7 +2,7 @@
 // message types
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-import { UUID, Person, Message, uuidv4 } from "./index.tsx";
+import { UUID, Person, Message, uuidv4 } from "/index.ts";
 
 // create a text type message class
 export class TextMessage implements Message {

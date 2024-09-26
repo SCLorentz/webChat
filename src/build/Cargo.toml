@@ -30,7 +30,6 @@ features = [
 [lib]
 crate-type = ["cdylib"]
 name = "wasm"                         # The name of the target
-path = "src/backend/wasm/lib.rs"      # The source file of the target
 
 [profile.dev]
 opt-level = "z"

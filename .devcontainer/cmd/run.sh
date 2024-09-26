@@ -1,21 +1,25 @@
-# kill any running server
-# ...
-# build WASM
-echo building wasm...
-echo ""
-cargo install wasm-pack
-wasm-pack build --target web --out-dir ./src/public/scripts/frontend
+#!/bin/bash
 
-# tidy go, not working, fix this!
+# Kill any running server
+pkill -f webchat
+
+# Install dependencies
+npm install
+
+# Build WASM
+echo "Building WASM..."
+npm run build:wasm
+
+# Build frontend
+echo "Building frontend..."
+npm run build
+
+# Build Go server
+echo "Building server..."
 cd ./src/backend
 go mod tidy
+go build -o ./webchat ./main.go
 
-# go build
-echo "Building server..."
-GOOS=linux GOARCH=amd64 go build -o ./webchat ./main.go
-
-# server startup
+# Start server
 echo "Starting server..."
 ./webchat
-
-# adicionar metodo para abrir no browser fora do container

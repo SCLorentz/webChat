@@ -11,6 +11,11 @@ extern {
 }
 
 #[wasm_bindgen]
+pub fn add(a: i32, b: i32) -> i32 {
+    a + b
+}
+
+#[wasm_bindgen]
 pub fn greet(name: &str) {
     alert("Hello, world!");
     if confirm(&format!("Are you sure?")) {
