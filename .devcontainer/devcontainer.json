@@ -33,9 +33,9 @@
 				"Tobermory.es6-string-html",
 				"ctcuff.font-preview",
 				"kisstkondoros.vscode-gutter-preview",
-				"supermaven.supermaven",
 				"rcore.rcore-unused-css-classes",
-				"golang.Go"
+				"golang.Go",
+				"oderwat.indent-rainbow"
 			],
 			// settings for vscode (other than .vscode/extensions.json)
 			"settings": {

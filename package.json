@@ -1,0 +1,33 @@
+{
+  "name": "chat",
+  "version": "1.0.0",
+  "description": "a webserver with front-end and back-end made to be used like a chatting pwa",
+  "main": "./src/frontend/scripts/index.tx",
+  "scripts": {
+    "test": "echo \"hello world\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SCLorentz/webChat.git"
+  },
+  "keywords": [
+    "webchat",
+    "chat",
+    "pwa",
+    "wasm",
+    "rust",
+    "typescript",
+    "react",
+    "tailwind",
+    "golang"
+  ],
+  "author": "sclorentz",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SCLorentz/webChat/issues"
+  },
+  "homepage": "https://github.com/SCLorentz/webChat#readme",
+  "dependencies": {
+    "react": "^18.3.1"
+  }
+}
