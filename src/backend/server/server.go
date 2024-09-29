@@ -15,9 +15,8 @@ import (
 	"strings"
 	// my packages
 	"compress/gzip"
-	"webchat/config"
+	"webchat/conf"
 	//"webchat/database"
-	"path/filepath"
 )
 
 type File struct {
@@ -53,18 +52,18 @@ func sendGzip(w http.ResponseWriter, r *http.Request, mime string, path string) 
 	if err != nil {
 		return_err := errors.New("error opening the file")
 		//
-		config.Err(w, 500, return_err)
+		conf.Err(w, 500, return_err)
 		return return_err
 	}
 	defer file.Close()
-	//file, _, _ := config.ReadFile(File);
+	//file, _, _ := conf.ReadFile(File);
 
 	// Copia o conteúdo do arquivo para o escritor Gzip
 	_, err = io.Copy(gz, file)
 	if err != nil {
 		return_err := errors.New("error copying the content")
 		//
-		config.Err(w, 500, return_err)
+		conf.Err(w, 500, return_err)
 		return return_err
 	}
 	return nil
@@ -72,9 +71,9 @@ func sendGzip(w http.ResponseWriter, r *http.Request, mime string, path string) 
 
 func send(path string, w http.ResponseWriter, mime string) {
 	// get the file path based on the project path
-	file, status, err := config.ReadFile("../public/" + path);
+	file, status, err := conf.ReadFile("../public/" + path);
 	if status != 200 {
-		config.Err(w, status, err)
+		conf.Err(w, status, err)
 		return
 	}
 
@@ -97,7 +96,7 @@ func send(path string, w http.ResponseWriter, mime string) {
 }
 
 /*func readJsonFile(path string) ([]byte, error) {
-	data, _, _ := config.ReadFile(path);
+	data, _, _ := conf.ReadFile(path);
 	//
 	jsonData, err := json.Marshal(data)
 	if err != nil {
@@ -160,24 +159,7 @@ func Start() {
 
 		if file != "static" && file != "json" && r.Header.Get("Referer") == "" {
 			fmt.Println(file)
-			config.Err(w, 403, errors.New("not allowed"))
-			return
-		}
-
-		// Adicione uma nova rota para o aplicativo React
-		if path == "/" || strings.HasPrefix(path, "/react-app") {
-			http.ServeFile(w, r, filepath.Join("src", "public", "index.html"))
-			return
-		}
-
-		// Adicione uma nova rota para o WASM
-		if strings.HasPrefix(path, "/wasm/") {
-			send(strings.TrimPrefix(path, "/"), w, "application/wasm")
-			return
-		}
-
-		if strings.HasPrefix(path, "/scripts/frontend/") {
-			http.ServeFile(w, r, filepath.Join("src", "public", path))
+			conf.Err(w, 403, errors.New("not allowed"))
 			return
 		}
 
@@ -196,7 +178,7 @@ func Start() {
 		/*ata := r.FormValue("data")
 		fmt.Println(data)
 		w.Write([]byte("ok"))*/
-		config.Err(w, 501, errors.New("not implemented"))
+		conf.Err(w, 501, errors.New("not implemented"))
 	})
 
 	/*// Open our jsonFile

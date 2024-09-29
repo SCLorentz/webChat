@@ -1,0 +1,33 @@
+[package]
+name = "ch6"
+description = "wch"
+version = "0.1.2"                     # now this is independent of the version of the chat
+edition = "2021"
+authors = ["S.C. Lorentz <113468900+SCLorentz@users.noreply.github.com>"]
+
+[dependencies]
+getrandom = { version = "0.2", features = ["js"] }
+wasm-bindgen = "0.2"
+
+[dependencies.web-sys]
+version = "0.3.4"
+features = [
+  'Document',
+  'Element',
+  'HtmlElement',
+  'Node',
+  'Window',
+]
+
+[dependencies.uuid]
+version = "1.10.0"
+features = [
+    "v4",                             # Lets you generate random UUIDs
+    "fast-rng",                       # Use a faster (but still sufficiently random) RNG
+    "macro-diagnostics",              # Enable better diagnostics for compile-time UUIDs
+]
+
+[lib]
+crate-type = ["cdylib"]
+name = "wasm"                         # The name of the target
+path = "src/frontend/scripts/build/lib.rs"      # The source file of the target
