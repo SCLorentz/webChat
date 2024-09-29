@@ -1,4 +1,4 @@
-apt-get update && apt-get install -y git
+apt-get update && apt-get install -y git gcc
 
 # Clear the existing .bashrc content
 > ~/.bashrc

@@ -1,3 +1,4 @@
+#![feature(proc_macro, wasm_import_module, wasm_custom_section)]
 // the UUIDs won't be generated using SQLite, they will be generated in Rust. That will provide a better IDs system.
 use uuid::Uuid;
 

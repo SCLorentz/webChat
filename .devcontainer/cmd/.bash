@@ -9,6 +9,12 @@ alias pull='git pull'
 alias status='git status'
 alias merge='git merge'
 
+alias tree='ls -R'  # create a tree view of the repo
+
 run() {
     /run.sh
+}
+
+json(path) {
+    pkl eval -f json $path
 }

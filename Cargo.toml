@@ -1,7 +1,7 @@
 [package]
 name = "ch6"
 description = "wch"
-version = "0.1.2"                     # now this is independent of the version of the chat
+version = "0.1.2"                               # now this is independent of the version of the chat
 edition = "2021"
 authors = ["S.C. Lorentz <113468900+SCLorentz@users.noreply.github.com>"]
 
@@ -22,12 +22,22 @@ features = [
 [dependencies.uuid]
 version = "1.10.0"
 features = [
-    "v4",                             # Lets you generate random UUIDs
-    "fast-rng",                       # Use a faster (but still sufficiently random) RNG
-    "macro-diagnostics",              # Enable better diagnostics for compile-time UUIDs
+    "v4",                                       # Lets you generate random UUIDs
+    "fast-rng",                                 # Use a faster (but still sufficiently random) RNG
+    "macro-diagnostics",                        # Enable better diagnostics for compile-time UUIDs
 ]
 
 [lib]
 crate-type = ["cdylib"]
-name = "wasm"                         # The name of the target
+name = "wasm"                                   # The name of the target
 path = "src/frontend/scripts/build/lib.rs"      # The source file of the target
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = false
+
+[package.metadata.wasm-pack.profile.release.wasm-bindgen]
+out-dir = "./src/frontend/scripts/web"
+
+[profile.release]
+lto = "full"
+opt-level = "z"
