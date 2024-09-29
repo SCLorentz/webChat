@@ -33,11 +33,13 @@ Front-end
 
 ### 0.0.1 - First version
 
+<img src="images/README/js.svg" width="60px">
+
 this version included:
 
 - [X] HTML
 - [X] CSS
-- [X] JS
+- [X] JS <!--js just appeard in future versions beetween 0.0.1 and 1.0.0, but was included in the version 0-->
 
 <!--------------------
 Obj Oriented Front-end
@@ -57,6 +59,8 @@ Back-end
 
 ### 2.0.0 - Back-end
 
+<img src="images/README/nodejs.svg" height="50px">
+
 This version of the back-end includes:
 
 - [X] NodeJS
@@ -68,6 +72,8 @@ Back-end in Deno
 ---------------------->
 
 ### 3.0.0 - Back-end in Deno
+
+<img src="images/README/deno.svg" width="60px">
 
 this version includes:
 
@@ -85,8 +91,9 @@ Front-end in WASM
 
 New features with wasm-pack include:
 
-- [X]  UUID generator
-- [ ]  Connection with the back-end
+- [X] Rust
+- [X] UUID generator
+- [ ] Connection with the back-end
 
 <!--------------------
 Back-end in Golang
@@ -106,6 +113,8 @@ Front-end in TS
 ---------------------->
 
 ### 6.0.0 - Front-end in TS
+
+<img src="images/README/ts.svg" width="60px">
 
 New features with this version of front-end includes:
 
