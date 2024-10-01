@@ -1,4 +1,6 @@
 //import init, { uuid4 } from "/web/wasm.js";
+import init, { id } from "../web/wasm.js";
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // start-up
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -34,9 +36,13 @@ class UserChat {
     public name: string;
 
     constructor(name: string) {
-        this.id = ID();
         this.name = name;
         // get messages from the database
+        this.genID();
+    }
+
+    private async genID() {
+        this.id = await ID();
     }
 
     // get messages from the database
@@ -64,10 +70,15 @@ class Chat {
 
     constructor(name: string) {
         // inicialization values
-        this.id = ID();
         this.name = name;
         // create a map for the people
         this.people = new Map<UUID, Person>();
+        //
+        this.genId()
+    }
+
+    private async genId() {
+        this.id = await ID();
     }
 
     public addPeople = (people: Person[]) => new Promise((resolve, _) => {
@@ -75,10 +86,10 @@ class Chat {
         resolve(true);              // return the status of the operation
     });
 
-    public newMessage(content: string, person: Person) {
+    public async newMessage(content: string, person: Person) {
         const newMsg: Message = {
             //id: init().then(() => id()) as unknown as UUID,
-            id: ID(),
+            id: await ID(),
             content: content,
             sender: person,
             timestamp: Date.now(),  // Todo: compare with the server date as well
@@ -100,24 +111,25 @@ class Chat {
     }
 }
 
-function ID(): UUID {
+async function ID(): Promise<UUID> {
     // verify the existence of that id in the DB
-    return Math.random().toString(36).slice(2, 11) as UUID; // Changed from substr to slice
+    await init();
+    return id() as UUID
 }
 
 // Test
 const Zéulo: Person = {
-    id: ID(),
+    id: await ID(),
     name: "Zéulo Rio Renno",
     img: undefined
 },
 Ana: Person = {
-    id: ID(),
+    id: await ID(),
     name: "Ana L.",
     img: undefined
 }
 //
-const test = new Chat("name");
+const test = new Chat("my chat");
 test.addPeople([Zéulo, Ana]);
 //
 console.log(test)

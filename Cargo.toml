@@ -17,6 +17,7 @@ features = [
   'HtmlElement',
   'Node',
   'Window',
+  'console',
 ]
 
 [dependencies.uuid]

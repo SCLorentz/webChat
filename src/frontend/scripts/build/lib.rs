@@ -1,29 +1,28 @@
-#![feature(proc_macro, wasm_import_module, wasm_custom_section)]
 // the UUIDs won't be generated using SQLite, they will be generated in Rust. That will provide a better IDs system.
 use uuid::Uuid;
-
 use wasm_bindgen::prelude::*;
-use web_sys::Element;
+
+extern crate web_sys;
+//use web_sys::console;
 
 #[wasm_bindgen]
 extern {
-    pub fn alert(s: &str);
     pub fn confirm(s: &str) -> bool;
 }
 
-#[wasm_bindgen]
+/*#[wasm_bindgen]
 pub fn greet(name: &str) {
-    alert("Hello, world!");
+    console::log_1(&JsValue::from_str("Hello, world!"));
     //
     if confirm(&format!("Are you sure?")) {
-        alert(&format!("fuck yourself! {}", name));
+        console::log_1(&JsValue::from_str(&format!("fuck you {}!", name)));
         return;
     }
     //
-    alert("You are not sure :(");
-}
+    console::log_1(&JsValue::from_str("You are not sure :("));
+}*/
 
-#[wasm_bindgen]
+/*#[wasm_bindgen]
 pub fn obj(ty: String, classes: Vec<String>, father: web_sys::Document, txt: String) -> Result<Element, JsValue> {
     let window = web_sys::window().expect("no global `window` exists");
     let document = window.document().expect("should have a document on window");
@@ -39,7 +38,7 @@ pub fn obj(ty: String, classes: Vec<String>, father: web_sys::Document, txt: Str
     father.append_child(&e)?;
 
     return Ok(e);
-}
+}*/
 
 #[wasm_bindgen]
 pub fn id() -> String {
