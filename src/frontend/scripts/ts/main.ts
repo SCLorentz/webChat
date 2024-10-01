@@ -1,4 +1,4 @@
-import init, { uuid4 } from "/web/wasm.js";
+//import init, { uuid4 } from "/web/wasm.js";
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // start-up
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -10,7 +10,7 @@ export type Base64 = `data:image/${string};base64,${string}`;
 export type Person = {
     id: UUID,
     name: string,
-    img: Base64
+    img: Base64 | undefined
 }
 
 // define Message type
@@ -18,7 +18,7 @@ export type Message = {
     id: UUID,
     content: string,
     sender: Person,
-    timestamp: Date,
+    timestamp: number,
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -34,7 +34,7 @@ class UserChat {
     public name: string;
 
     constructor(name: string) {
-        this.id = uuidv4();
+        this.id = ID();
         this.name = name;
         // get messages from the database
     }
@@ -62,19 +62,30 @@ class Chat {
     public name: string;
     public people: Map<UUID, Person>;
 
-    constructor(name: string, messages: Message[]) {
+    constructor(name: string) {
         // inicialization values
-        this.id = uuidv4();
+        this.id = ID();
         this.name = name;
         // create a map for the people
         this.people = new Map<UUID, Person>();
-        this.messages = new Map<UUID, Message>();
     }
 
     public addPeople = (people: Person[]) => new Promise((resolve, _) => {
         people.forEach(person => this.people.set(person.id, person));
-        resolve(true);          // return the status of the operation
+        resolve(true);              // return the status of the operation
     });
+
+    public newMessage(content: string, person: Person) {
+        const newMsg: Message = {
+            //id: init().then(() => id()) as unknown as UUID,
+            id: ID(),
+            content: content,
+            sender: person,
+            timestamp: Date.now(),  // Todo: compare with the server date as well
+        }
+        //
+        this.messages.set(newMsg.id, newMsg)
+    }
 
     // create a html chat
     public create() {
@@ -88,3 +99,25 @@ class Chat {
         // delete the chat, this shoud be a promise that deletes the html element, remove's it from the database and the local storage
     }
 }
+
+function ID(): UUID {
+    // verify the existence of that id in the DB
+    return Math.random().toString(36).slice(2, 11) as UUID; // Changed from substr to slice
+}
+
+// Test
+const Zéulo: Person = {
+    id: ID(),
+    name: "Zéulo Rio Renno",
+    img: undefined
+},
+Ana: Person = {
+    id: ID(),
+    name: "Ana L.",
+    img: undefined
+}
+//
+const test = new Chat("name");
+test.addPeople([Zéulo, Ana]);
+//
+console.log(test)
