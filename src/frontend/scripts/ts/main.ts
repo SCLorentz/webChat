@@ -1,6 +1,6 @@
 //import init, { uuid4 } from "/web/wasm.js";
 import init, { id } from "../web/wasm.js"; // make possible to use this both for local tests and server ones
-import { Message, UUID, Person, Base64 } from "./types.ts"
+import type { Message, UUID, Person, Base64 } from "./types.d.ts"
 
 async function ID(): Promise<UUID> {
     // verify the existence of that id in the DB
@@ -12,13 +12,14 @@ async function ID(): Promise<UUID> {
 // User Chat
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class UserChat {
-    // private fields
-    private id: UUID;
-    private messages: Map<UUID, Message>;
-    private person: Person;
-    // public fields
-    public name: string;
+interface User {
+    id: UUID;
+    messages: Map<UUID, Message>;
+    name: string;
+    person: Person;
+}
+
+class User implements User {
 
     constructor(person: Person) {
         this.name = person.name;
@@ -48,25 +49,22 @@ class UserChat {
 // chat class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class Chat {
-    // private fields
-    private id: UUID;
-    private messages: Map<UUID, Message>;
-    // public fields
-    public name: string;
-    public people: Map<UUID, Person>;
+interface Chat {
+    id: UUID;
+    messages: Map<UUID, Message>;
+    name: string;
+    people: Map<UUID, Person>;
+}
+
+class Chat implements Chat {
 
     constructor(name: string) {
         // inicialization values
         this.name = name;
         // create a map for the people
         this.people = new Map<UUID, Person>();
-        //
-        this.generate_id();
-    }
-
-    private async generate_id() {
-        this.id = await ID();
+        // set id
+        async () => this.id = await ID();
     }
 
     public add_people = (people: Person[]) => new Promise((resolve, _) => {
@@ -134,7 +132,7 @@ chat.add_people([Zéulo, Malu]);
 //
 console.log(chat)
 
-const user = new UserChat(Malu);
+const user = new User(Malu);
 user.new_message("hello world")
     .then(set => {
         set.favorited = true;
