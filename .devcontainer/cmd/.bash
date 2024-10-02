@@ -15,6 +15,6 @@ run() {
     /run.sh
 }
 
-json(path) {
-    pkl eval -f json $path
-}
+#json(path) {
+    #pkl eval -f json $path
+#}

@@ -1,6 +1,10 @@
 // the UUIDs won't be generated using SQLite, they will be generated in Rust. That will provide a better IDs system.
 use uuid::Uuid;
 use wasm_bindgen::prelude::*;
+// http response
+use web_sys::Request;
+use web_sys::RequestInit;
+use web_sys::Response;
 
 extern crate web_sys;
 //use web_sys::console;
@@ -43,4 +47,22 @@ pub fn obj(ty: String, classes: Vec<String>, father: web_sys::Document, txt: Str
 #[wasm_bindgen]
 pub fn id() -> String {
     return Uuid::new_v4().to_string();
+}
+
+#[wasm_bindgen]
+pub async fn fetch_data(url: &str) -> Result<String, JsValue> {
+    let mut opts = RequestInit::new();
+    opts.method("GET");
+
+    let request = Request::new_with_str_and_init(url, &opts)?;
+
+    let window = web_sys::window().expect("no global `window` exists");
+    let response: Response = JsFuture::from(window.fetch_with_request(&request)).await?.into();
+
+    if !response.ok() {
+        Err(JsValue::from_str("Failed to fetch data"))
+    }
+    
+    let text = JsFuture::from(response.text()?).await?;
+    Ok(text.as_string().unwrap_or_default())
 }

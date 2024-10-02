@@ -1,26 +1,11 @@
 //import init, { uuid4 } from "/web/wasm.js";
-import init, { id } from "../web/wasm.js";
+import init, { id } from "../web/wasm.js"; // make possible to use this both for local tests and server ones
+import { Message, UUID, Person, Base64 } from "./types.ts"
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// start-up
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-export type UUID = `${string}-${string}-${string}-${string}-${string}`;
-export type Base64 = `data:image/${string};base64,${string}`;
-
-// define Person type
-export type Person = {
-    id: UUID,
-    name: string,
-    img: Base64 | undefined
-}
-
-// define Message type
-export type Message = {
-    id: UUID,
-    content: string,
-    sender: Person,
-    timestamp: number,
+async function ID(): Promise<UUID> {
+    // verify the existence of that id in the DB
+    await init();
+    return id() as UUID
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -30,23 +15,26 @@ export type Message = {
 class UserChat {
     // private fields
     private id: UUID;
-    // this will contain olny preloaded messages that we think that the user will access frequently, normaly new messages or favorite ones
-    private messages: Message[];
+    private messages: Map<UUID, Message>;
+    private person: Person;
     // public fields
     public name: string;
 
-    constructor(name: string) {
-        this.name = name;
-        // get messages from the database
-        this.genID();
+    constructor(person: Person) {
+        this.name = person.name;
+        this.id = person.id;
+        this.person = person;
+        //
+        this.messages = new Map();
     }
 
-    private async genID() {
-        this.id = await ID();
-    }
+    public new_message = (text: string) => global_message(text, this.person).then(msg => {
+        this.messages.set(msg.id, msg);
+        return msg;
+    })
 
     // get messages from the database
-    private getMessages() {
+    private get_messages_from_db() {
         // get messages from the database
     }
 
@@ -74,28 +62,25 @@ class Chat {
         // create a map for the people
         this.people = new Map<UUID, Person>();
         //
-        this.genId()
+        this.generate_id();
     }
 
-    private async genId() {
+    private async generate_id() {
         this.id = await ID();
     }
 
-    public addPeople = (people: Person[]) => new Promise((resolve, _) => {
+    public add_people = (people: Person[]) => new Promise((resolve, _) => {
         people.forEach(person => this.people.set(person.id, person));
         resolve(true);              // return the status of the operation
     });
 
-    public async newMessage(content: string, person: Person) {
-        const newMsg: Message = {
-            //id: init().then(() => id()) as unknown as UUID,
-            id: await ID(),
-            content: content,
-            sender: person,
-            timestamp: Date.now(),  // Todo: compare with the server date as well
-        }
-        //
-        this.messages.set(newMsg.id, newMsg)
+    public new_message = (text: string, person: Person) => global_message(text, person).then(msg => {
+        this.messages.set(msg.id, msg)
+        return msg;
+    })
+
+    public get_messages_from_db() {
+        // get from db
     }
 
     // create a html chat
@@ -111,25 +96,49 @@ class Chat {
     }
 }
 
-async function ID(): Promise<UUID> {
-    // verify the existence of that id in the DB
-    await init();
-    return id() as UUID
-}
+const global_message = (text: string, sender: Person) => new Promise<Message>( async (resolve, reject) => {
+    if (typeof text != "string") reject(new Error("this message doesn't contain a properly string!"));
+    //
+    const new_message: Message = {
+        // info
+        id: await ID(),
+        sender: sender,
+        timestamp: Date.now(),  // Todo: compare with the server date as well
+        favorited: false,
+        // content
+        binaries: undefined,
+        text: text
+    }
+    //
+    try {
+        resolve(new_message)
+    } catch(err) {
+        reject(new Error(`something went wrong! ${err}`));
+    }
+})
 
 // Test
 const Zéulo: Person = {
     id: await ID(),
-    name: "Zéulo Rio Renno",
+    name: "Tina",
     img: undefined
 },
-Ana: Person = {
+Malu: Person = {
     id: await ID(),
-    name: "Ana L.",
+    name: "Malu",
     img: undefined
 }
 //
-const test = new Chat("my chat");
-test.addPeople([Zéulo, Ana]);
+const chat = new Chat("Prokopowitsch");
+chat.add_people([Zéulo, Malu]);
 //
-console.log(test)
+console.log(chat)
+
+const user = new UserChat(Malu);
+user.new_message("hello world")
+    .then(set => {
+        set.favorited = true;
+        return set;
+    })
+    .then(set => console.log(set))
+    .catch(err => console.log(err))
