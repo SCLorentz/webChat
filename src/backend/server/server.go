@@ -24,6 +24,8 @@ type File struct {
 	Mime string
 }
 
+const PORT = "8080"
+
 func sendGzip(w http.ResponseWriter, r *http.Request, mime string, path string) error {
 	File := "../frontend/" + path
 	// Verifica se o cliente aceita compressão Gzip
@@ -181,6 +183,18 @@ func Start() {
 		conf.Err(w, 501, errors.New("not implemented"))
 	})
 
+	https.HandleFunc("/is_running", func(w http.ResponseWriter, r * http.Request) {
+		//
+		status := map[string]string{
+			"port": PORT,
+			"status": "running",
+		}
+		jsonStatus, _ := json.Marshal(status)
+		//
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonStatus)
+	})
+
 	/*// Open our jsonFile
 	jsonFile, err := os.Open("./server/server.json")
 	// if we os.Open returns an error then handle it
@@ -191,8 +205,8 @@ func Start() {
 	// defer the closing of our jsonFile so that we can parse it later on
 	defer jsonFile.Close()*/
 
-	fmt.Println("The server has started successfully in http://localhost:8080")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	fmt.Println("The server has started successfully in http://localhost:%s", PORT)
+	if err := http.ListenAndServe(fmt.Sprintf(":%s", PORT), nil); err != nil {
 		log.Fatal(err)
 	}
 }
