@@ -59,13 +59,15 @@ export interface Chat {
 
 export class Chat implements Chat {
 
-    constructor(name: string) {
+    // this is the equivalent to 'constructor', but async
+    public static async inicialize(name: string) {
+        const me = new Chat();
         // inicialization values
-        this.name = name;
-        // create a map for the people
-        this.people = new Map<UUID, Person>();
-        // set id
-        async () => this.id = await ID();
+        me.name = name;
+        me.people = new Map<UUID, Person>();
+        me.id = await ID();
+        //
+        return me
     }
 
     public add_people = (people: Person[]) => new Promise((resolve, _) => {
@@ -83,12 +85,12 @@ export class Chat implements Chat {
     }
 
     // create a html chat
-    public create() {
+    /*public create() {
         // create a div with the chat id
         const chat = document.createElement('div');
         chat.id = this.id;
         // Todo: use react here
-    }
+    }*/
 
     public delete() {
         // delete the chat, this shoud be a promise that deletes the html element, remove's it from the database and the local storage

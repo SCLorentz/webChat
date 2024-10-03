@@ -37,7 +37,7 @@ Malu: Person = {
     img: undefined
 }
 //
-const chat = new Chat("Prokopowitsch");
+const chat = await Chat.inicialize("Prokopowitsch");
 chat.add_people([Tina, Malu]);
 //
 console.log(chat)
