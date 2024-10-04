@@ -1,4 +1,6 @@
 // merge the files when building the final JS one
+//@ts-ignore
+import * as zod from "https://deno.land/x/zod@v3.23.8/mod.ts";
 
 import type { UUID, Person, Message } from "./types.d.ts"
 import init, { id } from "../web/wasm.js";
@@ -8,6 +10,10 @@ async function ID(): Promise<UUID> {
     await init();
     return id() as UUID
 }
+
+const messageSchema = zod.object({
+    text: zod.string()
+});
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // User Chat
@@ -96,21 +102,18 @@ export class Chat implements Chat {
     }
 }
 
+// para prevenir o uso de uma biblioteca (zod) use WASM
 const global_message = async (text: string, sender: Person): Promise<Message> => {
-    if (typeof text !== "string") {
-        throw new Error("this message doesn't contain a properly string!");
-    }
-
-    const new_message: Message = {
+    messageSchema.parse({ text })
+    //
+    return {
         id: await ID(),
         sender: sender,
         timestamp: Date.now(),  // Todo: compare with the server date as well
         favorited: false,
-        binaries: undefined,
+        //binaries: undefined,
         text: text
     };
-
-    return new_message; // Retorna o novo objeto de mensagem
 }
 
 const get_data_from_db = async () => {

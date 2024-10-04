@@ -15,6 +15,6 @@ export type Message = {
     timestamp: number,
     favorited: boolean,
     // content
-    binaries: undefined // this is where the file of the message will be inserted
+    binaries?: undefined // this is where the file of the message will be inserted
     text: string,
 }
