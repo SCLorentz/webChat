@@ -61,19 +61,18 @@ export class Chat implements Chat {
 
     // this is the equivalent to 'constructor', but async
     public static async inicialize(name: string) {
-        const me = new Chat();
+        const self = new Chat();
         // inicialization values
-        me.name = name;
-        me.people = new Map<UUID, Person>();
-        me.id = await ID();
+        self.name = name;
+        self.people = new Map<UUID, Person>();
+        self.id = await ID();
         //
-        return me
+        return self
     }
 
-    public add_people = (people: Person[]) => new Promise((resolve, _) => {
+    public add_people(people: Person[]) {
         people.forEach(person => this.people.set(person.id, person));
-        resolve(true);              // return the status of the operation
-    });
+    }
 
     public new_message = (text: string, person: Person) => global_message(text, person).then(msg => {
         this.messages.set(msg.id, msg);
@@ -97,26 +96,22 @@ export class Chat implements Chat {
     }
 }
 
-const global_message = (text: string, sender: Person) => new Promise<Message>( async (resolve, reject) => {
-    if (typeof text != "string") reject(new Error("this message doesn't contain a properly string!"));
-    //
+const global_message = async (text: string, sender: Person): Promise<Message> => {
+    if (typeof text !== "string") {
+        throw new Error("this message doesn't contain a properly string!");
+    }
+
     const new_message: Message = {
-        // info
         id: await ID(),
         sender: sender,
         timestamp: Date.now(),  // Todo: compare with the server date as well
         favorited: false,
-        // content
         binaries: undefined,
         text: text
-    }
-    //
-    try {
-        resolve(new_message)
-    } catch(err) {
-        reject(new Error(`something went wrong! ${err}`));
-    }
-})
+    };
+
+    return new_message; // Retorna o novo objeto de mensagem
+}
 
 const get_data_from_db = async () => {
     // get this from wasm
