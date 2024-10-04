@@ -1,34 +1,39 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
-* @param {string} name
-*/
-export function greet(name: string): void;
-/**
-* @param {string} ty
-* @param {(string)[]} classes
-* @param {Document} father
-* @param {string} txt
-* @returns {Element}
-*/
-export function obj(ty: string, classes: (string)[], father: Document, txt: string): Element;
-/**
 * @returns {string}
 */
 export function id(): string;
+/**
+* @param {string} text
+* @param {Person} sender
+* @returns {Message}
+*/
+export function wasm_message(text: string, sender: Person): Message;
+/**
+*/
+export class Message {
+  free(): void;
+}
+/**
+*/
+export class Person {
+  free(): void;
+}
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
-  readonly greet: (a: number, b: number) => void;
-  readonly obj: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => void;
   readonly id: (a: number) => void;
-  readonly __wbindgen_malloc: (a: number, b: number) => number;
-  readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
+  readonly __wbg_message_free: (a: number, b: number) => void;
+  readonly __wbg_person_free: (a: number, b: number) => void;
+  readonly wasm_message: (a: number, b: number, c: number) => number;
+  readonly __wbindgen_exn_store: (a: number) => void;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_free: (a: number, b: number, c: number) => void;
-  readonly __wbindgen_exn_store: (a: number) => void;
+  readonly __wbindgen_malloc: (a: number, b: number) => number;
+  readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
 }
 
 export type SyncInitInput = BufferSource | WebAssembly.Module;

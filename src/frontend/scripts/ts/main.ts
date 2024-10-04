@@ -12,11 +12,11 @@ const is_local: () => Promise<boolean> = async () => {
 // @ts-ignore
 // import files from diferent paths dependinf if the server is running or not
 const wasmModule = await (is_local() ? import("../web/wasm.js") : import("/web/wasm.js"));
-const { id } = wasmModule;
+const { id, Message, Person } = wasmModule;
 const init = wasmModule.default; // Atribui a exportação padrão a init
 
 // update this method to be server / local in the future
-import type { Message, UUID, Person, Base64 } from "./types.d.ts"
+import type { UUID, Base64 } from "./types.d.ts"
 import { Chat, User } from "./chat.ts"
 
 async function ID(): Promise<UUID> {
@@ -25,28 +25,27 @@ async function ID(): Promise<UUID> {
     return id() as UUID
 }
 
-// Test
-const Tina: Person = {
-    id: await ID(),
-    name: "Tina",
-    img: undefined
-},
-Malu: Person = {
-    id: await ID(),
-    name: "Malu",
-    img: undefined
-}
-//
-const chat = await Chat.inicialize("Prokopowitsch")
-chat.add_people([Tina, Malu]);
-//
-console.log(chat)
+async function run() {
+    await init(); // Inicializa o módulo WASM
 
-const user = new User(Malu);
-user.new_message("hello world")
-    .then(set => {
-        set.favorited = true;
-        return set;
-    })
-    .then(set => console.log(set))
-    .catch(err => console.log(err))
+    // Cria uma instância de Person
+    const Tina = new Person({
+        id: await ID(), // Substitua por um UUID válido
+        name: 'Tina',
+        img: null
+    });
+
+    // Cria uma instância de Message
+    const message = new Message({
+        id: await ID(), // Substitua por um ID válido
+        sender: Tina,
+        timestamp: Date.now(),
+        favorited: false,
+        text: 'Hello, Tina!'
+    });
+
+    console.log(message);
+}
+
+// Chama a função run
+run();

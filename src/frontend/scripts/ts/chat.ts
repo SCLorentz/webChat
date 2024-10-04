@@ -1,9 +1,7 @@
 // merge the files when building the final JS one
-//@ts-ignore
-import * as zod from "https://deno.land/x/zod@v3.23.8/mod.ts";
 
-import type { UUID, Person, Message } from "./types.d.ts"
-import init, { id } from "../web/wasm.js";
+import type { UUID } from "./types.d.ts"
+import init, { id, wasm_message, Person, Message } from "../web/wasm.js"; // Verifique se o caminho está correto
 
 async function ID(): Promise<UUID> {
     // verify the existence of that id in the DB
@@ -11,9 +9,12 @@ async function ID(): Promise<UUID> {
     return id() as UUID
 }
 
-const messageSchema = zod.object({
-    text: zod.string()
-});
+// para prevenir o uso de uma biblioteca (zod) use WASM
+async function global_message(text: string, sender: Person): Promise<Message> {
+    await init();
+    return wasm_message(text, sender)
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // User Chat
@@ -29,17 +30,20 @@ export interface User {
 export class User implements User {
 
     constructor(person: Person) {
-        this.name = person.name;
-        this.id = person.id;
+        //this.name = person.name;
+        //this.id = person.id;
         this.person = person;
         //
         this.messages = new Map();
     }
 
-    public new_message = (text: string) => global_message(text, this.person).then(msg => {
-        this.messages.set(msg.id, msg);
-        return msg;
-    })
+    public new_message = async (text: string) => {
+        console.log("init")
+        const msg = await global_message(text, this.person);
+        console.log("msg val: ", msg)
+        //
+        //this.messages.set(msg.id, msg);
+    }
 
     // get messages from the database
     private get_messages_from_db() {
@@ -76,14 +80,14 @@ export class Chat implements Chat {
         return self
     }
 
-    public add_people(people: Person[]) {
+    /*public add_people(people: Person[]) {
         people.forEach(person => this.people.set(person.id, person));
-    }
+    }*/
 
-    public new_message = (text: string, person: Person) => global_message(text, person).then(msg => {
+    /*public new_message = (text: string, person: Person) => global_message(text, person).then(msg => {
         this.messages.set(msg.id, msg);
         return msg;
-    })
+    })*/
 
     public get_messages_from_db() {
         // get from db
@@ -100,20 +104,6 @@ export class Chat implements Chat {
     public delete() {
         // delete the chat, this shoud be a promise that deletes the html element, remove's it from the database and the local storage
     }
-}
-
-// para prevenir o uso de uma biblioteca (zod) use WASM
-const global_message = async (text: string, sender: Person): Promise<Message> => {
-    messageSchema.parse({ text })
-    //
-    return {
-        id: await ID(),
-        sender: sender,
-        timestamp: Date.now(),  // Todo: compare with the server date as well
-        favorited: false,
-        //binaries: undefined,
-        text: text
-    };
 }
 
 const get_data_from_db = async () => {

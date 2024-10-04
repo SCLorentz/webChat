@@ -2,9 +2,12 @@
 use uuid::Uuid;
 use wasm_bindgen::prelude::*;
 // http response
-use web_sys::Request;
+/*use web_sys::Request;
 use web_sys::RequestInit;
-use web_sys::Response;
+use web_sys::Response;*/
+
+use serde::{Serialize, Deserialize}; // Para serialização
+use chrono::Utc; // Para manipulação de data e hora
 
 extern crate web_sys;
 //use web_sys::console;
@@ -13,18 +16,6 @@ extern crate web_sys;
 extern {
     pub fn confirm(s: &str) -> bool;
 }
-
-/*#[wasm_bindgen]
-pub fn greet(name: &str) {
-    console::log_1(&JsValue::from_str("Hello, world!"));
-    //
-    if confirm(&format!("Are you sure?")) {
-        console::log_1(&JsValue::from_str(&format!("fuck you {}!", name)));
-        return;
-    }
-    //
-    console::log_1(&JsValue::from_str("You are not sure :("));
-}*/
 
 /*#[wasm_bindgen]
 pub fn obj(ty: String, classes: Vec<String>, father: web_sys::Document, txt: String) -> Result<Element, JsValue> {
@@ -44,12 +35,7 @@ pub fn obj(ty: String, classes: Vec<String>, father: web_sys::Document, txt: Str
     return Ok(e);
 }*/
 
-#[wasm_bindgen]
-pub fn id() -> String {
-    return Uuid::new_v4().to_string();
-}
-
-#[wasm_bindgen]
+/*#[wasm_bindgen]
 pub async fn fetch_data(url: &str) -> Result<String, JsValue> {
     let mut opts = RequestInit::new();
     opts.method("GET");
@@ -65,4 +51,43 @@ pub async fn fetch_data(url: &str) -> Result<String, JsValue> {
     
     let text = JsFuture::from(response.text()?).await?;
     Ok(text.as_string().unwrap_or_default())
+}*/
+
+#[wasm_bindgen]
+pub fn id() -> String {
+    return Uuid::new_v4().to_string();
+}
+
+// serio, eu vou chorar fazendo essa porra. Que merda
+// serio, eu estou começando a odiar mais do que só o JS.
+// TS até tem types, mas que porra, como assim o sistema de types deixa eu fazer qualquer merda sem problemas?
+// Eu quero rigidez
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+#[wasm_bindgen]
+pub struct Message {
+    id: String,
+    sender: Person,
+    timestamp: u64,
+    favorited: bool,
+    text: String,
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+#[wasm_bindgen]
+pub struct Person {
+    id: String, // Use String para o UUID
+    name: String,
+    img: Option<String>, // Use Option<String> para permitir que seja None (equivalente a undefined)
+}
+
+#[wasm_bindgen]
+pub fn wasm_message(text: String, sender: Person) -> Message {
+    return Message {
+        id: id(),
+        sender,
+        timestamp: Utc::now().timestamp() as u64,
+        favorited: false,
+        text
+    }
 }
