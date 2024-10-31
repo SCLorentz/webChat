@@ -2,70 +2,30 @@
 //@ts-ignore
 import * as zod from "https://deno.land/x/zod@v3.23.8/mod.ts";
 
-import type { UUID, Person, Message } from "./types.d.ts"
+import type { UUID, Person, Message } from "./.types"
 import init, { id } from "../web/wasm.js";
 
-async function ID(): Promise<UUID> {
-    // verify the existence of that id in the DB
-    await init();
-    return id() as UUID
-}
+await init();
 
 const messageSchema = zod.object({
     text: zod.string()
 });
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// User Chat
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-export interface User {
-    id: UUID;
-    messages: Map<UUID, Message>;
-    name: string;
-    person: Person;
-}
-
-export class User implements User {
-
-    constructor(person: Person) {
-        this.name = person.name;
-        this.id = person.id;
-        this.person = person;
-        //
-        this.messages = new Map();
-    }
-
-    public new_message = (text: string) => global_message(text, this.person).then(msg => {
-        this.messages.set(msg.id, msg);
-        return msg;
-    })
-
-    // get messages from the database
-    private get_messages_from_db() {
-        // get messages from the database
-    }
-
-    // create a html user chat
-    public create() {
-        // use react here
-    }
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // chat class
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export interface Chat {
+export interface Chat
+{
     id: UUID;
     messages: Map<UUID, Message>;
     name: string;
     people: Map<UUID, Person>;
 }
 
-export class Chat implements Chat {
-
-    // this is the equivalent to 'constructor', but async
+export class Chat implements Chat
+{
+    /* this is cool
     public static async inicialize(name: string) {
         const self = new Chat();
         // inicialization values
@@ -74,18 +34,28 @@ export class Chat implements Chat {
         self.id = await ID();
         //
         return self
+    }*/
+
+    constructor(name: string)
+    {
+        this.name = name;
+        this.people = new Map<UUID, Person>();
+        this.id = id() as UUID;
     }
 
-    public add_people(people: Person[]) {
+    public add_people(people: Person[])
+    {
         people.forEach(person => this.people.set(person.id, person));
     }
 
-    public new_message = (text: string, person: Person) => global_message(text, person).then(msg => {
+    public new_message = (text: string, person: Person) => global_message(text, person).then(msg => 
+    {
         this.messages.set(msg.id, msg);
         return msg;
     })
 
-    public get_messages_from_db() {
+    public get_messages_from_db()
+    {
         // get from db
     }
 
@@ -97,17 +67,18 @@ export class Chat implements Chat {
         // Todo: use react here
     }*/
 
-    public delete() {
+    public delete()
+    {
         // delete the chat, this shoud be a promise that deletes the html element, remove's it from the database and the local storage
     }
 }
 
-// para prevenir o uso de uma biblioteca (zod) use WASM
-const global_message = async (text: string, sender: Person): Promise<Message> => {
+// para prevenir o uso de uma biblioteca (zod) use WASM em "message_handler"
+export async function global_message(text: string, sender: Person): Promise<Message> {
     messageSchema.parse({ text })
     //
     return {
-        id: await ID(),
+        id: id() as UUID,
         sender: sender,
         timestamp: Date.now(),  // Todo: compare with the server date as well
         favorited: false,
@@ -116,6 +87,6 @@ const global_message = async (text: string, sender: Person): Promise<Message> =>
     };
 }
 
-const get_data_from_db = async () => {
+async function get_data_from_db() {
     // get this from wasm
 }
