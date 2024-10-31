@@ -18,3 +18,6 @@ If you want to develop your own version of this chat, you should get docker inst
 To start the server, use: `run`, this command will make shure that everything necessary to make this project work is being executed and is working correctly.
 
 tmp: deno run ./src/frontend/scripts/ts/main.ts
+
+
+## fix errors with gcc at the devcontainer!
