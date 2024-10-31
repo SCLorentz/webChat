@@ -1,18 +1,4 @@
-// verify if the code is beeing runned localy or in a server
-async function is_local(): Promise<boolean>
-{
-    const url = new URL('/is_running', import.meta.url).href;
-    // this is so ugly...
-    try {
-        await fetch(url);
-        console.log("running on server");
-        return true;
-    } catch {
-        console.log("running localy");
-        return false;
-    }
-};
-
+import { is_local, get_server_port } from "./server_handler.ts";
 // @ts-ignore
 // import files from diferent paths dependinf if the server is running or not
 const wasmModule = await (is_local() ? import("../web/wasm.js") : import("/web/wasm.js"));
@@ -25,6 +11,8 @@ import { Chat } from "./chat.ts"
 import { User } from "./user.ts"
 
 await init();
+
+console.log(await get_server_port());
 
 // Test
 const Tina: Person = {
