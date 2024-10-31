@@ -11,10 +11,6 @@ const messageSchema = zod.object({
     text: zod.string()
 });
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// chat class
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 export interface Chat
 {
     id: UUID;
@@ -26,7 +22,8 @@ export interface Chat
 export class Chat implements Chat
 {
     /* this is cool
-    public static async inicialize(name: string) {
+    public static async inicialize(name: string)
+    {
         const self = new Chat();
         // inicialization values
         self.name = name;
