@@ -1,8 +1,5 @@
 package server
 
-//https://www.digitalocean.com/community/tutorials/how-to-make-an-http-server-in-go
-//https://blog.logrocket.com/creating-a-web-server-with-golang/
-
 import (
 	"encoding/json"
 	"errors"
@@ -25,13 +22,18 @@ type File struct {
 
 const PORT = "8080"
 
+func isGzipAccepted(r *http.Request) bool {
+	encodings := r.Header.Get("Accept-Encoding")
+	return encodings != "" && strings.Contains(encodings, "gzip")
+}
+
 func sendGzip(w http.ResponseWriter, r *http.Request, mime string, path string) error {
-	File := "../frontend/static/" + path
+	File := "../frontend/" + path
 	// Verifica se o cliente aceita compressão Gzip
 	if !isGzipAccepted(r) {
 		//http.Error(w, "Not Acceptable", http.StatusNotAcceptable) // err 406
 		send(path, w, mime)
-		return errors.New("not acceptable! Sending uncompressed file")
+		return errors.New("not acceptable! Sending uncompressed file...")
 	}
 
 	// Cria um escritor gzip
@@ -45,7 +47,7 @@ func sendGzip(w http.ResponseWriter, r *http.Request, mime string, path string) 
 
 	if !exist {
 		send(path, w, mime)
-		return errors.New("file not found! Trying to send uncompressed file")
+		return errors.New("file not found! Trying to send uncompressed file...")
 	}
 
 	// Abre o arquivo HTML
@@ -62,7 +64,7 @@ func sendGzip(w http.ResponseWriter, r *http.Request, mime string, path string) 
 	// Copia o conteúdo do arquivo para o escritor Gzip
 	_, err = io.Copy(gz, file)
 	if err != nil {
-		return_err := errors.New("error copying the content")
+		return_err := errors.New("error while copying the content!")
 		//
 		conf.Err(w, 500, return_err)
 		return return_err
@@ -72,7 +74,7 @@ func sendGzip(w http.ResponseWriter, r *http.Request, mime string, path string) 
 
 func send(path string, w http.ResponseWriter, mime string) {
 	// get the file path based on the project path
-	file, status, err := conf.ReadFile("../frontend/static/" + path);
+	file, status, err := conf.ReadFile("../frontend/" + path);
 	if status != 200 {
 		conf.Err(w, status, err)
 		return
@@ -88,6 +90,7 @@ func send(path string, w http.ResponseWriter, mime string) {
 	data := make([]byte, info.Size())
 	count, err := file.Read(data)
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -96,115 +99,43 @@ func send(path string, w http.ResponseWriter, mime string) {
 	w.Write([]byte(data[:count]))
 }
 
-/*func readJsonFile(path string) ([]byte, error) {
-	data, _, _ := conf.ReadFile(path);
-	//
-	jsonData, err := json.Marshal(data)
-	if err != nil {
-		fmt.Printf("could not marshal json: %s\n", err)
-		return nil, err
+func default_handler(w http.ResponseWriter, r *http.Request) {
+	//path := r.URL.Path
+	sendGzip(w, r, "text/html", "static/pages/index.html")
+}
+
+func running_status(w http.ResponseWriter, r *http.Request) {
+	status := map[string]string{
+		"port": PORT,
+		"status": "running",
+		"ip": GetIP(r),
 	}
-	return jsonData, nil
-}*/
+	jsonStatus, err := json.Marshal(status)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	//
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonStatus)
+}
+
+func chat_handler(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query()
+	fmt.Println(q)
+	fmt.Fprintf(w, "hi bro")
+}
 
 func Start() {
-	//database.DB();
-	//fmt.Println(readJsonFile("../public/static/awesome.json"))
-	// file handle
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		// Extraindo o caminho do arquivo da URL
-		path := r.URL.Path
+	http.HandleFunc("/", default_handler)
 
-		// gemini helped me with this, but I have modifiied it
-		// transformar em algo mais parecido com o meus codigos em rust com o equivalente de Some() e None()
-		lastIndex := strings.LastIndexByte(path, '.')
-		file := ""
-		mime := "text/html"
-		//
-		if lastIndex > 0 && lastIndex < len(path)-1 {
-			file = strings.ToLower(path[lastIndex+1:])
-		}
+	http.HandleFunc("/is_running", running_status)
 
-		// the most important route
-		if path == "/" {
-			send("/pages/index.html", w, "html")
-			return
-		}
-
-		if path == "/frontend/wasm_bg.wasm" {
-			send("/scripts/frontend/wasm_bg.wasm", w, "application/wasm");
-			return
-		}
-
-		// verify if the user can access directly the file, remember, the code is public and it can be acessed in the devtools or in my github
-		// TODO: create a better way to do this
-		// reimplement the static file load without the file extension
-		redirect := map[string]File{
-			// Todo: get the files e generate the templates automatically
-			"png":         	{ Folder: "img", Mime: "image/png" },
-			"ico":         	{ Folder: "img", Mime: "image/x-icon" },
-			"svg":         	{ Folder: "img/svg", Mime: "image/svg+xml" },
-			"woff2":       	{ Folder: "fonts", Mime: "application/font-woff" },
-			"webmanifest": 	{ Folder: "static", Mime: "application/manifest+json" },
-			"html":        	{ Folder: "static", Mime: "text/html"},
-			"js":          	{ Folder: "scripts", Mime: "application/javascript" },
-			"wasm": 	   	{ Folder: "scripts/frontend", Mime: "application/wasm" },
-			"css":         	{ Folder: "styles", Mime: "text/css" },
-			//"": {Folder: "static"},
-		}
-
-		if template, ok := redirect[file]; ok {
-			file = template.Folder
-			mime = template.Mime
-		}
-
-		if file != "static" && file != "json" && r.Header.Get("Referer") == "" {
-			fmt.Println(file)
-			conf.Err(w, 403, errors.New("not allowed!"))
-			return
-		}
-
-		url := file + r.URL.Path
-		sendGzip(w, r, mime, url)
+	http.HandleFunc("/test", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", "59", "bruh")
 	})
 
-	http.HandleFunc("/get_data", func(w http.ResponseWriter, r *http.Request) {
-		send("static/awesome.json", w, "application/json")
-		// Todo: create a query handler
-	})
-
-	http.HandleFunc("/save_data", func(w http.ResponseWriter, r *http.Request) {
-		// TODO: implement this
-		// get the data from the request
-		/*ata := r.FormValue("data")
-		fmt.Println(data)
-		w.Write([]byte("ok"))*/
-		conf.Err(w, 501, errors.New("not implemented"))
-	})
-
-	http.HandleFunc("/is_running", func(w http.ResponseWriter, r *http.Request) {
-		status := map[string]string{
-			"port": PORT,
-			"status": "running",
-		}
-		jsonStatus, err := json.Marshal(status)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(jsonStatus)
-	})
-
-	/*// Open our jsonFile
-	jsonFile, err := os.Open("./server/server.json")
-	// if we os.Open returns an error then handle it
-	if err != nil {
-	fmt.Println(err)
-	}
-	fmt.Println("Successfully Opened users.json")
-	// defer the closing of our jsonFile so that we can parse it later on
-	defer jsonFile.Close()*/
+	http.HandleFunc("/new_chat", chat_handler)
 
 	fmt.Println("The server has started successfully in http://localhost:" + PORT)
 	if err := http.ListenAndServe(fmt.Sprintf(":%s", PORT), nil); err != nil {
@@ -212,7 +143,12 @@ func Start() {
 	}
 }
 
-func isGzipAccepted(r *http.Request) bool {
-	encodings := r.Header.Get("Accept-Encoding")
-	return encodings != "" && strings.Contains(encodings, "gzip")
+// GetIP gets a requests IP address by reading off the forwarded-for
+// header (for proxies) and falls back to use the remote address.
+func GetIP(r *http.Request) string {
+	forwarded := r.Header.Get("X-FORWARDED-FOR")
+	if forwarded != "" {
+		return forwarded
+	}
+	return r.RemoteAddr
 }
