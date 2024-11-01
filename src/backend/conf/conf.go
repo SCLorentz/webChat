@@ -22,7 +22,7 @@ func Mime(file_type string) string {
 // err handler
 
 func err(err int) *template.Template {
-	return template.Must(template.ParseFiles("../templates/err/" + fmt.Sprintf("%d", err) + ".html"))
+	return template.Must(template.ParseFiles("../frontend/static/pages/err/" + fmt.Sprintf("%d", err) + ".html"))
 }
 
 var errTemplates = map[int]*template.Template {
@@ -58,7 +58,7 @@ func ReadFile(path string) (*os.File, int, error) {
 	exist := !errors.Is(error, os.ErrNotExist)
 
 	if !exist {
-		return nil, 404, errors.New("file not found")
+		return nil, 404, errors.New("file not found: " + path)
 	}
 
 	// Open the file and check for errors

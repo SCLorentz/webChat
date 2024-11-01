@@ -21,3 +21,8 @@ tmp: deno run ./src/frontend/scripts/ts/main.ts
 
 
 ## fix errors with gcc at the devcontainer!
+cargo build --target wasm32-unknown-unknown --release --target-dir=./src/frontend/scripts/web <-- use this to create wasm
+
+GOARCH=386 GOOS=linux go build main.go <-- use this to run the server
+
+There are some problems with 'wasm-pack', don't use it

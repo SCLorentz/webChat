@@ -11,6 +11,7 @@ export async function is_local(): Promise<boolean>
     }
 };
 
+// merge this function with the above
 type Either<T, E> = number | Error;
 
 export async function get_server_port(): Promise<Either<number, Error>>

@@ -8,6 +8,7 @@ authors = ["S.C. Lorentz <113468900+SCLorentz@users.noreply.github.com>"]
 [dependencies]
 getrandom = { version = "0.2", features = ["js"] }
 wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4.45"
 
 [dependencies.web-sys]
 version = "0.3.4"
@@ -18,6 +19,9 @@ features = [
   'Node',
   'Window',
   'console',
+  'Request',
+  'RequestInit', 
+  'Response'
 ]
 
 [dependencies.uuid]
@@ -40,5 +44,5 @@ wasm-opt = false
 out-dir = "./src/frontend/scripts/web"
 
 [profile.release]
-lto = "full"
+lto = "yes"
 opt-level = "z"

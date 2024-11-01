@@ -4,11 +4,10 @@ package server
 //https://blog.logrocket.com/creating-a-web-server-with-golang/
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
-	//
-	//"encoding/json"
 	"io"
 	"net/http"
 	"os"
@@ -27,7 +26,7 @@ type File struct {
 const PORT = "8080"
 
 func sendGzip(w http.ResponseWriter, r *http.Request, mime string, path string) error {
-	File := "../frontend/" + path
+	File := "../frontend/static/" + path
 	// Verifica se o cliente aceita compressão Gzip
 	if !isGzipAccepted(r) {
 		//http.Error(w, "Not Acceptable", http.StatusNotAcceptable) // err 406
@@ -73,7 +72,7 @@ func sendGzip(w http.ResponseWriter, r *http.Request, mime string, path string) 
 
 func send(path string, w http.ResponseWriter, mime string) {
 	// get the file path based on the project path
-	file, status, err := conf.ReadFile("../public/" + path);
+	file, status, err := conf.ReadFile("../frontend/static/" + path);
 	if status != 200 {
 		conf.Err(w, status, err)
 		return
@@ -128,7 +127,7 @@ func Start() {
 
 		// the most important route
 		if path == "/" {
-			send("index.html", w, "html")
+			send("/pages/index.html", w, "html")
 			return
 		}
 
@@ -161,7 +160,7 @@ func Start() {
 
 		if file != "static" && file != "json" && r.Header.Get("Referer") == "" {
 			fmt.Println(file)
-			conf.Err(w, 403, errors.New("not allowed"))
+			conf.Err(w, 403, errors.New("not allowed!"))
 			return
 		}
 
@@ -183,14 +182,16 @@ func Start() {
 		conf.Err(w, 501, errors.New("not implemented"))
 	})
 
-	https.HandleFunc("/is_running", func(w http.ResponseWriter, r * http.Request) {
-		//
+	http.HandleFunc("/is_running", func(w http.ResponseWriter, r *http.Request) {
 		status := map[string]string{
 			"port": PORT,
 			"status": "running",
 		}
-		jsonStatus, _ := json.Marshal(status)
-		//
+		jsonStatus, err := json.Marshal(status)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonStatus)
 	})
@@ -205,7 +206,7 @@ func Start() {
 	// defer the closing of our jsonFile so that we can parse it later on
 	defer jsonFile.Close()*/
 
-	fmt.Println("The server has started successfully in http://localhost:%s", PORT)
+	fmt.Println("The server has started successfully in http://localhost:" + PORT)
 	if err := http.ListenAndServe(fmt.Sprintf(":%s", PORT), nil); err != nil {
 		log.Fatal(err)
 	}
