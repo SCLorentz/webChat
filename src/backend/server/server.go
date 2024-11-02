@@ -144,6 +144,7 @@ func expect(w http.ResponseWriter, val string, origin map[string]interface{}) bo
 func chat_handler(w http.ResponseWriter, r *http.Request) {
 	querry := r.URL.Query()
 	chat := make(map[string]interface{})
+	//
 	for key, values := range querry {
 		chat[key] = values[0]
 	}
@@ -153,7 +154,6 @@ func chat_handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	chat["id"] = uuid.New().String() // Todo: check in the DB if the value already exists
-	chat["status"] = "ok"
 
 	// Convertendo para JSON
 	jsonData, err := json.Marshal(chat)
