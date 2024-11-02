@@ -13,6 +13,7 @@ import (
 	"compress/gzip"
 	"webchat/conf"
 	//"webchat/database"
+	"github.com/google/uuid"
 )
 
 type File struct {
@@ -120,10 +121,31 @@ func running_status(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonStatus)
 }
 
+func expect(w http.ResponseWriter, val string, origin map[string]interface{}) {
+	if origin[val] != nil { return }
+	http.Error(w, fmt.Sprintf("Missing arg: %s!", val), http.StatusNotAcceptable)
+}
+
 func chat_handler(w http.ResponseWriter, r *http.Request) {
-	q := r.URL.Query()
-	fmt.Println(q)
-	fmt.Fprintf(w, "hi bro")
+	querry := r.URL.Query()
+	chat := make(map[string]interface{})
+	for key, values := range querry {
+		chat[key] = values[0]
+	}
+
+	expect(w, "name", chat) // go should have '?' like rust in Ok() functions
+	expect(w, "desc", chat)
+	chat["id"] = uuid.New().String() // check in the DB if the value already exsist
+
+	// Convertendo para JSON
+	jsonData, err := json.Marshal(chat)
+	if err != nil {
+		http.Error(w, "Erro ao converter para JSON", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonData)
 }
 
 func Start() {
