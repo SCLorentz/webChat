@@ -130,7 +130,7 @@ func Start() {
 		fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", "59", "bruh")
 	})
 
-	http.HandleFunc("/new_chat", chat.Chat_handler)
+	http.HandleFunc("/new_chat", chat.Handler)
 
 	fmt.Println("The server has started successfully in http://localhost:" + PORT)
 	if err := http.ListenAndServe(fmt.Sprintf(":%s", PORT), nil); err != nil {

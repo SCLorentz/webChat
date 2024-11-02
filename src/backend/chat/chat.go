@@ -41,7 +41,7 @@ func create_json(w http.ResponseWriter, r *http.Request) Response {
 	return chat
 }
 
-func Chat_handler(w http.ResponseWriter, r *http.Request) {
+func Handler(w http.ResponseWriter, r *http.Request) {
 	chat := create_json(w, r)
 
 	jsonData, err := json.Marshal(chat)
