@@ -6,7 +6,10 @@ import (
 	"net/http"
 	"errors"
 	"os"
+	"encoding/json"
 )
+
+const PORT = "8080"
 
 var mime = map[string]string {
 	"js": "text/javascript",
@@ -21,19 +24,19 @@ func Mime(file_type string) string {
 
 // err handler
 
-func err(err int) *template.Template {
+func get(err int) *template.Template {
 	return template.Must(template.ParseFiles("../frontend/static/pages/err/" + fmt.Sprintf("%d", err) + ".html"))
 }
 
 var errTemplates = map[int]*template.Template {
 	// Todo: get the files e generate the templates automatically
-	401: err(401), // Unauthorized
-	403: err(403), // Forbidden
-	404: err(404), // Not Found
-	418: err(418), // I'm a teapot
-	500: err(500), // Internal Server Error
-	501: err(501), // Not Implemented
-	508: err(508), // Loop Detected
+	401: get(401), // Unauthorized
+	403: get(403), // Forbidden
+	404: get(404), // Not Found
+	418: get(418), // I'm a teapot
+	500: get(500), // Internal Server Error
+	501: get(501), // Not Implemented
+	508: get(508), // Loop Detected
 }
 
 // exported function:
@@ -69,4 +72,30 @@ func ReadFile(path string) (*os.File, int, error) {
 	defer file.Close() // Close the file even on errors
 
 	return file, 200, nil
+}
+
+// GetIP gets a requests IP address by reading off the forwarded-for
+// header (for proxies) and falls back to use the remote address.
+func GetIP(r *http.Request) string {
+	forwarded := r.Header.Get("X-FORWARDED-FOR")
+	if forwarded != "" {
+		return forwarded
+	}
+	return r.RemoteAddr
+}
+
+func Status(w http.ResponseWriter, r *http.Request) {
+	status := map[string]string{
+		"port": PORT,
+		"status": "running",
+		"ip": GetIP(r),
+	}
+	jsonStatus, err := json.Marshal(status)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	//
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonStatus)
 }

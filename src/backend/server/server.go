@@ -1,7 +1,6 @@
 package server
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -20,8 +19,6 @@ type File struct {
 	Folder string
 	Mime string
 }
-
-const PORT = "8080"
 
 func isGzipAccepted(r *http.Request) bool {
 	encodings := r.Header.Get("Accept-Encoding")
@@ -105,45 +102,22 @@ func default_handler(w http.ResponseWriter, r *http.Request) {
 	sendGzip(w, r, "text/html", "static/pages/index.html")
 }
 
-func running_status(w http.ResponseWriter, r *http.Request) {
-	status := map[string]string{
-		"port": PORT,
-		"status": "running",
-		"ip": GetIP(r),
-	}
-	jsonStatus, err := json.Marshal(status)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	//
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonStatus)
-}
-
 func Start() {
 	http.HandleFunc("/", default_handler)
 
-	http.HandleFunc("/is_running", running_status)
-
-	http.HandleFunc("/test", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", "59", "bruh")
-	})
+	http.HandleFunc("/is_running", conf.Status)
 
 	http.HandleFunc("/new_chat", chat.Handler)
 
-	fmt.Println("The server has started successfully in http://localhost:" + PORT)
-	if err := http.ListenAndServe(fmt.Sprintf(":%s", PORT), nil); err != nil {
+	// http.HandleFunc("/new_message", messages.Handler) <-- All of this should be criptografed
+
+	/* this is useful:
+	http.HandleFunc("/test", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", "59", "bruh")
+	})*/
+
+	fmt.Println("The server has started successfully in http://localhost:" + conf.PORT)
+	if err := http.ListenAndServe(fmt.Sprintf(":%s", conf.PORT), nil); err != nil {
 		log.Fatal(err)
 	}
-}
-
-// GetIP gets a requests IP address by reading off the forwarded-for
-// header (for proxies) and falls back to use the remote address.
-func GetIP(r *http.Request) string {
-	forwarded := r.Header.Get("X-FORWARDED-FOR")
-	if forwarded != "" {
-		return forwarded
-	}
-	return r.RemoteAddr
 }
