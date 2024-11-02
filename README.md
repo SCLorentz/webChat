@@ -2,9 +2,7 @@
 
 Version: 6.5.0_a
 
-This is still been developed, so it has a lot of problems. I would appreciate if you want to contribute with the project
-
-## Develop by your own
+## Develop by your own:
 
 ### My recomendations - Docker
 
