@@ -1,6 +1,6 @@
 ﻿# web chat
 
-Version: 6.4.1_a
+Version: 6.5.0_a
 
 This is still been developed, so it has a lot of problems. I would appreciate if you want to contribute with the project
 
