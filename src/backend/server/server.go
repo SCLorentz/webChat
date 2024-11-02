@@ -9,11 +9,11 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	// my packages
 	"compress/gzip"
+	// my packages
 	"webchat/conf"
+	"webchat/chat"
 	//"webchat/database"
-	"github.com/google/uuid"
 )
 
 type File struct {
@@ -121,51 +121,6 @@ func running_status(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonStatus)
 }
 
-func expect(w http.ResponseWriter, val string, origin map[string]interface{}) bool {
-	if origin[val] != nil {
-		return true
-	}
-	//http.Error(w, fmt.Sprintf("Missing arg: %s!", val), http.StatusNotAcceptable)
-	status := map[string]string{
-		"status": "invalid arguments!",
-	}
-	jsonStatus, err := json.Marshal(status)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return false
-	}
-	//
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonStatus)
-	//
-	return false
-}
-
-func chat_handler(w http.ResponseWriter, r *http.Request) {
-	querry := r.URL.Query()
-	chat := make(map[string]interface{})
-	//
-	for key, values := range querry {
-		chat[key] = values[0]
-	}
-
-	if !expect(w, "name", chat) || !expect(w, "desc", chat) {
-		return
-	}
-
-	chat["id"] = uuid.New().String() // Todo: check in the DB if the value already exists
-
-	// Convertendo para JSON
-	jsonData, err := json.Marshal(chat)
-	if err != nil {
-		http.Error(w, "Erro ao converter para JSON", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonData)
-}
-
 func Start() {
 	http.HandleFunc("/", default_handler)
 
@@ -175,7 +130,7 @@ func Start() {
 		fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", "59", "bruh")
 	})
 
-	http.HandleFunc("/new_chat", chat_handler)
+	http.HandleFunc("/new_chat", chat.Chat_handler)
 
 	fmt.Println("The server has started successfully in http://localhost:" + PORT)
 	if err := http.ListenAndServe(fmt.Sprintf(":%s", PORT), nil); err != nil {
