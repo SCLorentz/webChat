@@ -121,9 +121,24 @@ func running_status(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonStatus)
 }
 
-func expect(w http.ResponseWriter, val string, origin map[string]interface{}) {
-	if origin[val] != nil { return }
-	http.Error(w, fmt.Sprintf("Missing arg: %s!", val), http.StatusNotAcceptable)
+func expect(w http.ResponseWriter, val string, origin map[string]interface{}) bool {
+	if origin[val] != nil {
+		return true
+	}
+	//http.Error(w, fmt.Sprintf("Missing arg: %s!", val), http.StatusNotAcceptable)
+	status := map[string]string{
+		"status": "invalid arguments!",
+	}
+	jsonStatus, err := json.Marshal(status)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return false
+	}
+	//
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(jsonStatus)
+	//
+	return false
 }
 
 func chat_handler(w http.ResponseWriter, r *http.Request) {
@@ -133,9 +148,12 @@ func chat_handler(w http.ResponseWriter, r *http.Request) {
 		chat[key] = values[0]
 	}
 
-	expect(w, "name", chat) // go should have '?' like rust in Ok() functions
-	expect(w, "desc", chat)
-	chat["id"] = uuid.New().String() // check in the DB if the value already exsist
+	if !expect(w, "name", chat) || !expect(w, "desc", chat) {
+		return
+	}
+
+	chat["id"] = uuid.New().String() // Todo: check in the DB if the value already exists
+	chat["status"] = "ok"
 
 	// Convertendo para JSON
 	jsonData, err := json.Marshal(chat)

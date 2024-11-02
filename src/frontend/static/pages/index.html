@@ -7,5 +7,20 @@
 </head>
 <body>
     <h1>hello world</h1>
+    <script>
+        fetch("/new_chat")
+            .then(x => x.json())
+            .then(y => response_handler(Object.values(y)[0]))
+            .catch(err => console.log(err))
+
+        function response_handler(y)
+        {
+            if (y[1] != "ok")
+            {
+                console.log("something went wrong: ", y)
+                return
+            }
+        }
+    </script>
 </body>
 </html>
