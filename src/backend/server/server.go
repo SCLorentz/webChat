@@ -12,6 +12,7 @@ import (
 	// my packages
 	"webchat/conf"
 	"webchat/chat"
+	//"webchat/token"
 	//"webchat/database"
 )
 
@@ -102,12 +103,18 @@ func default_handler(w http.ResponseWriter, r *http.Request) {
 	sendGzip(w, r, "text/html", "static/pages/index.html")
 }
 
+func script_handler(w http.ResponseWriter, r *http.Request) {
+	sendGzip(w, r, "application/javascript", r.URL.Path)
+}
+
 func Start() {
 	http.HandleFunc("/", default_handler)
 
 	http.HandleFunc("/is_running", conf.Status)
 
 	http.HandleFunc("/new_chat", chat.Handler)
+
+	http.HandleFunc("/scripts/", script_handler)
 
 	// http.HandleFunc("/new_message", messages.Handler) <-- All of this should be criptografed
 

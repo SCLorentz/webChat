@@ -1,1 +1,0 @@
-export type response = { [s: string]: string; } | ArrayLike<string>;

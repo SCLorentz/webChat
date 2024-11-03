@@ -41,7 +41,20 @@ func create_json(w http.ResponseWriter, r *http.Request) Response {
 	return chat
 }
 
+/*func auth(w http.ResponseWriter, r *http.Resquest) bool {
+	token := r.Header.Get("Authorization")
+    if isValidToken(token) {
+		return true
+    }
+	return false
+}*/
+
 func Handler(w http.ResponseWriter, r *http.Request) {
+	/*if val := auth(w, r); val == false {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}*/
+	//
 	chat := create_json(w, r)
 
 	jsonData, err := json.Marshal(chat)

@@ -17,10 +17,21 @@ To start the server, use: `run`, this command will make shure that everything ne
 
 tmp: deno run ./src/frontend/scripts/ts/main.ts
 
+## Bundle RS to WASM and JS
 
-## fix errors with gcc at the devcontainer!
 cargo build --target wasm32-unknown-unknown --release --target-dir=./src/frontend/scripts/web <-- use this to create wasm
 
-GOARCH=386 GOOS=linux go build main.go <-- use this to run the server
-
 There are some problems with 'wasm-pack', don't use it
+
+## Bundle TS to JS
+
+**for now I will use js (again), cause the output file 'bundle.js' has over 76MB of size idk why**
+
+deno compile --allow-read --allow-net --config tsconfig.json --output=./src/frontend/scripts/js/bundle.js ./src/frontend/scripts/ts/index.ts
+
+- Compile all the TS files into one JS file
+- Remove comments
+
+## Run the server
+
+GOARCH=386 GOOS=linux go build main.go

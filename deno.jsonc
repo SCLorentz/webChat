@@ -1,0 +1,9 @@
+{
+  "tasks": {
+    "dev": "deno run --watch ./src/frontend/scripts/ts/index.ts",
+    "run": "deno compile --allow-read --allow-net --output=./src/frontend/scripts/js/bundle.js ./src/frontend/scripts/ts/index.ts"
+  },
+  "imports": {
+    "@std/assert": "jsr:@std/assert@1"
+  }
+}
