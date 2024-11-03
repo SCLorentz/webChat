@@ -11,9 +11,11 @@ import (
 	"compress/gzip"
 	// my packages
 	"webchat/conf"
-	"webchat/chat"
+	"webchat/db/chat"
 	//"webchat/token"
-	//"webchat/database"
+	//"webchat/db"
+	//"webchat/auth"
+	//"webchat/auth/token"
 )
 
 type File struct {
@@ -116,6 +118,8 @@ func Start() {
 
 	http.HandleFunc("/scripts/", script_handler)
 
+	//http.HandleFunc("/get_db", database.GetDBHandler)
+
 	// http.HandleFunc("/new_message", messages.Handler) <-- All of this should be criptografed
 
 	/* this is useful:
@@ -127,4 +131,12 @@ func Start() {
 	if err := http.ListenAndServe(fmt.Sprintf(":%s", conf.PORT), nil); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func IsServerRunning() bool {
+	_, err := http.Get("http://localhost:" + conf.PORT)
+	if err != nil {
+		return false
+	}
+	return true
 }

@@ -3,9 +3,17 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"webchat/server"
+	"time"
 )
 
 func Start() {
+	// esperar o servidor ser iniciado
+	for !server.IsServerRunning() {
+		fmt.Println("waiting for the server to start...")
+		time.Sleep(time.Second)
+	}
+
 	for {
 		var i string
 

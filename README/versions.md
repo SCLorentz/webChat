@@ -85,11 +85,13 @@ New features with this version of back-end includes:
 Front-end in TS
 ---------------------->
 
-### 6.0.0 - Front-end in TS
+### 6.0.0 - Rewrite everything
 
-<img src="../images/README/ts.svg" width="60px">
+<!--<img src="../images/README/ts.svg" width="60px">-->
 
 New features with this version of front-end includes:
 
-- [X] TypeScript
+- [ ] TypeScript
 - [ ] TailwindCSS
+- [ ] React
+- [X] Chat creation and management in the backend

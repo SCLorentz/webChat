@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func generateToken(userID int) (string, error) {
+func GenerateToken(userID int) (string, error) {
     claims := jwt.StandardClaims{
         ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
         Issuer:    "ch6",
@@ -24,6 +24,6 @@ func generateToken(userID int) (string, error) {
     return ss, nil
 }
 
-func validateToken(tokenString string) (int, error) {
-    //
-}
+/*func ValidateToken(tokenString string) (int, error) {
+    
+}*/
