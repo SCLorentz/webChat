@@ -30,6 +30,15 @@ func Start() {
 			exit(5)
 		}
 
+		// Todo: create a better method to do this, implement with support for args like: '--time 5'
+
+		switch i {
+			case "restart":
+				fmt.Print("\n\x1b[1mTERMINAL:\033[0m not implemented yet\n")
+			case "exit":
+				exit(5)
+		}
+
 		/*
 		Commands:
 		- restart the server without restarting the terminal

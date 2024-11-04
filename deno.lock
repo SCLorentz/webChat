@@ -1,5 +1,13 @@
 {
-  "version": "3",
+  "version": "4",
+  "specifiers": {
+    "npm:create-vite@latest": "5.5.5"
+  },
+  "npm": {
+    "create-vite@5.5.5": {
+      "integrity": "sha512-xQaaMBBP7iTs9GrWj48y6WIMqn1l+83ao/BW1T32KkEzzi6kTEEAp0UI9EW/waCy7R4dGN6bRR86YQfPHmUsuQ=="
+    }
+  },
   "remote": {
     "https://deno.land/x/zod@v3.23.8/ZodError.ts": "528da200fbe995157b9ae91498b103c4ef482217a5c086249507ac850bd78f52",
     "https://deno.land/x/zod@v3.23.8/errors.ts": "5285922d2be9700cc0c70c95e4858952b07ae193aa0224be3cbd5cd5567eabef",

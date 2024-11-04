@@ -27,6 +27,8 @@ There are some problems with 'wasm-pack', don't use it
 
 **for now I will use js (again), cause the output file 'bundle.js' has over 76MB of size idk why**
 
+deno run -A npm:create-vite@latest --template react-ts
+
 deno compile --allow-read --allow-net --config tsconfig.json --output=./src/frontend/scripts/js/bundle.js ./src/frontend/scripts/ts/index.ts
 
 - Compile all the TS files into one JS file
