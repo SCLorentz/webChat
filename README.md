@@ -1,4 +1,6 @@
-﻿# WebChat
+# Now this is just a place for tests, maybe some day I will finish
+ 
+ # WebChat
 
 I want to get experience making websites, so I decided to build a webchat to get better at frontend and backend.
 
