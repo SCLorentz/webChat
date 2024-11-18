@@ -1,0 +1,30 @@
+{
+    "name": "awesome",
+    "description": "A curated list of awesome things related to Chat",
+    "url": "https://github.com/chat-app/awesome",
+    "chats": [
+        {
+            "id": "chat:1",
+            "name": "chat",
+            "thumb": "groupImg.svg",
+            "guests": [
+                {
+                    "id": "user:1",
+                    "name": "Felipe",
+                    "sobrenome": "Lorentz",
+                    "img": "/no-photo-avaliable.svg",
+                    "email": "user.email@domain.org.br",
+                    "adm": true
+                },
+                {
+                    "id": "user:2",
+                    "name": "S.C. Lorentz",
+                    "sobrenome": "Lorentz",
+                    "img": "/no-photo-avaliable.svg",
+                    "email": "user.email@domain.org.br",
+                    "adm": false
+                }
+            ]
+        }
+    ]
+}
