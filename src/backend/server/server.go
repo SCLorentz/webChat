@@ -8,7 +8,6 @@ import (
 	"webchat/conf"
 	"webchat/db/chat"
 	"webchat/server/common"
-	//"webchat/token"
 	//"webchat/db"
 	//"webchat/auth"
 	//"webchat/auth/token"
