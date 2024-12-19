@@ -6,7 +6,7 @@ Front-end
 
 ### 0.0.1 - Zero version
 
-<img src="../images/README/js.svg" width="60px">
+<img src="../images/js.svg" width="60px">
 
 this version included:
 
@@ -32,7 +32,7 @@ Back-end
 
 ### 2.0.0 - Back-end
 
-<img src="../images/README/nodejs.svg" height="50px">
+<img src="../images/nodejs.svg" height="50px">
 
 This version of the back-end includes:
 
@@ -46,7 +46,7 @@ Back-end in Deno
 
 ### 3.0.0 - Back-end in Deno
 
-<img src="../images/README/deno.svg" width="60px">
+<img src="../images/deno.svg" width="60px">
 
 this version includes:
 
@@ -60,7 +60,7 @@ Front-end in WASM
 
 ### 4.0.0 - WASM features in the front-end
 
-<img src="../images/README/wasm-pack.webp" width="60px">
+<img src="../images/wasm-pack.webp" width="60px">
 
 New features with wasm-pack include:
 
@@ -74,7 +74,7 @@ Back-end in Golang
 
 ### 5.0.0 - back-end in Golang
 
-<img src="../images/README/golang.svg" width="60px">
+<img src="../images/golang.svg" width="60px">
 
 New features with this version of back-end includes:
 
@@ -87,7 +87,7 @@ Front-end in TS
 
 ### 6.0.0 - Rewrite everything
 
-<!--<img src="../images/README/ts.svg" width="60px">-->
+<!--<img src="../images/ts.svg" width="60px">-->
 
 New features with this version of front-end includes:
 

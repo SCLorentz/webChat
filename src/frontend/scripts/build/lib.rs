@@ -15,15 +15,18 @@ use web_sys::{Request, RequestInit, Response};
 //use web_sys::console;
 
 #[wasm_bindgen]
-extern {
+extern
+{
     pub fn confirm(s: &str) -> bool;
 }
 
 /*#[wasm_bindgen]
-pub fn greet(name: &str) {
+pub fn greet(name: &str)
+{
     console::log_1(&JsValue::from_str("Hello, world!"));
     //
-    if confirm(&format!("Are you sure?")) {
+    if confirm(&format!("Are you sure?"))
+    {
         console::log_1(&JsValue::from_str(&format!("fuck you {}!", name)));
         return;
     }
@@ -32,7 +35,8 @@ pub fn greet(name: &str) {
 }*/
 
 /*#[wasm_bindgen]
-pub fn obj(ty: String, classes: Vec<String>, father: web_sys::Document, txt: String) -> Result<Element, JsValue> {
+pub fn obj(ty: String, classes: Vec<String>, father: web_sys::Document, txt: String) -> Result<Element, JsValue>
+{
     let window = web_sys::window().expect("no global `window` exists");
     let document = window.document().expect("should have a document on window");
     let _body = document.body().expect("document should have a body");
@@ -50,12 +54,14 @@ pub fn obj(ty: String, classes: Vec<String>, father: web_sys::Document, txt: Str
 }*/
 
 #[wasm_bindgen]
-pub fn id() -> String {
+pub fn id() -> String
+{
     return Uuid::new_v4().to_string();
 }
 
 #[wasm_bindgen]
-pub async fn fetch_data(url: &str) -> Result<String, JsValue> {
+pub async fn fetch_data(url: &str) -> Result<String, JsValue>
+{
     let opts = RequestInit::new();
     opts.set_method("GET");
 
@@ -64,7 +70,8 @@ pub async fn fetch_data(url: &str) -> Result<String, JsValue> {
     let window = web_sys::window().expect("no global `window` exists");
     let response: Response = JsFuture::from(window.fetch_with_request(&request)).await?.into();
 
-    if !response.ok() {
+    if !response.ok()
+    {
         return Err(JsValue::from_str(&format!("Failed to fetch data: {}", response.status())));
     };
     
