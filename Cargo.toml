@@ -1,0 +1,27 @@
+[package]
+name = "walkie-talkie"
+version = "0.0.1"
+edition = "2024"
+
+[package.metadata.release]
+release = false
+
+[dependencies]
+anyhow = "1.0.100"
+clap = { version = "4.5.51", features = ["derive"] }
+colog = "1.4.0"
+#font-kit = "0.14.3"
+futures-util = "0.3.31"
+glutin = "0.32.3"
+glutin-winit = "0.5.0"
+log = "0.4.28"
+log-panics = "2.1.0"
+matrix-sdk = { version = "0.13.0", features = ["markdown", "bundled-sqlite", "anyhow"]}
+skia-safe = { version = "0.81.0", features = ["metal", "gl", "textlayout"] }
+#softbuffer = "0.4.6"
+tokio = { version = "1.48.0", features = ["full"] }
+tracing-subscriber = "0.3.20"
+url = "2.5.7"
+#wayland-client = "0.31.11"
+#wayland-protocols = { version = "0.32.9", features = ["unstable"] }
+winit = "0.30.12"
